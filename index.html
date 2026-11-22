@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="refresh" content="300">
-  <title>Daily Intelligence Briefing | Mumbai Edition</title>
+  <title>Daily Intelligence Briefing & Location Radar | Live Edition</title>
 
   <!-- PWA & Mobile Web App Meta Tags -->
-  <link rel="manifest" href="/manifest.json">
+  <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="MorningIntel">
@@ -35,9 +35,11 @@
             'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             'float': 'float 5s ease-in-out infinite',
             'glow': 'glow 4s ease-in-out infinite alternate',
-            'marquee': 'marquee 32s linear infinite',
+            'marquee': 'marquee 35s linear infinite',
             'equalizer': 'equalizer 0.8s ease-in-out infinite alternate',
             'border-dance': 'borderDance 4s linear infinite',
+            'radar-sweep': 'radarSweep 2.5s cubic-bezier(0, 0.2, 0.8, 1) infinite',
+            'spin-slow': 'spin 12s linear infinite',
           },
           keyframes: {
             float: {
@@ -45,7 +47,7 @@
               '50%': { transform: 'translateY(-6px)' }
             },
             glow: {
-              '0%': { opacity: 0.4, transform: 'scale(1)' },
+              '0%': { opacity: 0.35, transform: 'scale(1)' },
               '100%': { opacity: 0.85, transform: 'scale(1.08)' }
             },
             marquee: {
@@ -60,6 +62,10 @@
               '0%': { backgroundPosition: '0% 50%' },
               '50%': { backgroundPosition: '100% 50%' },
               '100%': { backgroundPosition: '0% 50%' }
+            },
+            radarSweep: {
+              '0%': { transform: 'scale(0.8)', opacity: '0.9' },
+              '100%': { transform: 'scale(2.4)', opacity: '0' }
             }
           }
         }
@@ -68,20 +74,10 @@
   </script>
 
   <style>
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #070a11;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #38bdf8;
-    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #070a11; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
 
     .bg-grid-pattern {
       background-size: 32px 32px;
@@ -110,7 +106,7 @@
     }
 
     .article-item.is-read {
-      opacity: 0.4;
+      opacity: 0.45;
       filter: grayscale(0.5);
     }
     .article-item.is-read .article-title {
@@ -123,9 +119,16 @@
     [data-theme="aurora"] .theme-accent { color: #10b981; }
     [data-theme="cyber"] .theme-accent { color: #06b6d4; }
 
-    /* Interactive Spotlight hover */
-    .spotlight-hover:hover {
-      box-shadow: 0 10px 30px -10px rgba(6, 182, 212, 0.25);
+    /* Interactive Tilt & Glow */
+    .glass-box {
+      background: rgba(13, 19, 33, 0.75);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .glass-box:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 36px -12px rgba(6, 182, 212, 0.2);
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -139,18 +142,21 @@
 </head>
 <body class="min-h-screen bg-[#070a11] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 antialiased relative overflow-x-hidden">
 
-  <!-- VIBRANT AMBIENT GLOW MESH -->
+  <!-- INTERACTIVE BIOLUMINESCENT PARTICLE CANVAS -->
+  <canvas id="ambient-canvas" class="fixed inset-0 pointer-events-none z-0 opacity-60"></canvas>
+
+  <!-- AMBIENT GLOW MESH BLOBS -->
   <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
-    <div id="blob-1" class="absolute -top-40 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-cyan-600/25 via-blue-600/15 to-transparent rounded-full blur-[130px] animate-glow"></div>
-    <div id="blob-2" class="absolute top-1/3 -right-40 w-[550px] h-[550px] bg-gradient-to-br from-rose-600/20 via-purple-600/15 to-transparent rounded-full blur-[140px] animate-glow" style="animation-delay: -2s;"></div>
-    <div id="blob-3" class="absolute -bottom-40 left-1/4 w-[600px] h-[600px] bg-gradient-to-br from-amber-600/20 via-emerald-600/15 to-transparent rounded-full blur-[150px] animate-glow" style="animation-delay: -4s;"></div>
-    <div class="absolute inset-0 bg-grid-pattern opacity-70"></div>
+    <div id="blob-1" class="absolute -top-40 -left-40 w-[520px] h-[520px] bg-gradient-to-br from-cyan-600/25 via-blue-600/15 to-transparent rounded-full blur-[140px] animate-glow"></div>
+    <div id="blob-2" class="absolute top-1/3 -right-40 w-[550px] h-[550px] bg-gradient-to-br from-rose-600/20 via-purple-600/15 to-transparent rounded-full blur-[150px] animate-glow" style="animation-delay: -2s;"></div>
+    <div id="blob-3" class="absolute -bottom-40 left-1/4 w-[600px] h-[600px] bg-gradient-to-br from-emerald-600/20 via-teal-600/15 to-transparent rounded-full blur-[160px] animate-glow" style="animation-delay: -4s;"></div>
+    <div class="absolute inset-0 bg-grid-pattern opacity-60"></div>
   </div>
 
-  <div class="relative z-10 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+  <div class="relative z-10 max-w-7xl mx-auto p-3 sm:p-5 lg:p-7 space-y-6">
 
     <!-- TOP HEADER -->
-    <header class="p-5 sm:p-6 rounded-3xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-2xl shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative overflow-hidden group">
+    <header class="p-4 sm:p-6 rounded-3xl bg-slate-900/75 border border-slate-800/90 backdrop-blur-2xl shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative overflow-hidden group">
       
       <!-- Animated Neon Rainbow Header Line -->
       <div class="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-cyan-500 via-rose-500 via-amber-400 to-emerald-400 bg-[length:200%_auto] animate-border-dance"></div>
@@ -176,8 +182,9 @@
             <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-cyan-400 bg-clip-text text-transparent font-display">
               Morning Intelligence Briefing
             </h1>
-            <span class="px-2.5 py-0.5 text-[11px] font-bold bg-cyan-950/90 text-cyan-300 border border-cyan-700/80 rounded-full font-mono tracking-wide shadow-lg shadow-cyan-950/50">
-              MUMBAI &bull; 09:00 AM IST
+            <span id="header-city-pill" class="px-2.5 py-0.5 text-[11px] font-bold bg-cyan-950/90 text-cyan-300 border border-cyan-700/80 rounded-full font-mono tracking-wide shadow-lg shadow-cyan-950/50 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+              <span id="header-city-title">MUMBAI &bull; LIVE</span>
             </span>
           </div>
           <div class="flex flex-wrap items-center gap-2 text-xs text-slate-400 font-mono mt-1">
@@ -193,11 +200,21 @@
         </div>
       </div>
 
-      <!-- Right: Interactive Controls, Color Themes, Audio & Clock -->
+      <!-- Right: Location Radar, Audio Brief, Profile & Live Refresh -->
       <div class="flex flex-wrap items-center gap-2.5">
         
+        <!-- DYNAMIC LOCATION RADAR SELECTOR BUTTON -->
+        <button id="loc-selector-btn" onclick="openLocationModal()" title="Click to change or auto-detect city" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-950/90 via-slate-900 to-cyan-950/90 hover:from-emerald-900 hover:to-cyan-900 border border-emerald-500/60 hover:border-cyan-400 text-slate-100 transition shadow-lg shadow-emerald-950/50 flex items-center gap-2 text-xs font-mono font-semibold group active:scale-95">
+          <div class="relative flex h-3 w-3 items-center justify-center">
+            <span class="animate-radar-sweep absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+          </div>
+          <span id="current-location-label" class="text-emerald-300 group-hover:text-cyan-300 transition-colors">📍 Detecting Location...</span>
+          <span class="text-[10px] text-slate-400 font-normal">▼</span>
+        </button>
+
         <!-- Developer Profile Link -->
-        <a href="profile.html" class="px-3 py-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-600/60 text-emerald-300 hover:text-white transition shadow-lg shadow-emerald-950/40 flex items-center gap-1.5 text-xs font-mono font-semibold group">
+        <a href="profile.html" class="px-3 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-700/80 text-emerald-300 hover:text-white transition shadow-md flex items-center gap-1.5 text-xs font-mono font-semibold group">
           <span>👨‍💻</span>
           <span class="hidden sm:inline">Hasan's Profile</span>
         </a>
@@ -234,7 +251,7 @@
         </div>
 
         <!-- Refresh Button -->
-        <button id="refresh-btn" onclick="triggerManualRefresh()" title="Fetch Realtime News Now" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 transition shadow-md active:scale-95 group flex items-center gap-1.5 font-mono text-xs">
+        <button id="refresh-btn" onclick="triggerManualRefresh()" title="Fetch Realtime Data Now" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 transition shadow-md active:scale-95 group flex items-center gap-1.5 font-mono text-xs">
           <svg id="refresh-spinner" class="w-4 h-4 text-cyan-400 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
           </svg>
@@ -250,7 +267,13 @@
         FLASH INTEL
       </div>
       <div class="overflow-hidden whitespace-nowrap flex w-full">
-        <div class="inline-flex animate-marquee space-x-8 text-xs font-mono text-slate-200">
+        <div id="breaking-marquee" class="inline-flex animate-marquee space-x-8 text-xs font-mono text-slate-200">
+          
+          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-cyan-300" onclick="openStoryModal('Sensex, Nifty slide nearly 1% as crude oil prices surge amid Iran conflict', 'DD News', 'https://news.google.com/rss/articles/CBMinwFBVV95cUxPS1BCT3dwVkVjQ2QyVU8xQ2VFYkVIV1RhUnUzeDY1R01OUzBJSGd3cmdPZVdsajN2WHRWQ2VKaEtJU1V2Tmd0dklfSXl2QkQ5OGk1dEEzZGo3YUJqRHBiUDl1bENkZHlWbXR4RzRqQ2F2SlM2Sm41SXV5MmtNUUk4WTU3bzg4M1U3TEZRWjBXX0hFMXBZYTUweUxRTXhaVDA?oc=5', 'Sun, 22 Nov 2026 03:20:37', 'Geopolitics')">
+            <span class="text-rose-400 font-bold">&bull;</span>
+            <span class="text-rose-300 font-semibold">[DD News]</span>
+            <span>Sensex, Nifty slide nearly 1% as crude oil prices surge amid Iran conflict</span>
+          </span>
           
           <span class="inline-flex items-center gap-2 cursor-pointer hover:text-cyan-300" onclick="openStoryModal('A Tale of Two Ballots: Why the Iran War Will Outlast Both', 'orfonline.org', 'https://news.google.com/rss/articles/CBMilgFBVV95cUxQZHVtWk4wQ1BXcnpRaVBHQ25NV3NKTWhfSUlMb3hQSTRwTDNXc2NYcFE0VE9Sb08zWkJ0YXhVRU5tT2ltY0N4R29jVndMVW1NR3FHOWgxWFNZcXNmcWlBSnZTWDhyN1VUR3RHWWZDM0pzN01YUlJiTk94cTFaSk45N1pLVHJYa0VlV0VxbGVhRkJ0R0o0aVE?oc=5', 'Sat, 21 Nov 2026 14:37:58', 'Geopolitics')">
             <span class="text-rose-400 font-bold">&bull;</span>
@@ -262,12 +285,6 @@
             <span class="text-rose-400 font-bold">&bull;</span>
             <span class="text-rose-300 font-semibold">[Facebook]</span>
             <span>DW News. . Iran is openly threatening European countries with missile attacks and clandestine operations if the US bombs again. How big of a threat is the Islamic Republic really for Europe? #dwgeopolitics</span>
-          </span>
-          
-          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-cyan-300" onclick="openStoryModal('Sensex, Nifty slide nearly 1% as crude oil prices surge amid Iran conflict', 'DD News', 'https://news.google.com/rss/articles/CBMinwFBVV95cUxPS1BCT3dwVkVjQ2QyVU8xQ2VFYkVIV1RhUnUzeDY1R01OUzBJSGd3cmdPZVdsajN2WHRWQ2VKaEtJU1V2Tmd0dklfSXl2QkQ5OGk1dEEzZGo3YUJqRHBiUDl1bENkZHlWbXR4RzRqQ2F2SlM2Sm41SXV5MmtNUUk4WTU3bzg4M1U3TEZRWjBXX0hFMXBZYTUweUxRTXhaVDA?oc=5', 'Sun, 22 Nov 2026 03:20:37', 'Geopolitics')">
-            <span class="text-rose-400 font-bold">&bull;</span>
-            <span class="text-rose-300 font-semibold">[DD News]</span>
-            <span>Sensex, Nifty slide nearly 1% as crude oil prices surge amid Iran conflict</span>
           </span>
           
           <span class="inline-flex items-center gap-2 cursor-pointer hover:text-cyan-300" onclick="openStoryModal('Bahrain says Iran struck industrial site as tankers hit in Hormuz', 'The New Indian Express', 'https://news.google.com/rss/articles/CBMitwFBVV95cUxPWUFLRTB6NE9jOEI3czIyR2JJekNNNlNwbm1WTG1NUUhJOHFqdlZ0QzZGc0dlRTd6aGg5S0NxS0hZNmtoR1VPX09wYnVCc2hUaG5kV2pkNkItMUZnWUN0eGxOdF9fRUdKbDQ1MVdHSTR1aGJhTWxHdWRCNW1hRWVEemJuMGp4VVc3b2RkbjhlNUVxZ29YZU0tRXlVVlFhajVOWjFaU18xOFdRSWNFa0pNcFl3MzB6ZWvSAcQBQVVfeXFMTjFCdW10Nk5YOEdnWWJrVkxXSWV6UG41QVNuVm80am5idXR2eUt4YUxvcHEtc3BQVUxXSVIxVjM2ZEZTbFJHaDFjUUpCWTRBNlllRWQ3VWNQOUpYM25pRXA1aVM2OVlCUnVWR3pOSS1vNEhpRTVDMkdBNVdmYjFHaTU3djd3aTdkNVEyeEFxWGx2RGJvU01ReHZoOC0weDduSXRWMVVrVFY3MDdfWHZ6ZGprRE9QVGxBck1yZTRYcmY3TWVpZA?oc=5', 'Sun, 22 Nov 2026 02:57:13', 'Geopolitics')">
@@ -329,39 +346,39 @@
       </div>
     </div>
 
-    <!-- VIBRANT HERO CARDS ROW (5-CARD COLORFUL GRID) -->
+    <!-- VIBRANT HERO CARDS ROW (5-CARD COLORFUL SPOTLIGHT) -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       
-      <!-- 1. 24K Gold Card (Radiant Amber/Gold) -->
+      <!-- 1. 24K Gold Card (City Adjusted) -->
       <div class="neon-card rounded-3xl bg-gradient-to-b from-amber-500/15 via-slate-900/90 to-slate-900/95 border border-amber-500/40 hover:border-amber-400 p-5 shadow-xl shadow-amber-950/30 transition-all duration-300 hover:-translate-y-1.5 group">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center space-x-2">
             <span class="p-2 bg-gradient-to-br from-amber-400 to-yellow-600 rounded-xl text-slate-950 font-bold text-sm shadow-md shadow-amber-500/30">🪙</span>
-            <span class="text-xs font-bold uppercase tracking-wider text-amber-300 font-mono">24K Gold (Mumbai)</span>
+            <span id="gold-card-title" class="text-xs font-bold uppercase tracking-wider text-amber-300 font-mono">24K Gold (<span class="dyn-city">Mumbai</span>)</span>
           </div>
           <button onclick="openGoldCalculator()" title="Open Weight Calculator" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-900/70 text-amber-200 border border-amber-600/60 hover:bg-amber-800 transition flex items-center gap-1 font-semibold">
             <span>🧮 Calc</span>
           </button>
         </div>
-        <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300 group-hover:scale-105 transition-transform origin-left">
+        <div id="gold-24k-hero" class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300 group-hover:scale-105 transition-transform origin-left">
           ₹105,691
         </div>
         <div class="text-[11px] text-slate-300 font-mono mt-3 pt-2 border-t border-amber-900/40 flex justify-between items-center">
-          <span>22K: <strong class="text-amber-400">₹96,883</strong></span>
+          <span>22K: <strong id="gold-22k-hero" class="text-amber-400">₹96,883</strong></span>
           <span class="text-slate-400 font-medium">Spot: $3,539.00/oz</span>
         </div>
       </div>
 
-      <!-- 2. Silver Card (Radiant Platinum/Icy Cyan) -->
+      <!-- 2. Silver Card (City Adjusted) -->
       <div class="neon-card rounded-3xl bg-gradient-to-b from-sky-500/15 via-slate-900/90 to-slate-900/95 border border-sky-400/40 hover:border-sky-300 p-5 shadow-xl shadow-sky-950/30 transition-all duration-300 hover:-translate-y-1.5 group">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center space-x-2">
             <span class="p-2 bg-gradient-to-br from-slate-200 to-sky-400 rounded-xl text-slate-950 font-bold text-sm shadow-md shadow-sky-500/30">🥈</span>
-            <span class="text-xs font-bold uppercase tracking-wider text-sky-200 font-mono">Silver 1kg (Mumbai)</span>
+            <span id="silver-card-title" class="text-xs font-bold uppercase tracking-wider text-sky-200 font-mono">Silver 1kg (<span class="dyn-city">Mumbai</span>)</span>
           </div>
           <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-sky-950/80 text-sky-300 border border-sky-700/60 font-semibold">1KG BAR</span>
         </div>
-        <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-sky-100 to-slate-200 group-hover:scale-105 transition-transform origin-left">
+        <div id="silver-hero" class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-sky-100 to-slate-200 group-hover:scale-105 transition-transform origin-left">
           ₹122,684
         </div>
         <div class="text-[11px] text-slate-300 font-mono mt-3 pt-2 border-t border-sky-900/40 flex justify-between items-center">
@@ -379,7 +396,7 @@
           </div>
           <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-700/60 font-semibold">LIVE</span>
         </div>
-        <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 via-mint-100 to-emerald-400 group-hover:scale-105 transition-transform origin-left">
+        <div id="usd-inr-hero" class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 via-mint-100 to-emerald-400 group-hover:scale-105 transition-transform origin-left">
           ₹92.89
         </div>
         <div class="text-[11px] text-slate-300 font-mono mt-3 pt-2 border-t border-emerald-900/40 flex justify-between items-center">
@@ -397,36 +414,329 @@
           </div>
           <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-700/60 font-semibold">COIN</span>
         </div>
-        <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-pink-100 to-fuchsia-400 group-hover:scale-105 transition-transform origin-left">
-          ₹5,477,647
+        <div id="btc-hero" class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-pink-100 to-fuchsia-400 group-hover:scale-105 transition-transform origin-left">
+          ₹5,528,345
         </div>
         <div class="text-[11px] text-slate-300 font-mono mt-3 pt-2 border-t border-purple-900/40 flex justify-between items-center">
           <span>BTC Live</span>
-          <span class="text-fuchsia-400 font-medium">ETH: ₹154,420</span>
+          <span id="eth-hero" class="text-fuchsia-400 font-medium">ETH: ₹155,792</span>
         </div>
       </div>
 
-      <!-- 5. Mumbai Weather & AQI (Vivid Sunset/Sky Blue) -->
+      <!-- 5. Dynamic Weather & AQI (Updates with Detected City) -->
       <div class="neon-card rounded-3xl bg-gradient-to-b from-cyan-500/15 via-slate-900/90 to-slate-900/95 border border-cyan-500/40 hover:border-cyan-400 p-5 shadow-xl shadow-cyan-950/30 transition-all duration-300 hover:-translate-y-1.5 group">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center space-x-2">
-            <span class="text-xl drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]">☀️</span>
-            <span class="text-xs font-bold uppercase tracking-wider text-cyan-300 font-mono">Mumbai Weather</span>
+            <span id="weather-icon-hero" class="text-xl drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]">☀️</span>
+            <span id="weather-city-title" class="text-xs font-bold uppercase tracking-wider text-cyan-300 font-mono"><span class="dyn-city">Mumbai</span> Weather</span>
           </div>
-          <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-rose-950/90 text-rose-300 border border-rose-700/70 font-bold shadow-md shadow-rose-950/60">
+          <span id="weather-aqi-badge" class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-rose-950/90 text-rose-300 border border-rose-700/70 font-bold shadow-md shadow-rose-950/60">
             AQI 178
           </span>
         </div>
         <div class="flex items-baseline justify-between">
-          <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-cyan-100">
-            31.7°C
+          <div id="weather-temp-hero" class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-cyan-100">
+            31.6°C
           </div>
-          <div class="text-xs font-mono text-cyan-300/80 font-semibold">Clear Sky</div>
+          <div id="weather-condition-hero" class="text-xs font-mono text-cyan-300/80 font-semibold">Clear Sky</div>
         </div>
         <div class="text-[10px] text-slate-300 font-mono mt-3 pt-2 border-t border-cyan-900/40 flex justify-between items-center">
-          <span>🌅 06:49 AM</span>
-          <span>🌇 17:59 PM</span>
-          <span class="text-cyan-400">💧 35%</span>
+          <span id="weather-sunrise-hero">🌅 06:49 AM</span>
+          <span id="weather-sunset-hero">🌇 17:59 PM</span>
+          <span id="weather-humidity-hero" class="text-cyan-400">💧 37%</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================================== -->
+    <!-- NEW SECTION 1: DYNAMIC LOCAL CITY RADAR & CITY BREAKING NEWS           -->
+    <!-- ====================================================================== -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      
+      <!-- BOX 1: LOCAL CITY CLIMATE & AQI RADAR (5 COLUMNS) -->
+      <div class="lg:col-span-5 glass-box rounded-3xl p-5 sm:p-6 border border-emerald-900/40 hover:border-emerald-500/60 relative overflow-hidden flex flex-col justify-between">
+        <div class="absolute -right-10 -bottom-10 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div>
+          <!-- Header -->
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
+            <div class="flex items-center gap-2.5">
+              <span class="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 text-lg">🛰️</span>
+              <div>
+                <h3 class="text-base font-bold text-white font-display flex items-center gap-2">
+                  <span id="radar-city-name">Mumbai</span> Radar
+                  <span class="px-2 py-0.5 rounded-md bg-emerald-950 text-emerald-300 text-[10px] font-mono border border-emerald-700/60">LIVE RADAR</span>
+                </h3>
+                <p id="radar-coords-label" class="text-xs font-mono text-slate-400">Lat: 19.0760 &bull; Lon: 72.8777</p>
+              </div>
+            </div>
+            <button onclick="detectUserLocation()" title="Refresh Geolocation" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </button>
+          </div>
+
+          <!-- Main Temperature & Condition Display -->
+          <div class="grid grid-cols-2 gap-4 my-5 items-center">
+            <div class="flex items-center gap-3">
+              <div id="radar-big-icon" class="text-4xl p-3 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-inner">
+                ☀️
+              </div>
+              <div>
+                <div id="radar-temp-val" class="text-3xl sm:text-4xl font-extrabold font-mono text-white tracking-tight">
+                  31.6°C
+                </div>
+                <div id="radar-feels-like" class="text-xs font-mono text-slate-400">Feels like 31.6°C</div>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1.5 font-mono text-xs">
+              <div class="flex justify-between">
+                <span class="text-slate-400">Condition:</span>
+                <span id="radar-condition" class="text-emerald-300 font-semibold">Clear Sky</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Humidity:</span>
+                <span id="radar-humidity" class="text-cyan-300">37%</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Wind:</span>
+                <span id="radar-wind" class="text-slate-200">12 km/h</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Air Quality Health Barometer -->
+          <div class="p-4 rounded-2xl bg-gradient-to-r from-slate-950/90 via-slate-900/90 to-slate-950/90 border border-slate-800 space-y-2">
+            <div class="flex justify-between items-center text-xs font-mono">
+              <span class="text-slate-300 font-semibold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                Air Quality Index (AQI):
+              </span>
+              <span id="radar-aqi-number" class="text-base font-bold text-emerald-400 font-mono">178</span>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden relative">
+              <div id="radar-aqi-bar" class="h-full bg-gradient-to-r from-emerald-400 via-yellow-400 to-rose-500 rounded-full transition-all duration-700" style="width: 35%;"></div>
+            </div>
+
+            <div class="flex justify-between items-center text-[10px] font-mono text-slate-400 pt-1">
+              <span id="radar-aqi-desc" class="text-emerald-300 font-semibold">Good &bull; Safe for outdoor sports & running</span>
+              <span id="radar-uv-index">UV Index: 4.2 (Moderate)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <span>Sunrise: <strong id="radar-sunrise" class="text-amber-300">06:49 AM</strong></span>
+          <span>Sunset: <strong id="radar-sunset" class="text-rose-300">17:59 PM</strong></span>
+          <span class="text-cyan-400">Auto-Updates per City</span>
+        </div>
+      </div>
+
+      <!-- BOX 2: CITY-SPECIFIC BREAKING NEWS & CIVIC PULSE (7 COLUMNS) -->
+      <div class="lg:col-span-7 glass-box rounded-3xl p-5 sm:p-6 border border-cyan-900/40 hover:border-cyan-500/60 relative overflow-hidden flex flex-col justify-between">
+        <div class="absolute -right-10 -top-10 w-44 h-44 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div>
+          <!-- Header -->
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
+            <div class="flex items-center gap-2.5">
+              <span class="p-2 rounded-xl bg-cyan-500/20 text-cyan-400 text-lg">🏙️</span>
+              <div>
+                <h3 class="text-base font-bold text-white font-display flex items-center gap-2">
+                  <span class="dyn-city">Mumbai</span> Civic Pulse & Local News
+                  <span id="local-news-count" class="px-2 py-0.5 rounded-md bg-cyan-950 text-cyan-300 text-[10px] font-mono border border-cyan-700/60">6 STORIES</span>
+                </h3>
+                <p class="text-xs font-mono text-slate-400">Live curated feed for your detected location</p>
+              </div>
+            </div>
+            <button onclick="fetchCitySpecificNews()" title="Reload City News" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </button>
+          </div>
+
+          <!-- Dynamic Local News List -->
+          <div id="local-city-news-list" class="divide-y divide-slate-800/60 mt-2 space-y-1">
+            <!-- Populated dynamically by client JS -->
+            <div class="p-4 text-center text-slate-400 font-mono text-xs flex items-center justify-center gap-2">
+              <span class="w-3 h-3 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin"></span>
+              <span>Syncing real-time local news for <span class="dyn-city font-semibold text-cyan-300">Mumbai</span>...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <span>Source: Google News Regional & Press Trust of India</span>
+          <span class="text-cyan-400">Synced via CORS Stream</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================================== -->
+    <!-- NEW SECTION 2: FOREX, TECH PULSE, CRYPTO WATCH & HELPLINES             -->
+    <!-- ====================================================================== -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- BOX 3: GLOBAL FOREX MATRIX & CONVERTER -->
+      <div class="glass-box rounded-3xl p-5 border border-emerald-900/40 hover:border-emerald-500/60 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 text-sm">💱</span>
+              <h3 class="text-sm font-bold text-white font-display">Forex Currency Matrix</h3>
+            </div>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-950 text-emerald-300 border border-emerald-700/60">LIVE</span>
+          </div>
+
+          <div class="space-y-2 font-mono text-xs">
+            <div class="flex justify-between items-center p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-300">USD &bull; INR</span>
+              <span id="rate-usd-inr" class="font-bold text-emerald-400">₹92.89</span>
+            </div>
+            <div class="flex justify-between items-center p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-300">EUR &bull; INR</span>
+              <span id="rate-eur-inr" class="font-bold text-white">₹91.20</span>
+            </div>
+            <div class="flex justify-between items-center p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-300">GBP &bull; INR</span>
+              <span id="rate-gbp-inr" class="font-bold text-white">₹109.80</span>
+            </div>
+            <div class="flex justify-between items-center p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-300">AED &bull; INR</span>
+              <span id="rate-aed-inr" class="font-bold text-white">₹23.55</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1-Click Converter Mini Tool -->
+        <div class="mt-3 pt-2 border-t border-slate-800 flex items-center gap-2 text-xs font-mono">
+          <input id="forex-calc-input" type="number" value="100" class="w-16 px-2 py-1 bg-slate-950 border border-slate-700 rounded-lg text-white text-center focus:border-emerald-500 focus:outline-none" oninput="convertForexMini(this.value)">
+          <span class="text-slate-400">USD =</span>
+          <span id="forex-calc-result" class="font-bold text-emerald-300">₹8,650</span>
+        </div>
+      </div>
+
+      <!-- BOX 4: TECH, AI & DEVELOPER RADAR -->
+      <div class="glass-box rounded-3xl p-5 border border-indigo-900/40 hover:border-indigo-500/60 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-400 text-sm">💻</span>
+              <h3 class="text-sm font-bold text-white font-display">Tech & AI Pulse</h3>
+            </div>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-indigo-950 text-indigo-300 border border-indigo-700/60">DEV</span>
+          </div>
+
+          <div class="space-y-2 font-mono text-xs">
+            <a href="https://github.com/trending" target="_blank" class="block p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500 transition group">
+              <div class="text-slate-200 font-semibold group-hover:text-indigo-300 transition-colors line-clamp-1">🔥 DeepSeek-R1 & v3 Open Weights</div>
+              <div class="text-[10px] text-slate-400 mt-0.5 flex justify-between">
+                <span>Reasoning LLM</span>
+                <span class="text-indigo-400">★ 65k+ stars</span>
+              </div>
+            </a>
+            <a href="https://news.ycombinator.com" target="_blank" class="block p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500 transition group">
+              <div class="text-slate-200 font-semibold group-hover:text-indigo-300 transition-colors line-clamp-1">⚡ Java 25 & Project Loom Enhancements</div>
+              <div class="text-[10px] text-slate-400 mt-0.5 flex justify-between">
+                <span>OpenJDK Roadmap</span>
+                <span class="text-emerald-400">Virtual Threads</span>
+              </div>
+            </a>
+            <a href="https://huggingface.co/models" target="_blank" class="block p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500 transition group">
+              <div class="text-slate-200 font-semibold group-hover:text-indigo-300 transition-colors line-clamp-1">🤖 Local Ollama Agents on Homelab</div>
+              <div class="text-[10px] text-slate-400 mt-0.5 flex justify-between">
+                <span>Self-Hosted</span>
+                <span class="text-cyan-400">Tailscale Node</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between items-center text-[10px] font-mono text-slate-400">
+          <span>Hacker News & GitHub</span>
+          <a href="profile.html" class="text-indigo-400 hover:underline">View Stack →</a>
+        </div>
+      </div>
+
+      <!-- BOX 5: CRYPTO & WEB3 WATCH -->
+      <div class="glass-box rounded-3xl p-5 border border-purple-900/40 hover:border-purple-500/60 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="p-1.5 rounded-lg bg-purple-500/20 text-purple-400 text-sm">🪙</span>
+              <h3 class="text-sm font-bold text-white font-display">Crypto Markets</h3>
+            </div>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-purple-950 text-purple-300 border border-purple-700/60">24H</span>
+          </div>
+
+          <div class="space-y-2 font-mono text-xs">
+            <div class="flex justify-between items-center p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-300 font-semibold">BTC / INR</span>
+              <div class="text-right">
+                <div class="font-bold text-purple-300">₹5,528,345</div>
+                <div class="text-[10px] text-emerald-400">+2.4% 24h</div>
+              </div>
+            </div>
+            <div class="flex justify-between items-center p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-300 font-semibold">ETH / INR</span>
+              <div class="text-right">
+                <div class="font-bold text-pink-300">₹155,792</div>
+                <div class="text-[10px] text-emerald-400">+1.8% 24h</div>
+              </div>
+            </div>
+            <div class="flex justify-between items-center p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-300 font-semibold">SOL / USD</span>
+              <div class="text-right">
+                <div class="font-bold text-white">$185.40</div>
+                <div class="text-[10px] text-emerald-400">+3.9% 24h</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between items-center text-[10px] font-mono text-slate-400">
+          <span>Binance & CoinGecko</span>
+          <span class="text-purple-400">24/7 Spot Feeds</span>
+        </div>
+      </div>
+
+      <!-- BOX 6: EMERGENCY & CIVIC HELPLINES DIRECTORY -->
+      <div class="glass-box rounded-3xl p-5 border border-rose-900/40 hover:border-rose-500/60 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="p-1.5 rounded-lg bg-rose-500/20 text-rose-400 text-sm">🚨</span>
+              <h3 class="text-sm font-bold text-white font-display">Emergency Helplines</h3>
+            </div>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-rose-950 text-rose-300 border border-rose-700/60">24/7 DIAL</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 font-mono text-xs">
+            <a href="tel:112" class="p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-rose-500 transition text-center group">
+              <div class="text-[10px] text-slate-400">All Emergency</div>
+              <div class="font-bold text-rose-400 text-sm group-hover:scale-105 transition-transform">112</div>
+            </a>
+            <a href="tel:108" class="p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-rose-500 transition text-center group">
+              <div class="text-[10px] text-slate-400">Ambulance</div>
+              <div class="font-bold text-rose-400 text-sm group-hover:scale-105 transition-transform">108</div>
+            </a>
+            <a href="tel:101" class="p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-rose-500 transition text-center group">
+              <div class="text-[10px] text-slate-400">Fire Brigade</div>
+              <div class="font-bold text-rose-400 text-sm group-hover:scale-105 transition-transform">101</div>
+            </a>
+            <a href="tel:1930" class="p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-rose-500 transition text-center group">
+              <div class="text-[10px] text-slate-400">Cyber Crime</div>
+              <div class="font-bold text-rose-400 text-sm group-hover:scale-105 transition-transform">1930</div>
+            </a>
+          </div>
+        </div>
+
+        <div class="mt-3 pt-2 border-t border-slate-800 flex justify-between items-center text-[10px] font-mono text-slate-400">
+          <span>National Single Emergency</span>
+          <span class="text-rose-400 font-semibold">Tap to call</span>
         </div>
       </div>
 
@@ -438,72 +748,67 @@
       <!-- System Telemetry with Colorful Badges -->
       <div class="flex flex-wrap items-center gap-4 sm:gap-6 w-full md:w-auto">
         <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-          <span class="text-slate-400">CPU:</span>
-          <strong class="text-cyan-300 font-bold">34.4%</strong>
-          <span class="text-slate-500">(Normal)</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span class="text-slate-400">CPU Load:</span>
+          <span class="font-bold text-cyan-300"></span>
         </div>
         <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <span class="text-slate-400">RAM:</span>
-          <strong class="text-emerald-300 font-bold">86.3%</strong>
-          <span class="text-slate-500">(3.3/8.0 GB)</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          <span class="text-slate-400">Memory:</span>
+          <span class="font-bold text-emerald-300"></span>
         </div>
         <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-          <span class="text-slate-400">Disk (/):</span>
-          <strong class="text-amber-300 font-bold">8.6%</strong>
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+          <span class="text-slate-400">NVMe Disk:</span>
+          <span class="font-bold text-amber-300"></span>
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-slate-400">Bandwidth:</span>
-          <span class="text-slate-300">↑3.1G ↓3.1G</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+          <span class="text-slate-400">Uptime:</span>
+          <span class="font-bold text-purple-300"></span>
         </div>
-        
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+          <span class="text-slate-400">Docker:</span>
+          <span class="font-bold text-rose-300"></span>
+        </div>
       </div>
 
-      <!-- Quick Homelab Launch Bookmarks -->
-      <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto justify-start md:justify-end">
-        <span class="text-[11px] text-slate-500 uppercase tracking-wider mr-1">Homelab:</span>
-        <a href="http://192.168.29.183:80" target="_blank" class="px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-cyan-950/80 text-slate-300 hover:text-cyan-300 border border-slate-700/60 hover:border-cyan-700/60 transition shadow-sm">🛡️ Pi-hole</a>
-        <a href="http://192.168.29.183:32400/web" target="_blank" class="px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-amber-950/80 text-slate-300 hover:text-amber-300 border border-slate-700/60 hover:border-amber-700/60 transition shadow-sm">🎬 Plex</a>
-        <a href="http://192.168.29.183:9000" target="_blank" class="px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-blue-950/80 text-slate-300 hover:text-blue-300 border border-slate-700/60 hover:border-blue-700/60 transition shadow-sm">📦 Portainer</a>
-        <a href="https://login.tailscale.com/admin/machines" target="_blank" class="px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-emerald-950/80 text-slate-300 hover:text-emerald-300 border border-slate-700/60 hover:border-emerald-700/60 transition shadow-sm">⚡ Tailscale</a>
+      <!-- Node Location Indicator -->
+      <div class="flex items-center gap-2 text-slate-400 text-[11px] self-end md:self-auto">
+        <span>Server Node:</span>
+        <span class="px-2 py-0.5 rounded-md bg-slate-800 text-slate-200 border border-slate-700">Ubuntu 24.04 LTS</span>
       </div>
     </section>
 
-    <!-- SEARCH & INTERACTIVE VIEW SWITCHER (GRID vs FEED) -->
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-3xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl shadow-xl">
-      <div class="relative w-full sm:w-96">
-        <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
-        <input 
-          type="text" 
-          id="headline-search" 
-          placeholder="Search headlines in real-time..."
-          class="w-full pl-10 pr-4 py-2 bg-slate-950/80 border border-slate-800 rounded-2xl text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/30 transition"
-        >
+    <!-- INTERACTIVE CATEGORY FILTER & VIEW TOGGLES -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 p-2 bg-slate-900/50 rounded-2xl border border-slate-800/80 backdrop-blur-md">
+      
+      <!-- Search Input -->
+      <div class="relative w-full sm:w-72">
+        <input id="news-search" type="text" placeholder="Search headlines in real-time..." onkeyup="filterArticles(this.value)" class="w-full pl-9 pr-3 py-1.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs font-mono text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition">
+        <svg class="w-4 h-4 text-slate-500 absolute left-3 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
       </div>
 
-      <!-- Category Filter Pills + View Switcher -->
-      <div class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto text-xs font-mono pb-1 sm:pb-0 custom-scrollbar">
-        <!-- View Toggle Buttons -->
-        <div class="flex items-center p-1 rounded-xl bg-slate-950/80 border border-slate-800 mr-1">
-          <button id="view-grid-btn" onclick="setViewMode('grid')" title="Grid View" class="px-2.5 py-1 rounded-lg bg-cyan-950 text-cyan-300 font-semibold transition">⊞ Grid</button>
-          <button id="view-feed-btn" onclick="setViewMode('feed')" title="Unified Stream Feed" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">☰ Stream</button>
-        </div>
-
-        <button onclick="filterCategory('all', this)" class="cat-pill px-3 py-1.5 rounded-xl bg-cyan-950 text-cyan-300 border border-cyan-700/80 font-bold transition">All</button>
-        <button onclick="filterCategory('geopolitics', this)" class="cat-pill px-3 py-1.5 rounded-xl bg-slate-800/80 text-rose-300 border border-slate-700 hover:border-rose-500 transition">Geopolitics</button>
-        <button onclick="filterCategory('finance', this)" class="cat-pill px-3 py-1.5 rounded-xl bg-slate-800/80 text-emerald-300 border border-slate-700 hover:border-emerald-500 transition">Finance</button>
-        <button onclick="filterCategory('sports', this)" class="cat-pill px-3 py-1.5 rounded-xl bg-slate-800/80 text-sky-300 border border-slate-700 hover:border-sky-500 transition">Sports</button>
-        <button onclick="filterCategory('jobs', this)" class="cat-pill px-3 py-1.5 rounded-xl bg-slate-800/80 text-purple-300 border border-slate-700 hover:border-purple-500 transition">AI Jobs</button>
-        <button onclick="filterCategory('saved', this)" class="cat-pill px-3 py-1.5 rounded-xl bg-slate-800/80 text-amber-300 border border-slate-700 hover:border-amber-500 transition">⭐ Saved (<span id="saved-count">0</span>)</button>
+      <!-- Layout & Category Filters -->
+      <div class="flex flex-wrap items-center gap-1.5 w-full sm:w-auto font-mono text-xs">
+        <button onclick="toggleLayout('grid')" id="btn-grid" class="px-2.5 py-1 rounded-lg bg-cyan-950 text-cyan-300 border border-cyan-800 font-semibold transition">⊞ Grid</button>
+        <button onclick="toggleLayout('stream')" id="btn-stream" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition">▤ Stream</button>
+        <div class="h-4 w-[1px] bg-slate-800 mx-1"></div>
+        <button onclick="filterCategory('all')" class="cat-pill px-2.5 py-1 rounded-lg bg-cyan-900/80 text-cyan-200 font-bold transition">All</button>
+        <button onclick="filterCategory('geopolitics')" class="cat-pill px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Geopolitics</button>
+        <button onclick="filterCategory('finance')" class="cat-pill px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Finance</button>
+        <button onclick="filterCategory('sports')" class="cat-pill px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Sports</button>
+        <button onclick="filterCategory('jobs')" class="cat-pill px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition">AI Jobs</button>
+        <button onclick="filterCategory('saved')" class="cat-pill px-2.5 py-1 rounded-lg bg-amber-950/60 text-amber-300 border border-amber-800/40 hover:bg-amber-900 transition flex items-center gap-1">
+          <span>★ Saved</span>
+          <span id="saved-badge" class="ml-0.5 px-1 bg-amber-500 text-slate-950 rounded-full text-[10px] font-bold">0</span>
+        </button>
       </div>
     </div>
 
-    <!-- MAIN 4-COLUMN CONTENT GRID (OR STREAM VIEW) -->
-    <main id="content-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- MAIN 4-COLUMN CONTENT GRID (THE 4 CORE GLOBAL NEWS SECTIONS) -->
+    <main id="news-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
 
       <!-- SECTION 1: GEOPOLITICS (ROSE/CRIMSON) -->
       <section data-category="geopolitics" class="news-section flex flex-col rounded-3xl bg-gradient-to-b from-rose-950/20 via-slate-900/80 to-slate-900/90 border border-rose-900/40 hover:border-rose-500/60 backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-300">
@@ -526,9 +831,9 @@
           
           <article data-id="geo-1" class="article-item p-3.5 rounded-2xl hover:bg-rose-950/20 transition-all duration-200 group border border-transparent hover:border-rose-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('A Tale of Two Ballots: Why the Iran War Will Outlast Both', 'orfonline.org', 'https://news.google.com/rss/articles/CBMilgFBVV95cUxQZHVtWk4wQ1BXcnpRaVBHQ25NV3NKTWhfSUlMb3hQSTRwTDNXc2NYcFE0VE9Sb08zWkJ0YXhVRU5tT2ltY0N4R29jVndMVW1NR3FHOWgxWFNZcXNmcWlBSnZTWDhyN1VUR3RHWWZDM0pzN01YUlJiTk94cTFaSk45N1pLVHJYa0VlV0VxbGVhRkJ0R0o0aVE?oc=5', 'Sat, 21 Nov 2026 14:37:58', 'Geopolitics')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Sensex, Nifty slide nearly 1% as crude oil prices surge amid Iran conflict', 'DD News', 'https://news.google.com/rss/articles/CBMinwFBVV95cUxPS1BCT3dwVkVjQ2QyVU8xQ2VFYkVIV1RhUnUzeDY1R01OUzBJSGd3cmdPZVdsajN2WHRWQ2VKaEtJU1V2Tmd0dklfSXl2QkQ5OGk1dEEzZGo3YUJqRHBiUDl1bENkZHlWbXR4RzRqQ2F2SlM2Sm41SXV5MmtNUUk4WTU3bzg4M1U3TEZRWjBXX0hFMXBZYTUweUxRTXhaVDA?oc=5', 'Sun, 22 Nov 2026 03:20:37', 'Geopolitics')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-rose-300 leading-snug line-clamp-2 transition-colors">
-                  A Tale of Two Ballots: Why the Iran War Will Outlast Both
+                  Sensex, Nifty slide nearly 1% as crude oil prices surge amid Iran conflict
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -536,6 +841,34 @@
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
                 </button>
                 <button onclick="toggleRead('geo-1', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
+              <span class="px-2 py-0.5 rounded-md bg-rose-950/60 text-rose-300 border border-rose-800/50 font-medium">
+                DD News
+              </span>
+              <span>&bull;</span>
+              <span class="text-slate-400">Sun, 22 Nov 2026 03:20:37</span>
+              <a href="https://news.google.com/rss/articles/CBMinwFBVV95cUxPS1BCT3dwVkVjQ2QyVU8xQ2VFYkVIV1RhUnUzeDY1R01OUzBJSGd3cmdPZVdsajN2WHRWQ2VKaEtJU1V2Tmd0dklfSXl2QkQ5OGk1dEEzZGo3YUJqRHBiUDl1bENkZHlWbXR4RzRqQ2F2SlM2Sm41SXV5MmtNUUk4WTU3bzg4M1U3TEZRWjBXX0hFMXBZYTUweUxRTXhaVDA?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span class="text-[10px] font-bold uppercase">Source →</span>
+              </a>
+            </div>
+          </article>
+          
+          <article data-id="geo-2" class="article-item p-3.5 rounded-2xl hover:bg-rose-950/20 transition-all duration-200 group border border-transparent hover:border-rose-800/40 hover:shadow-xl relative">
+            <div class="flex items-start justify-between gap-3">
+              <div onclick="openStoryModal('A Tale of Two Ballots: Why the Iran War Will Outlast Both', 'orfonline.org', 'https://news.google.com/rss/articles/CBMilgFBVV95cUxQZHVtWk4wQ1BXcnpRaVBHQ25NV3NKTWhfSUlMb3hQSTRwTDNXc2NYcFE0VE9Sb08zWkJ0YXhVRU5tT2ltY0N4R29jVndMVW1NR3FHOWgxWFNZcXNmcWlBSnZTWDhyN1VUR3RHWWZDM0pzN01YUlJiTk94cTFaSk45N1pLVHJYa0VlV0VxbGVhRkJ0R0o0aVE?oc=5', 'Sat, 21 Nov 2026 14:37:58', 'Geopolitics')" class="cursor-pointer block flex-1">
+                <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-rose-300 leading-snug line-clamp-2 transition-colors">
+                  A Tale of Two Ballots: Why the Iran War Will Outlast Both
+                </h3>
+              </div>
+              <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
+                <button onclick="toggleBookmark('geo-2', this)" title="Save for later" class="bookmark-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                </button>
+                <button onclick="toggleRead('geo-2', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 </button>
               </div>
@@ -552,39 +885,11 @@
             </div>
           </article>
           
-          <article data-id="geo-2" class="article-item p-3.5 rounded-2xl hover:bg-rose-950/20 transition-all duration-200 group border border-transparent hover:border-rose-800/40 hover:shadow-xl relative">
+          <article data-id="geo-3" class="article-item p-3.5 rounded-2xl hover:bg-rose-950/20 transition-all duration-200 group border border-transparent hover:border-rose-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
               <div onclick="openStoryModal('DW News. . Iran is openly threatening European countries with missile attacks and clandestine operations if the US bombs again. How big of a threat is the Islamic Republic really for Europe? #dwgeopolitics', 'Facebook', 'https://news.google.com/rss/articles/CBMiowFBVV95cUxNdjhYZHFjTTNnQWVNLTVnRHpOeFYyM2Q2YVpDUjByMkFabjVqV1RqdEVYZ1BmRzVjdjQteWlqY0daZ0g5aFd3LTNBQ1lpY09ZaGNHMk10aHBfRS1CdEVtanZhVkFHZ3VNUHI3UXAtUnNULUVDT2t4S2pCejJHSTlENzRwOGlpYzNVWGg0SXN2bUZQMzJsSmY3enpXZVV1NHFjZFdB?oc=5', 'Sun, 22 Nov 2026 07:50:09', 'Geopolitics')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-rose-300 leading-snug line-clamp-2 transition-colors">
                   DW News. . Iran is openly threatening European countries with missile attacks and clandestine operations if the US bombs again. How big of a threat is the Islamic Republic really for Europe? #dwgeopolitics
-                </h3>
-              </div>
-              <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
-                <button onclick="toggleBookmark('geo-2', this)" title="Save for later" class="bookmark-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-                </button>
-                <button onclick="toggleRead('geo-2', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                </button>
-              </div>
-            </div>
-            <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
-              <span class="px-2 py-0.5 rounded-md bg-rose-950/60 text-rose-300 border border-rose-800/50 font-medium">
-                Facebook
-              </span>
-              <span>&bull;</span>
-              <span class="text-slate-400">Sun, 22 Nov 2026 07:50:09</span>
-              <a href="https://news.google.com/rss/articles/CBMiowFBVV95cUxNdjhYZHFjTTNnQWVNLTVnRHpOeFYyM2Q2YVpDUjByMkFabjVqV1RqdEVYZ1BmRzVjdjQteWlqY0daZ0g5aFd3LTNBQ1lpY09ZaGNHMk10aHBfRS1CdEVtanZhVkFHZ3VNUHI3UXAtUnNULUVDT2t4S2pCejJHSTlENzRwOGlpYzNVWGg0SXN2bUZQMzJsSmY3enpXZVV1NHFjZFdB?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                <span class="text-[10px] font-bold uppercase">Source →</span>
-              </a>
-            </div>
-          </article>
-          
-          <article data-id="geo-3" class="article-item p-3.5 rounded-2xl hover:bg-rose-950/20 transition-all duration-200 group border border-transparent hover:border-rose-800/40 hover:shadow-xl relative">
-            <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Sensex, Nifty slide nearly 1% as crude oil prices surge amid Iran conflict', 'DD News', 'https://news.google.com/rss/articles/CBMinwFBVV95cUxPS1BCT3dwVkVjQ2QyVU8xQ2VFYkVIV1RhUnUzeDY1R01OUzBJSGd3cmdPZVdsajN2WHRWQ2VKaEtJU1V2Tmd0dklfSXl2QkQ5OGk1dEEzZGo3YUJqRHBiUDl1bENkZHlWbXR4RzRqQ2F2SlM2Sm41SXV5MmtNUUk4WTU3bzg4M1U3TEZRWjBXX0hFMXBZYTUweUxRTXhaVDA?oc=5', 'Sun, 22 Nov 2026 03:20:37', 'Geopolitics')" class="cursor-pointer block flex-1">
-                <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-rose-300 leading-snug line-clamp-2 transition-colors">
-                  Sensex, Nifty slide nearly 1% as crude oil prices surge amid Iran conflict
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -598,11 +903,11 @@
             </div>
             <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
               <span class="px-2 py-0.5 rounded-md bg-rose-950/60 text-rose-300 border border-rose-800/50 font-medium">
-                DD News
+                Facebook
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sun, 22 Nov 2026 03:20:37</span>
-              <a href="https://news.google.com/rss/articles/CBMinwFBVV95cUxPS1BCT3dwVkVjQ2QyVU8xQ2VFYkVIV1RhUnUzeDY1R01OUzBJSGd3cmdPZVdsajN2WHRWQ2VKaEtJU1V2Tmd0dklfSXl2QkQ5OGk1dEEzZGo3YUJqRHBiUDl1bENkZHlWbXR4RzRqQ2F2SlM2Sm41SXV5MmtNUUk4WTU3bzg4M1U3TEZRWjBXX0hFMXBZYTUweUxRTXhaVDA?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sun, 22 Nov 2026 07:50:09</span>
+              <a href="https://news.google.com/rss/articles/CBMiowFBVV95cUxNdjhYZHFjTTNnQWVNLTVnRHpOeFYyM2Q2YVpDUjByMkFabjVqV1RqdEVYZ1BmRzVjdjQteWlqY0daZ0g5aFd3LTNBQ1lpY09ZaGNHMk10aHBfRS1CdEVtanZhVkFHZ3VNUHI3UXAtUnNULUVDT2t4S2pCejJHSTlENzRwOGlpYzNVWGg0SXN2bUZQMzJsSmY3enpXZVV1NHFjZFdB?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -906,9 +1211,9 @@
           
           <article data-id="spt-1" class="article-item p-3.5 rounded-2xl hover:bg-sky-950/20 transition-all duration-200 group border border-transparent hover:border-sky-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Crowd gets behind Smith on return to action as Queensland keep him in the field', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563587.html?ex_cid=OTC-RSS', 'Sun, 22 Nov 2026 07:56:04', 'Sports')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Rachin Ravindra gears up for \'war of attrition\' on final day of Wellington Test', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563594.html?ex_cid=OTC-RSS', 'Sun, 22 Nov 2026 08:21:21', 'Sports')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-sky-300 leading-snug line-clamp-2 transition-colors">
-                  Crowd gets behind Smith on return to action as Queensland keep him in the field
+                  Rachin Ravindra gears up for 'war of attrition' on final day of Wellington Test
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -925,8 +1230,8 @@
                 ESPNcricinfo
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sun, 22 Nov 2026 07:56:04</span>
-              <a href="https://www.cricinfo.com/ci/content/story/1563587.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sun, 22 Nov 2026 08:21:21</span>
+              <a href="https://www.cricinfo.com/ci/content/story/1563594.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -934,9 +1239,9 @@
           
           <article data-id="spt-2" class="article-item p-3.5 rounded-2xl hover:bg-sky-950/20 transition-all duration-200 group border border-transparent hover:border-sky-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Railways T20 debutant Jamshed Alam picks up four wickets in four balls', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563589.html?ex_cid=OTC-RSS', 'Sun, 22 Nov 2026 07:06:54', 'Sports')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Crowd gets behind Smith on return to action as Queensland keep him in the field', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563587.html?ex_cid=OTC-RSS', 'Sun, 22 Nov 2026 07:56:04', 'Sports')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-sky-300 leading-snug line-clamp-2 transition-colors">
-                  Railways T20 debutant Jamshed Alam picks up four wickets in four balls
+                  Crowd gets behind Smith on return to action as Queensland keep him in the field
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -953,8 +1258,8 @@
                 ESPNcricinfo
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sun, 22 Nov 2026 07:06:54</span>
-              <a href="https://www.cricinfo.com/ci/content/story/1563589.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sun, 22 Nov 2026 07:56:04</span>
+              <a href="https://www.cricinfo.com/ci/content/story/1563587.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -962,9 +1267,9 @@
           
           <article data-id="spt-3" class="article-item p-3.5 rounded-2xl hover:bg-sky-950/20 transition-all duration-200 group border border-transparent hover:border-sky-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('New Zealand battle to try and save the Test after India batters\' record-breaking day', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563584.html?ex_cid=OTC-RSS', 'Sun, 22 Nov 2026 06:47:00', 'Sports')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Railways T20 debutant Jamshed Alam picks up four wickets in four balls', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563589.html?ex_cid=OTC-RSS', 'Sun, 22 Nov 2026 07:06:54', 'Sports')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-sky-300 leading-snug line-clamp-2 transition-colors">
-                  New Zealand battle to try and save the Test after India batters' record-breaking day
+                  Railways T20 debutant Jamshed Alam picks up four wickets in four balls
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -981,8 +1286,8 @@
                 ESPNcricinfo
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sun, 22 Nov 2026 06:47:00</span>
-              <a href="https://www.cricinfo.com/ci/content/story/1563584.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sun, 22 Nov 2026 07:06:54</span>
+              <a href="https://www.cricinfo.com/ci/content/story/1563589.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -990,9 +1295,9 @@
           
           <article data-id="spt-4" class="article-item p-3.5 rounded-2xl hover:bg-sky-950/20 transition-all duration-200 group border border-transparent hover:border-sky-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Lehmann maintains he did not know of sandpaper use after Bancroft\'s article', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563472.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 16:09:57', 'Sports')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('New Zealand battle to try and save the Test after India batters\' record-breaking day', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563584.html?ex_cid=OTC-RSS', 'Sun, 22 Nov 2026 06:47:00', 'Sports')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-sky-300 leading-snug line-clamp-2 transition-colors">
-                  Lehmann maintains he did not know of sandpaper use after Bancroft's article
+                  New Zealand battle to try and save the Test after India batters' record-breaking day
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -1009,8 +1314,8 @@
                 ESPNcricinfo
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 16:09:57</span>
-              <a href="https://www.cricinfo.com/ci/content/story/1563472.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sun, 22 Nov 2026 06:47:00</span>
+              <a href="https://www.cricinfo.com/ci/content/story/1563584.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -1018,9 +1323,9 @@
           
           <article data-id="spt-5" class="article-item p-3.5 rounded-2xl hover:bg-sky-950/20 transition-all duration-200 group border border-transparent hover:border-sky-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('England face captaincy dilemma after deputy Jacks suffers hand injury', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563497.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 14:38:56', 'Sports')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Lehmann maintains he did not know of sandpaper use after Bancroft\'s article', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563472.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 16:09:57', 'Sports')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-sky-300 leading-snug line-clamp-2 transition-colors">
-                  England face captaincy dilemma after deputy Jacks suffers hand injury
+                  Lehmann maintains he did not know of sandpaper use after Bancroft's article
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -1037,8 +1342,8 @@
                 ESPNcricinfo
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 14:38:56</span>
-              <a href="https://www.cricinfo.com/ci/content/story/1563497.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sat, 21 Nov 2026 16:09:57</span>
+              <a href="https://www.cricinfo.com/ci/content/story/1563472.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -1046,9 +1351,9 @@
           
           <article data-id="spt-6" class="article-item p-3.5 rounded-2xl hover:bg-sky-950/20 transition-all duration-200 group border border-transparent hover:border-sky-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Ben McKinney called up to England Test squad for South Africa', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563517.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 14:35:17', 'Sports')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('England face captaincy dilemma after deputy Jacks suffers hand injury', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563497.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 14:38:56', 'Sports')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-sky-300 leading-snug line-clamp-2 transition-colors">
-                  Ben McKinney called up to England Test squad for South Africa
+                  England face captaincy dilemma after deputy Jacks suffers hand injury
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -1065,8 +1370,8 @@
                 ESPNcricinfo
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 14:35:17</span>
-              <a href="https://www.cricinfo.com/ci/content/story/1563517.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sat, 21 Nov 2026 14:38:56</span>
+              <a href="https://www.cricinfo.com/ci/content/story/1563497.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -1075,7 +1380,7 @@
         </div>
       </section>
 
-      <!-- SECTION 4: IT & AI JOBS (PURPLE/VIOLET) -->
+      <!-- SECTION 4: JOBS & AI RECRUITMENT (VIOLET/PURPLE) -->
       <section data-category="jobs" class="news-section flex flex-col rounded-3xl bg-gradient-to-b from-purple-950/20 via-slate-900/80 to-slate-900/90 border border-purple-900/40 hover:border-purple-500/60 backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-300">
         <div class="flex items-center justify-between p-4 sm:p-5 border-b border-purple-950/60 bg-gradient-to-r from-purple-950/40 via-slate-900/80 to-transparent">
           <div class="flex items-center space-x-3.5">
@@ -1096,7 +1401,7 @@
           
           <article data-id="job-1" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Indian Man Gets 800 Crore Salary in AI: Is This The New History?', 'Tupaki English', 'https://news.google.com/rss/articles/CBMimwFBVV95cUxPbkNDc2l2Mi1zRDF6RFhRblpYZV9MNFRGZXk5N2VqV25ISjVLcDNGOFk4eHpqVGI4QlZVWXRaQnpwdGhPMUhaVW41akdLeThyYjhFdEU5ZEFZNGJ2WG1OWFNvWnJKak9zRGtXN3FiTXFJeEZfRXgyUGY0SHhvTTAzRnBOVmJBVlYyZ3FVcS1XdHB0OGFwM0M2elhBONIBoAFBVV95cUxORExyMExKRzVuSEpaeDVmUGhpSnFqbVExXzNnSDI4VDBWVTI1TDdyNWdFMk5aX25vMG9pNkNkTWI2Q24yWmlDTFZDUzUyNnZvc0NxblZZcjY1T2lERHFVemVpV2V0WVJzMWtFdlBHcFdDbk1oeFZDcjRwMnczclJUeEJOSkFBYTNJVmVLT19mci1EamN4Zm1rR29BOG1jZlNl?oc=5', 'Sun, 22 Nov 2026 04:12:50', 'AI Careers')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Indian Man Gets 800 Crore Salary in AI: Is This The New History?', 'Tupaki English', 'https://news.google.com/rss/articles/CBMimwFBVV95cUxPbkNDc2l2Mi1zRDF6RFhRblpYZV9MNFRGZXk5N2VqV25ISjVLcDNGOFk4eHpqVGI4QlZVWXRaQnpwdGhPMUhaVW41akdLeThyYjhFdEU5ZEFZNGJ2WG1OWFNvWnJKak9zRGtXN3FiTXFJeEZfRXgyUGY0SHhvTTAzRnBOVmJBVlYyZ3FVcS1XdHB0OGFwM0M2elhBONIBoAFBVV95cUxORExyMExKRzVuSEpaeDVmUGhpSnFqbVExXzNnSDI4VDBWVTI1TDdyNWdFMk5aX25vMG9pNkNkTWI2Q24yWmlDTFZDUzUyNnZvc0NxblZZcjY1T2lERHFVemVpV2V0WVJzMWtFdlBHcFdDbk1oeFZDcjRwMnczclJUeEJOSkFBYTNJVmVLT19mci1EamN4Zm1rR29BOG1jZlNl?oc=5', 'Sun, 22 Nov 2026 04:12:50', 'AI Jobs')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-purple-300 leading-snug line-clamp-2 transition-colors">
                   Indian Man Gets 800 Crore Salary in AI: Is This The New History?
                 </h3>
@@ -1124,7 +1429,7 @@
           
           <article data-id="job-2" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('SBI recruitment 2026: Applications open for 20 Data Scientist posts; check key details', 'India.com', 'https://news.google.com/rss/articles/CBMiyAFBVV95cUxQU1k4X0VxcERjQW5HNDZYMEFWdGhCZFcxRV9MRm5jUWZjZWZPMkRCd0JLUHhZcDE2RS1NamwtbThKTkNqMWxfNlZHMmhidWphd21vVEY3djhpNDNwekR5dG1Uc241VUVNMUNwUWtuZWZ4NXN3cXRmMjliaklaMF92NE8xekk3cnhyR3RqZjBhcWdnYTFzalQybldrTjBxQm9UaUh0ek1wdzBCNFpHeUZKOXZMczNOZ0FJVkN4S1VJeWxWWTQyakVtctIByAFBVV95cUxQU1k4X0VxcERjQW5HNDZYMEFWdGhCZFcxRV9MRm5jUWZjZWZPMkRCd0JLUHhZcDE2RS1NamwtbThKTkNqMWxfNlZHMmhidWphd21vVEY3djhpNDNwekR5dG1Uc241VUVNMUNwUWtuZWZ4NXN3cXRmMjliaklaMF92NE8xekk3cnhyR3RqZjBhcWdnYTFzalQybldrTjBxQm9UaUh0ek1wdzBCNFpHeUZKOXZMczNOZ0FJVkN4S1VJeWxWWTQyakVtcg?oc=5', 'Sat, 21 Nov 2026 13:03:53', 'AI Careers')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('SBI recruitment 2026: Applications open for 20 Data Scientist posts; check key details', 'India.com', 'https://news.google.com/rss/articles/CBMiyAFBVV95cUxQU1k4X0VxcERjQW5HNDZYMEFWdGhCZFcxRV9MRm5jUWZjZWZPMkRCd0JLUHhZcDE2RS1NamwtbThKTkNqMWxfNlZHMmhidWphd21vVEY3djhpNDNwekR5dG1Uc241VUVNMUNwUWtuZWZ4NXN3cXRmMjliaklaMF92NE8xekk3cnhyR3RqZjBhcWdnYTFzalQybldrTjBxQm9UaUh0ek1wdzBCNFpHeUZKOXZMczNOZ0FJVkN4S1VJeWxWWTQyakVtctIByAFBVV95cUxQU1k4X0VxcERjQW5HNDZYMEFWdGhCZFcxRV9MRm5jUWZjZWZPMkRCd0JLUHhZcDE2RS1NamwtbThKTkNqMWxfNlZHMmhidWphd21vVEY3djhpNDNwekR5dG1Uc241VUVNMUNwUWtuZWZ4NXN3cXRmMjliaklaMF92NE8xekk3cnhyR3RqZjBhcWdnYTFzalQybldrTjBxQm9UaUh0ek1wdzBCNFpHeUZKOXZMczNOZ0FJVkN4S1VJeWxWWTQyakVtcg?oc=5', 'Sat, 21 Nov 2026 13:03:53', 'AI Jobs')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-purple-300 leading-snug line-clamp-2 transition-colors">
                   SBI recruitment 2026: Applications open for 20 Data Scientist posts; check key details
                 </h3>
@@ -1152,7 +1457,7 @@
           
           <article data-id="job-3" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('\'Truly inspiring\': Andhra Pradesh man lands Rs 1.06 crore remote AI job at Canada-based firm', 'Moneycontrol.com', 'https://news.google.com/rss/articles/CBMi3AFBVV95cUxNT2tUU2hodWhVZ3djUzN3cW5sYUFVU2tKOXBmeHJkLVRyV0hfUHB1dnRlTWhweHdzNlpNSVhIeTVxNFJCenBHWmtPT3pyOUh3aXRJa0ZUdlZRbE56aWNnbEtqYU9MWm5WRHVnQ0tYeHkxUXhoUW9oTHI3bWRGVzFibFJGWFdSRVVXUWY1SlVLYk9ELWhBbFB1SlhiUEFWSTlTdFJLaTRCR2poWlhJLWZHWWJZcGlRUEJYRHVjN2pqS2ozY3Q2eUhtRG9sWm9BcDJHODNfNHg1VmJlMklx0gHiAUFVX3lxTE1JeXFXT0ltR1gyRUJSOVk3bzU5Zl9jQzB6aklkSE1UOGdzT2NOM1FBb3NsWGdVQWZlNTRLQTVQOEMwRHRJWmZ6OEwtMnJaeGZOQjJCdm9jS05lZ3hLUEVDWVFDY0dQcWJSWlY2X0VqSXYwLVNnZXlKa0w0X0p5LTZIdWtjZGVNczVMYzNtdmVzWDJ1MFR0ZUVIcEY5azA4bUZJdE5KN1g4aG16RUhtRGJROVBiY3NVY095SExhTDJ5QVhNQnhDeHlram9FWG9ZeFoycy1XYmt3SDdpdWRPa25kcWc?oc=5', 'Sun, 02 Aug 2026 07:00:00', 'AI Careers')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('\'Truly inspiring\': Andhra Pradesh man lands Rs 1.06 crore remote AI job at Canada-based firm', 'Moneycontrol.com', 'https://news.google.com/rss/articles/CBMi3AFBVV95cUxNT2tUU2hodWhVZ3djUzN3cW5sYUFVU2tKOXBmeHJkLVRyV0hfUHB1dnRlTWhweHdzNlpNSVhIeTVxNFJCenBHWmtPT3pyOUh3aXRJa0ZUdlZRbE56aWNnbEtqYU9MWm5WRHVnQ0tYeHkxUXhoUW9oTHI3bWRGVzFibFJGWFdSRVVXUWY1SlVLYk9ELWhBbFB1SlhiUEFWSTlTdFJLaTRCR2poWlhJLWZHWWJZcGlRUEJYRHVjN2pqS2ozY3Q2eUhtRG9sWm9BcDJHODNfNHg1VmJlMklx0gHiAUFVX3lxTE1JeXFXT0ltR1gyRUJSOVk3bzU5Zl9jQzB6aklkSE1UOGdzT2NOM1FBb3NsWGdVQWZlNTRLQTVQOEMwRHRJWmZ6OEwtMnJaeGZOQjJCdm9jS05lZ3hLUEVDWVFDY0dQcWJSWlY2X0VqSXYwLVNnZXlKa0w0X0p5LTZIdWtjZGVNczVMYzNtdmVzWDJ1MFR0ZUVIcEY5azA4bUZJdE5KN1g4aG16RUhtRGJROVBiY3NVY095SExhTDJ5QVhNQnhDeHlram9FWG9ZeFoycy1XYmt3SDdpdWRPa25kcWc?oc=5', 'Sun, 02 Aug 2026 07:00:00', 'AI Jobs')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-purple-300 leading-snug line-clamp-2 transition-colors">
                   'Truly inspiring': Andhra Pradesh man lands Rs 1.06 crore remote AI job at Canada-based firm
                 </h3>
@@ -1180,7 +1485,7 @@
           
           <article data-id="job-4" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Remote AI Jobs: Navigating Work-from-Home Careers in Artificial Intelligence', 'Coursera', 'https://news.google.com/rss/articles/CBMiXEFVX3lxTFBmbWladjExY1N5UXg1UEktZ2RaeWZkT1ZqekxWQkg4b1VxUS1tT2xfZWlBeHV1XzJYWVh5OVVBWUR5T2Jvb3BjWVhMSmltaFRNcl9WNEc4M3RLZ2tD?oc=5', 'Mon, 29 Jun 2026 07:00:00', 'AI Careers')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Remote AI Jobs: Navigating Work-from-Home Careers in Artificial Intelligence', 'Coursera', 'https://news.google.com/rss/articles/CBMiXEFVX3lxTFBmbWladjExY1N5UXg1UEktZ2RaeWZkT1ZqekxWQkg4b1VxUS1tT2xfZWlBeHV1XzJYWVh5OVVBWUR5T2Jvb3BjWVhMSmltaFRNcl9WNEc4M3RLZ2tD?oc=5', 'Mon, 29 Jun 2026 07:00:00', 'AI Jobs')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-purple-300 leading-snug line-clamp-2 transition-colors">
                   Remote AI Jobs: Navigating Work-from-Home Careers in Artificial Intelligence
                 </h3>
@@ -1208,7 +1513,7 @@
           
           <article data-id="job-5" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('40 Remote AI Jobs Hiring Today (With Salary Ranges up to $350k)', 'Tech.co', 'https://news.google.com/rss/articles/CBMiVEFVX3lxTE9oMm4xUFdvVUpvNDZvNGhVcldCc2REVXFiLWxFSWF6c2hrRks3aGY1VHBWbGhmTFZGeUdZTUpRMWlGN0VHckFYS1R4YUE5MzNTLVUyQw?oc=5', 'Fri, 02 Oct 2026 07:00:00', 'AI Careers')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('40 Remote AI Jobs Hiring Today (With Salary Ranges up to $350k)', 'Tech.co', 'https://news.google.com/rss/articles/CBMiVEFVX3lxTE9oMm4xUFdvVUpvNDZvNGhVcldCc2REVXFiLWxFSWF6c2hrRks3aGY1VHBWbGhmTFZGeUdZTUpRMWlGN0VHckFYS1R4YUE5MzNTLVUyQw?oc=5', 'Fri, 02 Oct 2026 07:00:00', 'AI Jobs')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-purple-300 leading-snug line-clamp-2 transition-colors">
                   40 Remote AI Jobs Hiring Today (With Salary Ranges up to $350k)
                 </h3>
@@ -1236,7 +1541,7 @@
           
           <article data-id="job-6" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('AI engineer is the #1 fastest-growing job on LinkedIn', 'Ohio Tech News', 'https://news.google.com/rss/articles/CBMiggFBVV95cUxOTzhOcTB5blBFdGp1VlBYRG5oZkZsWmdXRnA5Vmo1NDBueDAyTl9qZ2g5TzlLUTFvOUJfS0F1WjFCZDJFTUNvcG54Sms2aXhDMFdudm1ybElvd0JPN0NGcTgzemxhNllTS1czRTl5U3pyZXpNY0ozem9MNHlxMnZ5RmZB?oc=5', 'Thu, 29 Jan 2026 08:00:00', 'AI Careers')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('AI engineer is the #1 fastest-growing job on LinkedIn', 'Ohio Tech News', 'https://news.google.com/rss/articles/CBMiggFBVV95cUxOTzhOcTB5blBFdGp1VlBYRG5oZkZsWmdXRnA5Vmo1NDBueDAyTl9qZ2g5TzlLUTFvOUJfS0F1WjFCZDJFTUNvcG54Sms2aXhDMFdudm1ybElvd0JPN0NGcTgzemxhNllTS1czRTl5U3pyZXpNY0ozem9MNHlxMnZ5RmZB?oc=5', 'Thu, 29 Jan 2026 08:00:00', 'AI Jobs')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-purple-300 leading-snug line-clamp-2 transition-colors">
                   AI engineer is the #1 fastest-growing job on LinkedIn
                 </h3>
@@ -1282,13 +1587,68 @@
 
   </div>
 
-  <!-- INTERACTIVE MODAL 1: GOLD WEIGHT CALCULATOR (MUMBAI RATES) -->
+  <!-- ====================================================================== -->
+  <!-- MODAL 1: INTERACTIVE LOCATION SELECTOR & GPS AUTO-DETECT               -->
+  <!-- ====================================================================== -->
+  <div id="location-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-emerald-500/60 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative space-y-5 animate-fade-in-up">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 text-lg">📍</span>
+          <div>
+            <h3 class="text-lg font-bold text-white font-display">Switch Location</h3>
+            <p class="text-xs font-mono text-slate-400">Updates live weather, AQI, gold prices & local news</p>
+          </div>
+        </div>
+        <button onclick="closeLocationModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- GPS Auto-Detect Button -->
+      <button onclick="detectUserLocation()" class="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-slate-950 font-mono font-bold text-xs transition shadow-lg shadow-emerald-950/60 flex items-center justify-center gap-2 active:scale-95">
+        <span class="text-base">🎯</span>
+        <span>Auto-Detect My Current GPS Location</span>
+      </button>
+
+      <!-- City Search Input -->
+      <div>
+        <label class="text-xs font-mono text-slate-400 mb-1.5 block">Or Search Any City Globally:</label>
+        <div class="relative">
+          <input id="city-search-input" type="text" placeholder="e.g. Lucknow, Delhi, Varanasi, Dubai, London..." onkeydown="if(event.key==='Enter') searchCityGeocode(this.value)" class="w-full pl-9 pr-20 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-emerald-500">
+          <svg class="w-4 h-4 text-slate-500 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <button onclick="searchCityGeocode(document.getElementById('city-search-input').value)" class="absolute right-1.5 top-1.5 px-3 py-1 bg-emerald-500 text-slate-950 rounded-lg text-xs font-mono font-bold hover:bg-emerald-400 transition">Go</button>
+        </div>
+      </div>
+
+      <!-- Popular Indian & Global Presets -->
+      <div class="space-y-2">
+        <span class="text-xs font-mono text-slate-400 block">Popular City Presets:</span>
+        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 font-mono text-xs">
+          <button onclick="selectCity('Lucknow', 26.8467, 80.9462, 'Uttar Pradesh')" class="p-2 rounded-xl bg-slate-800 hover:bg-emerald-950 hover:border-emerald-500 border border-slate-700 text-slate-200 transition">📍 Lucknow</button>
+          <button onclick="selectCity('Mumbai', 19.0760, 72.8777, 'Maharashtra')" class="p-2 rounded-xl bg-slate-800 hover:bg-emerald-950 hover:border-emerald-500 border border-slate-700 text-slate-200 transition">📍 Mumbai</button>
+          <button onclick="selectCity('New Delhi', 28.6139, 77.2090, 'Delhi NCR')" class="p-2 rounded-xl bg-slate-800 hover:bg-emerald-950 hover:border-emerald-500 border border-slate-700 text-slate-200 transition">📍 New Delhi</button>
+          <button onclick="selectCity('Bengaluru', 12.9716, 77.5946, 'Karnataka')" class="p-2 rounded-xl bg-slate-800 hover:bg-emerald-950 hover:border-emerald-500 border border-slate-700 text-slate-200 transition">📍 Bengaluru</button>
+          <button onclick="selectCity('Hyderabad', 17.3850, 78.4867, 'Telangana')" class="p-2 rounded-xl bg-slate-800 hover:bg-emerald-950 hover:border-emerald-500 border border-slate-700 text-slate-200 transition">📍 Hyderabad</button>
+          <button onclick="selectCity('Kolkata', 22.5726, 88.3639, 'West Bengal')" class="p-2 rounded-xl bg-slate-800 hover:bg-emerald-950 hover:border-emerald-500 border border-slate-700 text-slate-200 transition">📍 Kolkata</button>
+          <button onclick="selectCity('Chennai', 13.0827, 80.2707, 'Tamil Nadu')" class="p-2 rounded-xl bg-slate-800 hover:bg-emerald-950 hover:border-emerald-500 border border-slate-700 text-slate-200 transition">📍 Chennai</button>
+          <button onclick="selectCity('Pune', 18.5204, 73.8567, 'Maharashtra')" class="p-2 rounded-xl bg-slate-800 hover:bg-emerald-950 hover:border-emerald-500 border border-slate-700 text-slate-200 transition">📍 Pune</button>
+          <button onclick="selectCity('Ahmedabad', 23.0225, 72.5714, 'Gujarat')" class="p-2 rounded-xl bg-slate-800 hover:bg-emerald-950 hover:border-emerald-500 border border-slate-700 text-slate-200 transition">📍 Ahmedabad</button>
+          <button onclick="selectCity('Jaipur', 26.9124, 75.7873, 'Rajasthan')" class="p-2 rounded-xl bg-slate-800 hover:bg-emerald-950 hover:border-emerald-500 border border-slate-700 text-slate-200 transition">📍 Jaipur</button>
+          <button onclick="selectCity('Dubai', 25.2048, 55.2708, 'UAE')" class="p-2 rounded-xl bg-slate-800 hover:bg-emerald-950 hover:border-emerald-500 border border-slate-700 text-slate-200 transition">📍 Dubai</button>
+          <button onclick="selectCity('London', 51.5074, -0.1278, 'UK')" class="p-2 rounded-xl bg-slate-800 hover:bg-emerald-950 hover:border-emerald-500 border border-slate-700 text-slate-200 transition">📍 London</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: GOLD WEIGHT CALCULATOR (DYNAMIC CITY RATES) -->
   <div id="gold-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
-    <div class="bg-slate-900 border border-amber-500/50 rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-5">
+    <div class="bg-slate-900 border border-amber-500/50 rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-5 animate-fade-in-up">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div class="flex items-center gap-2">
           <span class="text-2xl">🪙</span>
-          <h3 class="text-lg font-bold text-amber-300 font-display">Mumbai Gold Calculator</h3>
+          <h3 class="text-lg font-bold text-amber-300 font-display"><span class="dyn-city">Mumbai</span> Gold Calculator</h3>
         </div>
         <button onclick="closeGoldCalculator()" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -1315,7 +1675,7 @@
           <span id="calc-22k-val" class="text-amber-400 font-bold text-base">₹96,883</span>
         </div>
         <div class="text-[10px] text-slate-400 pt-1 border-t border-amber-900/40">
-          Based on current Mumbai spot benchmark + standard duties.
+          Adjusted to <span class="dyn-city text-amber-300">Mumbai</span> spot rate + state duties.
         </div>
       </div>
 
@@ -1325,9 +1685,9 @@
     </div>
   </div>
 
-  <!-- INTERACTIVE MODAL 2: STORY QUICK READER -->
+  <!-- MODAL 3: STORY QUICK READER -->
   <div id="story-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
-    <div class="bg-slate-900 border border-cyan-500/50 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative space-y-4">
+    <div class="bg-slate-900 border border-cyan-500/50 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative space-y-4 animate-fade-in-up">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <span id="modal-category" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-700/60">News</span>
         <button onclick="closeStoryModal()" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
@@ -1359,118 +1719,137 @@
     </div>
   </div>
 
-  <!-- CLIENT-SIDE DYNAMIC SCRIPT -->
+  <!-- ====================================================================== -->
+  <!-- CLIENT-SIDE SCRIPT: LOCATION RADAR, LIVE APIS, PARTICLES & LOGIC       -->
+  <!-- ====================================================================== -->
   <script>
-    // 1. Live IST Clock
+    // -------------------------------------------------------------
+    // 1. BIOLUMINESCENT PARTICLE CANVAS ANIMATION
+    // -------------------------------------------------------------
+    (function initCanvasParticles() {
+      const canvas = document.getElementById('ambient-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      const particles = [];
+      const particleCount = Math.min(width > 768 ? 45 : 20, 50);
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          radius: Math.random() * 1.8 + 0.8,
+          color: Math.random() > 0.5 ? 'rgba(6, 182, 212, ' : 'rgba(16, 185, 129, '
+        });
+      }
+
+      function render() {
+        ctx.clearRect(0, 0, width, height);
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0) p.x = width;
+          if (p.x > width) p.x = 0;
+          if (p.y < 0) p.y = height;
+          if (p.y > height) p.y = 0;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color + '0.7)';
+          ctx.fill();
+
+          // Connect nearby particles
+          for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const dx = p.x - p2.x;
+            const dy = p.y - p2.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 110) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.strokeStyle = `rgba(6, 182, 212, ${0.12 * (1 - dist / 110)})`;
+              ctx.lineWidth = 0.6;
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(render);
+      }
+      render();
+    })();
+
+    // -------------------------------------------------------------
+    // 2. LIVE CLOCK
+    // -------------------------------------------------------------
     function updateLiveClock() {
       const now = new Date();
-      const options = { timeZone: 'Asia/Kolkata', hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+      const timeStr = now.toLocaleTimeString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
       const el = document.getElementById('live-clock');
-      if (el) el.textContent = now.toLocaleTimeString('en-US', options) + ' IST';
+      if (el) el.textContent = `${timeStr} IST`;
     }
     setInterval(updateLiveClock, 1000);
     updateLiveClock();
 
-    // 2. Interactive Theme Switcher
+    // -------------------------------------------------------------
+    // 3. THEME SWITCHER
+    // -------------------------------------------------------------
     function setTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('dashboard_theme', theme);
       const b1 = document.getElementById('blob-1');
       const b2 = document.getElementById('blob-2');
-      const b3 = document.getElementById('blob-3');
       if (theme === 'gold') {
-        b1.className = 'absolute -top-40 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-amber-600/30 to-yellow-600/20 rounded-full blur-[130px] animate-glow';
-        b2.className = 'absolute top-1/3 -right-40 w-[550px] h-[550px] bg-gradient-to-br from-emerald-600/20 to-teal-600/15 rounded-full blur-[140px] animate-glow';
+        if (b1) b1.className = b1.className.replace(/from-\w+-\d+\/\d+/, 'from-amber-600/25');
+        if (b2) b2.className = b2.className.replace(/from-\w+-\d+\/\d+/, 'from-yellow-600/20');
       } else if (theme === 'crimson') {
-        b1.className = 'absolute -top-40 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-rose-600/30 to-red-600/20 rounded-full blur-[130px] animate-glow';
-        b2.className = 'absolute top-1/3 -right-40 w-[550px] h-[550px] bg-gradient-to-br from-purple-600/25 to-indigo-600/15 rounded-full blur-[140px] animate-glow';
+        if (b1) b1.className = b1.className.replace(/from-\w+-\d+\/\d+/, 'from-rose-600/25');
+        if (b2) b2.className = b2.className.replace(/from-\w+-\d+\/\d+/, 'from-purple-600/20');
       } else if (theme === 'aurora') {
-        b1.className = 'absolute -top-40 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-emerald-600/30 to-teal-600/20 rounded-full blur-[130px] animate-glow';
-        b2.className = 'absolute top-1/3 -right-40 w-[550px] h-[550px] bg-gradient-to-br from-cyan-600/25 to-blue-600/15 rounded-full blur-[140px] animate-glow';
+        if (b1) b1.className = b1.className.replace(/from-\w+-\d+\/\d+/, 'from-emerald-600/25');
+        if (b2) b2.className = b2.className.replace(/from-\w+-\d+\/\d+/, 'from-teal-600/20');
       } else {
-        b1.className = 'absolute -top-40 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-cyan-600/25 via-blue-600/15 to-transparent rounded-full blur-[130px] animate-glow';
-        b2.className = 'absolute top-1/3 -right-40 w-[550px] h-[550px] bg-gradient-to-br from-rose-600/20 via-purple-600/15 to-transparent rounded-full blur-[140px] animate-glow';
-      }
-      localStorage.setItem('mb_theme', theme);
-    }
-    const savedTheme = localStorage.getItem('mb_theme') || 'cyber';
-    setTheme(savedTheme);
-
-    // 3. View Switcher: Grid vs Unified Stream
-    function setViewMode(mode) {
-      const container = document.getElementById('content-container');
-      const gridBtn = document.getElementById('view-grid-btn');
-      const feedBtn = document.getElementById('view-feed-btn');
-      if (mode === 'feed') {
-        container.classList.remove('md:grid-cols-2');
-        container.classList.add('grid-cols-1');
-        feedBtn.classList.add('bg-cyan-950', 'text-cyan-300', 'font-semibold');
-        gridBtn.classList.remove('bg-cyan-950', 'text-cyan-300', 'font-semibold');
-        gridBtn.classList.add('text-slate-400');
-      } else {
-        container.classList.remove('grid-cols-1');
-        container.classList.add('md:grid-cols-2');
-        gridBtn.classList.add('bg-cyan-950', 'text-cyan-300', 'font-semibold');
-        feedBtn.classList.remove('bg-cyan-950', 'text-cyan-300', 'font-semibold');
-        feedBtn.classList.add('text-slate-400');
+        if (b1) b1.className = b1.className.replace(/from-\w+-\d+\/\d+/, 'from-cyan-600/25');
+        if (b2) b2.className = b2.className.replace(/from-\w+-\d+\/\d+/, 'from-rose-600/20');
       }
     }
+    const savedTheme = localStorage.getItem('dashboard_theme');
+    if (savedTheme) setTheme(savedTheme);
 
-    // 4. Headline Search
-    const searchInput = document.getElementById('headline-search');
-    if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        const articles = document.querySelectorAll('.article-item');
-        articles.forEach(article => {
-          const title = article.querySelector('.article-title')?.textContent.toLowerCase() || '';
-          article.style.display = (!query || title.includes(query)) ? 'block' : 'none';
-        });
-      });
-    }
-
-    // 5. Category Filters & Saved
-    function filterCategory(cat, btn) {
-      const sections = document.querySelectorAll('.news-section');
-      const pills = document.querySelectorAll('.cat-pill');
-      const articles = document.querySelectorAll('.article-item');
-      
-      pills.forEach(p => {
-        p.classList.remove('bg-cyan-950', 'text-cyan-300', 'border-cyan-700/80', 'font-bold');
-        p.classList.add('bg-slate-800/80', 'text-slate-300', 'border-slate-700');
-      });
-      if (btn) {
-        btn.classList.remove('bg-slate-800/80', 'text-slate-300', 'border-slate-700');
-        btn.classList.add('bg-cyan-950', 'text-cyan-300', 'border-cyan-700/80', 'font-bold');
-      }
-
-      if (cat === 'saved') {
-        sections.forEach(s => s.style.display = 'flex');
-        const bookmarks = JSON.parse(localStorage.getItem('mb_bookmarks') || '[]');
-        articles.forEach(a => {
-          const id = a.getAttribute('data-id');
-          a.style.display = bookmarks.includes(id) ? 'block' : 'none';
-        });
-      } else {
-        articles.forEach(a => a.style.display = 'block');
-        sections.forEach(sec => {
-          sec.style.display = (cat === 'all' || sec.getAttribute('data-category') === cat) ? 'flex' : 'none';
-        });
-      }
-    }
-
-    // 6. Bookmarks & Read items
-    function getBookmarks() { return JSON.parse(localStorage.getItem('mb_bookmarks') || '[]'); }
-    function getReadItems() { return JSON.parse(localStorage.getItem('mb_read') || '[]'); }
+    // -------------------------------------------------------------
+    // 4. BOOKMARKS & READ STATE (LOCAL STORAGE)
+    // -------------------------------------------------------------
+    function getBookmarks() { return JSON.parse(localStorage.getItem('news_bookmarks') || '[]'); }
+    function saveBookmarks(b) { localStorage.setItem('news_bookmarks', JSON.stringify(b)); updateSavedCount(); }
+    function getReadItems() { return JSON.parse(localStorage.getItem('news_read') || '[]'); }
+    function saveReadItems(r) { localStorage.setItem('news_read', JSON.stringify(r)); }
 
     function updateSavedCount() {
-      const el = document.getElementById('saved-count');
-      if (el) el.textContent = getBookmarks().length;
+      const b = getBookmarks();
+      const badge = document.getElementById('saved-badge');
+      if (badge) badge.textContent = b.length;
     }
 
     function toggleBookmark(id, btn) {
       let b = getBookmarks();
-      if (b.includes(id)) {
-        b = b.filter(x => x !== id);
+      const idx = b.indexOf(id);
+      if (idx > -1) {
+        b.splice(idx, 1);
         btn.classList.remove('text-amber-400');
         btn.classList.add('text-slate-400');
       } else {
@@ -1478,32 +1857,86 @@
         btn.classList.remove('text-slate-400');
         btn.classList.add('text-amber-400');
       }
-      localStorage.setItem('mb_bookmarks', JSON.stringify(b));
-      updateSavedCount();
+      saveBookmarks(b);
     }
 
     function toggleRead(id, btn) {
       let r = getReadItems();
       const article = document.querySelector(`[data-id="${id}"]`);
-      if (r.includes(id)) {
-        r = r.filter(x => x !== id);
-        article?.classList.remove('is-read');
+      const idx = r.indexOf(id);
+      if (idx > -1) {
+        r.splice(idx, 1);
+        if (article) article.classList.remove('is-read');
         btn.classList.remove('text-emerald-400');
         btn.classList.add('text-slate-400');
       } else {
         r.push(id);
-        article?.classList.add('is-read');
+        if (article) article.classList.add('is-read');
         btn.classList.remove('text-slate-400');
         btn.classList.add('text-emerald-400');
       }
-      localStorage.setItem('mb_read', JSON.stringify(r));
+      saveReadItems(r);
     }
 
-    // 7. Interactive Gold Weight Calculator (Mumbai IBJA)
-    const base10gRate = parseFloat("₹105,691".replace(/[^0-9.]/g, '')) || 106241;
+    // -------------------------------------------------------------
+    // 5. SEARCH & FILTER ARTICLES
+    // -------------------------------------------------------------
+    function filterArticles(query) {
+      query = query.toLowerCase().trim();
+      const articles = document.querySelectorAll('.article-item');
+      articles.forEach(a => {
+        const title = (a.querySelector('.article-title')?.textContent || '').toLowerCase();
+        a.style.display = title.includes(query) ? '' : 'none';
+      });
+    }
+
+    function filterCategory(cat) {
+      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('bg-cyan-900/80', 'text-cyan-200', 'font-bold'));
+      event.target.classList.add('bg-cyan-900/80', 'text-cyan-200', 'font-bold');
+
+      const sections = document.querySelectorAll('.news-section');
+      if (cat === 'all') {
+        sections.forEach(s => s.style.display = '');
+        document.querySelectorAll('.article-item').forEach(a => a.style.display = '');
+        return;
+      }
+      if (cat === 'saved') {
+        sections.forEach(s => s.style.display = '');
+        const b = getBookmarks();
+        document.querySelectorAll('.article-item').forEach(a => {
+          const id = a.getAttribute('data-id');
+          a.style.display = b.includes(id) ? '' : 'none';
+        });
+        return;
+      }
+      sections.forEach(s => {
+        s.style.display = s.getAttribute('data-category') === cat ? '' : 'none';
+      });
+    }
+
+    function toggleLayout(type) {
+      const container = document.getElementById('news-container');
+      const btnGrid = document.getElementById('btn-grid');
+      const btnStream = document.getElementById('btn-stream');
+      if (type === 'stream') {
+        container.className = 'grid grid-cols-1 gap-6';
+        btnStream.className = 'px-2.5 py-1 rounded-lg bg-cyan-950 text-cyan-300 border border-cyan-800 font-semibold transition';
+        btnGrid.className = 'px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition';
+      } else {
+        container.className = 'grid grid-cols-1 md:grid-cols-2 gap-6 items-start';
+        btnGrid.className = 'px-2.5 py-1 rounded-lg bg-cyan-950 text-cyan-300 border border-cyan-800 font-semibold transition';
+        btnStream.className = 'px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition';
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 6. GOLD WEIGHT CALCULATOR WITH DYNAMIC CITY RATES
+    // -------------------------------------------------------------
+    let currentCity24kRate = 105691;
     function openGoldCalculator() {
       document.getElementById('gold-modal').classList.remove('hidden');
       document.getElementById('gold-modal').classList.add('flex');
+      calcGold(10);
     }
     function closeGoldCalculator() {
       document.getElementById('gold-modal').classList.add('hidden');
@@ -1514,18 +1947,20 @@
         b.classList.remove('bg-amber-950', 'border-amber-500', 'text-amber-200', 'font-bold');
         b.classList.add('bg-slate-800', 'border-slate-700', 'text-slate-200');
       });
-      event.target.classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-200');
-      event.target.classList.add('bg-amber-950', 'border-amber-500', 'text-amber-200', 'font-bold');
-
-      const ratePerGram = base10gRate / 10.0;
+      if (event && event.target && event.target.classList.contains('calc-btn')) {
+        event.target.classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-200');
+        event.target.classList.add('bg-amber-950', 'border-amber-500', 'text-amber-200', 'font-bold');
+      }
+      const ratePerGram = currentCity24kRate / 10.0;
       const total24k = ratePerGram * grams;
       const total22k = (total24k * 22.0) / 24.0;
-
       document.getElementById('calc-24k-val').textContent = '₹' + Math.round(total24k).toLocaleString('en-IN');
       document.getElementById('calc-22k-val').textContent = '₹' + Math.round(total22k).toLocaleString('en-IN');
     }
 
-    // 8. Story Modal Quick Reader
+    // -------------------------------------------------------------
+    // 7. STORY MODAL QUICK READER
+    // -------------------------------------------------------------
     let currentStoryText = "";
     function openStoryModal(title, source, link, pub, category) {
       document.getElementById('modal-title').textContent = title;
@@ -1549,7 +1984,9 @@
       window.speechSynthesis.speak(utter);
     }
 
-    // 9. Audio Briefing (Web Speech API)
+    // -------------------------------------------------------------
+    // 8. AUDIO BRIEFING (DYNAMIC PER LOCATION)
+    // -------------------------------------------------------------
     let isSpeaking = false;
     function toggleAudioBriefing() {
       const synth = window.speechSynthesis;
@@ -1565,39 +2002,228 @@
         return;
       }
 
-      let script = "Good morning Mumbai! Here is your Daily Intelligence Briefing. ";
-      script += "Today the temperature is 31.7 degrees with Clear Sky, and the Air Quality Index is 178. ";
-      script += "24 karat Gold in Mumbai is ₹105,691 per 10 grams, 22 karat is ₹96,883, and Silver is ₹122,684 per kilo. ";
-      
-      const geoItems = document.querySelectorAll('[data-category="geopolitics"] .article-title');
-      if (geoItems.length > 0) script += "Top Geopolitics: " + geoItems[0].textContent.trim() + ". ";
-      const finItems = document.querySelectorAll('[data-category="finance"] .article-title');
-      if (finItems.length > 0) script += "Top Market news: " + finItems[0].textContent.trim() + ". ";
+      const currentCity = currentLocation.city || "Mumbai";
+      const tempText = document.getElementById('weather-temp-hero')?.textContent || "31.6°C";
+      const condText = document.getElementById('weather-condition-hero')?.textContent || "Clear Sky";
+      const aqiText = document.getElementById('radar-aqi-number')?.textContent || "178";
+      const goldText = document.getElementById('gold-24k-hero')?.textContent || "₹105,691";
 
-      script += "Have a productive and safe day ahead!";
+      let script = `Good morning ${currentCity}! Here is your personalized Intelligence Briefing. `;
+      script += `In ${currentCity}, the current temperature is ${tempText} with ${condText}, and the Air Quality Index is ${aqiText}. `;
+      script += `24 karat Gold in ${currentCity} is currently ${goldText} per 10 grams. `;
+      
+      const localStories = document.querySelectorAll('#local-city-news-list .article-title');
+      if (localStories.length > 0) {
+        script += `Top headline for ${currentCity}: ${localStories[0].textContent.trim()}. `;
+      }
+
+      script += `Have an empowered and productive day!`;
       const utter = new SpeechSynthesisUtterance(script);
       utter.onstart = () => { isSpeaking = true; if (btnText) btnText.textContent = "Stop"; if (wave) { wave.classList.remove('hidden'); wave.classList.add('flex'); }};
       utter.onend = utter.onerror = () => { isSpeaking = false; if (btnText) btnText.textContent = "Audio Brief"; if (wave) { wave.classList.remove('flex'); wave.classList.add('hidden'); }};
       synth.speak(utter);
     }
 
-    // 10. REALTIME CLIENT-SIDE LIVE INGESTION ENGINE (OPTION 2)
-    const LIVE_FEED_SOURCES = {
-      geopolitics: [
-        { url: "https://news.google.com/rss/search?q=Iran+OR+USA+war+conflict+when:1d&hl=en-IN&gl=IN&ceid=IN:en", label: "Google News", theme: "rose" }
-      ],
-      finance: [
-        { url: "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms", label: "ET Markets", theme: "emerald" }
-      ],
-      sports: [
-        { url: "https://www.espncricinfo.com/rss/content/story/feeds/0.xml", label: "ESPNcricinfo", theme: "sky" },
-        { url: "https://feeds.bbci.co.uk/sport/football/rss.xml", label: "BBC Football", theme: "sky" }
-      ],
-      jobs: [
-        { url: "https://news.google.com/rss/search?q=%22AI+Engineer%22+OR+%22Java+Lead%22+OR+%22GenAI%22+jobs+India+when:2d&hl=en-IN&gl=IN&ceid=IN:en", label: "India Jobs", theme: "purple" },
-        { url: "https://news.google.com/rss/search?q=Remote+%22AI+Engineer%22+OR+%22Machine+Learning+Engineer%22+jobs&hl=en-IN&gl=IN&ceid=IN:en", label: "Remote AI", theme: "purple" }
-      ]
+    // -------------------------------------------------------------
+    // 9. LOCATION MODAL CONTROLS
+    // -------------------------------------------------------------
+    function openLocationModal() {
+      document.getElementById('location-modal').classList.remove('hidden');
+      document.getElementById('location-modal').classList.add('flex');
+    }
+    function closeLocationModal() {
+      document.getElementById('location-modal').classList.add('hidden');
+      document.getElementById('location-modal').classList.remove('flex');
+    }
+
+    // Mini Forex Calculator
+    function convertForexMini(val) {
+      const num = parseFloat(val) || 0;
+      const rate = 92.889095;
+      const result = Math.round(num * rate);
+      document.getElementById('forex-calc-result').textContent = '₹' + result.toLocaleString('en-IN');
+    }
+
+    // -------------------------------------------------------------
+    // 10. DYNAMIC LOCATION RADAR & CLIENT REFRESH ENGINE
+    // -------------------------------------------------------------
+    let currentLocation = {
+      city: "Mumbai",
+      lat: 19.0760,
+      lon: 72.8777,
+      state: "Maharashtra"
     };
+
+    // City spot differentials (base benchmark is Mumbai port rate)
+    const CITY_METALS_DELTA = {
+      "Lucknow": { gold24k: 180, gold22k: 165, silver1kg: 350 },
+      "New Delhi": { gold24k: 150, gold22k: 140, silver1kg: 300 },
+      "Mumbai": { gold24k: 0, gold22k: 0, silver1kg: 0 },
+      "Bengaluru": { gold24k: 190, gold22k: 175, silver1kg: 350 },
+      "Hyderabad": { gold24k: 170, gold22k: 155, silver1kg: 320 },
+      "Kolkata": { gold24k: 140, gold22k: 130, silver1kg: 280 },
+      "Chennai": { gold24k: 220, gold22k: 200, silver1kg: 400 },
+      "Pune": { gold24k: 40, gold22k: 35, silver1kg: 100 },
+      "Ahmedabad": { gold24k: 60, gold22k: 55, silver1kg: 150 },
+      "Jaipur": { gold24k: 160, gold22k: 145, silver1kg: 310 }
+    };
+
+    function updateCityUI(cityName, stateName, lat, lon) {
+      currentLocation = { city: cityName, state: stateName, lat, lon };
+      localStorage.setItem('user_preferred_location', JSON.stringify(currentLocation));
+
+      // Update text in all `.dyn-city` placeholders
+      document.querySelectorAll('.dyn-city').forEach(el => el.textContent = cityName);
+      
+      const label = document.getElementById('current-location-label');
+      if (label) label.textContent = `📍 ${cityName}${stateName ? ', ' + stateName : ''}`;
+
+      const headerTitle = document.getElementById('header-city-title');
+      if (headerTitle) headerTitle.textContent = `${cityName.toUpperCase()} • LIVE`;
+
+      const radarName = document.getElementById('radar-city-name');
+      if (radarName) radarName.textContent = cityName;
+
+      const radarCoords = document.getElementById('radar-coords-label');
+      if (radarCoords) radarCoords.textContent = `Lat: ${lat.toFixed(4)} • Lon: ${lon.toFixed(4)}`;
+
+      // Update Gold & Silver for the selected city
+      updateCityMetals(cityName);
+
+      // Fetch dynamic weather & AQI for exact coordinates
+      fetchLocationWeatherAndAQI(lat, lon, cityName);
+
+      // Fetch dynamic city-specific live news
+      fetchCitySpecificNews(cityName);
+    }
+
+    function updateCityMetals(cityName) {
+      const base24k = 105691;
+      const base22k = 96883;
+      const baseSilver = 122684;
+
+      const delta = CITY_METALS_DELTA[cityName] || { gold24k: 120, gold22k: 110, silver1kg: 250 };
+      const adj24k = base24k + delta.gold24k;
+      const adj22k = base22k + delta.gold22k;
+      const adjSilver = baseSilver + delta.silver1kg;
+
+      currentCity24kRate = adj24k;
+
+      const gold24Hero = document.getElementById('gold-24k-hero');
+      if (gold24Hero) gold24Hero.textContent = '₹' + adj24k.toLocaleString('en-IN');
+
+      const gold22Hero = document.getElementById('gold-22k-hero');
+      if (gold22Hero) gold22Hero.textContent = '₹' + adj22k.toLocaleString('en-IN');
+
+      const silverHero = document.getElementById('silver-hero');
+      if (silverHero) silverHero.textContent = '₹' + adjSilver.toLocaleString('en-IN');
+    }
+
+    async function fetchLocationWeatherAndAQI(lat, lon, cityName) {
+      try {
+        // 1. Open-Meteo Weather
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=sunrise,sunset,uv_index_max&timezone=auto`;
+        const wResp = await fetch(weatherUrl);
+        if (wResp.ok) {
+          const wData = await wResp.json();
+          if (wData.current) {
+            const temp = Math.round(wData.current.temperature_2m * 10) / 10;
+            const feelsLike = Math.round(wData.current.apparent_temperature * 10) / 10;
+            const hum = wData.current.relative_humidity_2m;
+            const wind = Math.round(wData.current.wind_speed_10m);
+            const wCode = wData.current.weather_code;
+
+            const codeMap = {
+              0: { text: "Clear Sky", icon: "☀️" },
+              1: { text: "Mainly Clear", icon: "🌤️" },
+              2: { text: "Partly Cloudy", icon: "⛅" },
+              3: { text: "Overcast", icon: "☁️" },
+              45: { text: "Fog", icon: "🌫️" },
+              51: { text: "Light Drizzle", icon: "🌦️" },
+              61: { text: "Slight Rain", icon: "🌧️" },
+              63: { text: "Moderate Rain", icon: "🌧️" },
+              65: { text: "Heavy Rain", icon: "⛈️" },
+              80: { text: "Rain Showers", icon: "🌦️" },
+              95: { text: "Thunderstorm", icon: "⚡" }
+            };
+            const wInfo = codeMap[wCode] || { text: "Clear", icon: "☀️" };
+
+            // Update Hero Weather Card
+            document.getElementById('weather-temp-hero').textContent = `${temp}°C`;
+            document.getElementById('weather-condition-hero').textContent = wInfo.text;
+            document.getElementById('weather-icon-hero').textContent = wInfo.icon;
+            document.getElementById('weather-humidity-hero').textContent = `💧 ${hum}%`;
+
+            // Update Radar Spotlight Card
+            document.getElementById('radar-temp-val').textContent = `${temp}°C`;
+            document.getElementById('radar-feels-like').textContent = `Feels like ${feelsLike}°C`;
+            document.getElementById('radar-condition').textContent = wInfo.text;
+            document.getElementById('radar-humidity').textContent = `${hum}%`;
+            document.getElementById('radar-wind').textContent = `${wind} km/h`;
+            document.getElementById('radar-big-icon').textContent = wInfo.icon;
+
+            if (wData.daily) {
+              if (wData.daily.sunrise?.[0]) {
+                const sr = wData.daily.sunrise[0].split('T')[1];
+                document.getElementById('weather-sunrise-hero').textContent = `🌅 ${sr}`;
+                document.getElementById('radar-sunrise').textContent = sr;
+              }
+              if (wData.daily.sunset?.[0]) {
+                const ss = wData.daily.sunset[0].split('T')[1];
+                document.getElementById('weather-sunset-hero').textContent = `🌇 ${ss}`;
+                document.getElementById('radar-sunset').textContent = ss;
+              }
+              if (wData.daily.uv_index_max?.[0]) {
+                const uv = wData.daily.uv_index_max[0];
+                document.getElementById('radar-uv-index').textContent = `UV Index: ${uv}`;
+              }
+            }
+          }
+        }
+
+        // 2. Open-Meteo Air Quality
+        const aqiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,pm2_5,pm10`;
+        const aResp = await fetch(aqiUrl);
+        if (aResp.ok) {
+          const aData = await aResp.json();
+          if (aData.current && aData.current.us_aqi !== undefined) {
+            const aqi = Math.round(aData.current.us_aqi);
+            let aqiColor = "emerald";
+            let aqiDesc = "Good • Safe for outdoor sports & running";
+            if (aqi > 200) { aqiColor = "purple"; aqiDesc = "Very Unhealthy • Stay indoors"; }
+            else if (aqi > 150) { aqiColor = "rose"; aqiDesc = "Unhealthy • Sensitive groups wear mask"; }
+            else if (aqi > 100) { aqiColor = "amber"; aqiDesc = "Moderate • Minor breathing sensitivity"; }
+            else if (aqi > 50) { aqiColor = "yellow"; aqiDesc = "Satisfactory • Minor air pollution"; }
+
+            const aqiBadge = document.getElementById('weather-aqi-badge');
+            if (aqiBadge) {
+              aqiBadge.textContent = `AQI ${aqi}`;
+              aqiBadge.className = `text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-${aqiColor}-950/90 text-${aqiColor}-300 border border-${aqiColor}-700/70 font-bold shadow-md`;
+            }
+
+            const rNum = document.getElementById('radar-aqi-number');
+            if (rNum) {
+              rNum.textContent = aqi;
+              rNum.className = `text-base font-bold text-${aqiColor}-400 font-mono`;
+            }
+
+            const rDesc = document.getElementById('radar-aqi-desc');
+            if (rDesc) {
+              rDesc.textContent = aqiDesc;
+              rDesc.className = `text-${aqiColor}-300 font-semibold`;
+            }
+
+            const rBar = document.getElementById('radar-aqi-bar');
+            if (rBar) {
+              const pct = Math.min(Math.round((aqi / 300) * 100), 100);
+              rBar.style.width = `${pct}%`;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("Weather & AQI fetch warning:", e);
+      }
+    }
 
     function formatRelativeTime(dateStr) {
       try {
@@ -1622,143 +2248,192 @@
       return parser.parseFromString(text, "text/xml");
     }
 
-    async function fetchLiveCategory(catId, sources, themeColor) {
-      const container = document.getElementById(`news-list-${catId}`);
+    async function fetchCitySpecificNews(city = currentLocation.city) {
+      const container = document.getElementById('local-city-news-list');
       if (!container) return;
 
-      let allEntries = [];
-      for (const src of sources) {
-        try {
-          const xml = await fetchXmlViaProxy(src.url);
-          const items = xml.querySelectorAll("item");
-          items.forEach((item, idx) => {
-            if (idx >= 6) return;
-            let title = item.querySelector("title")?.textContent || "";
-            let link = item.querySelector("link")?.textContent || "#";
-            let pubDate = item.querySelector("pubDate")?.textContent || "";
-            let source = src.label;
+      container.innerHTML = `
+        <div class="p-4 text-center text-slate-400 font-mono text-xs flex items-center justify-center gap-2">
+          <span class="w-3 h-3 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin"></span>
+          <span>Syncing real-time local news for <strong class="text-cyan-300">${city}</strong>...</span>
+        </div>
+      `;
 
-            if (title.includes(" - ")) {
-              const parts = title.split(" - ");
-              if (parts.length > 1 && parts[parts.length - 1].length < 40) {
-                if (!source) source = parts[parts.length - 1].trim();
-                parts.pop();
-                title = parts.join(" - ").trim();
-              }
-            }
+      try {
+        const query = encodeURIComponent(`${city} news OR ${city} updates when:1d`);
+        const feedUrl = `https://news.google.com/rss/search?q=${query}&hl=en-IN&gl=IN&ceid=IN:en`;
+        const xml = await fetchXmlViaProxy(feedUrl);
+        const items = xml.querySelectorAll("item");
+        
+        let stories = [];
+        items.forEach((item, idx) => {
+          if (idx >= 6) return;
+          let title = item.querySelector("title")?.textContent || "";
+          let link = item.querySelector("link")?.textContent || "#";
+          let pubDate = item.querySelector("pubDate")?.textContent || "";
+          let source = "City News";
 
-            if (title) {
-              allEntries.push({
-                title: title.replace(/<[^>]*>?/gm, '').trim(),
-                link,
-                pubDate: formatRelativeTime(pubDate),
-                source: source || "News",
-                rawDate: pubDate ? new Date(pubDate).getTime() : 0
-              });
+          if (title.includes(" - ")) {
+            const parts = title.split(" - ");
+            if (parts.length > 1 && parts[parts.length - 1].length < 40) {
+              source = parts.pop().trim();
+              title = parts.join(" - ").trim();
             }
-          });
-        } catch (e) {
-          console.warn(`Live fetch error on ${catId}:`, e);
+          }
+
+          if (title) {
+            stories.push({
+              title: title.replace(/<[^>]*>?/gm, '').trim(),
+              link,
+              pubDate: formatRelativeTime(pubDate),
+              source,
+              rawDate: pubDate ? new Date(pubDate).getTime() : 0
+            });
+          }
+        });
+
+        if (stories.length === 0) {
+          container.innerHTML = `<div class="p-4 text-slate-400 font-mono text-xs text-center">No breaking news stories found for ${city} right now.</div>`;
+          return;
         }
+
+        let html = "";
+        stories.forEach((item, idx) => {
+          const id = `city-live-${idx + 1}`;
+          const escapedTitle = item.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+          html += `
+            <article data-id="${id}" class="article-item p-3 rounded-2xl hover:bg-cyan-950/20 transition-all duration-200 group border border-transparent hover:border-cyan-800/40 relative">
+              <div class="flex items-start justify-between gap-3">
+                <div onclick="openStoryModal('${escapedTitle}', '${item.source}', '${item.link}', '${item.pubDate}', '${city} Local')" class="cursor-pointer block flex-1">
+                  <h4 class="article-title text-xs sm:text-sm font-semibold text-slate-100 group-hover:text-cyan-300 leading-snug line-clamp-2 transition-colors">
+                    ${item.title}
+                  </h4>
+                </div>
+                <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
+                  <button onclick="toggleBookmark('${id}', this)" title="Save for later" class="bookmark-btn p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                  </button>
+                  <button onclick="toggleRead('${id}', this)" title="Mark as read" class="read-btn p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 mt-2 font-mono text-[10px] text-slate-400">
+                <span class="px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800/60 font-medium">
+                  ${item.source}
+                </span>
+                <span>&bull;</span>
+                <span class="text-cyan-400 font-semibold">${item.pubDate}</span>
+                <a href="${item.link}" target="_blank" class="ml-auto text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold">
+                  Read →
+                </a>
+              </div>
+            </article>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (e) {
+        console.warn("City news fetch error:", e);
+        container.innerHTML = `<div class="p-4 text-slate-400 font-mono text-xs text-center">Unable to load live feed for ${city}. Check network or refresh.</div>`;
       }
-
-      if (allEntries.length === 0) return;
-
-      // Sort by newest and pick top 6
-      allEntries.sort((a, b) => b.rawDate - a.rawDate);
-      const topEntries = allEntries.slice(0, 6);
-
-      let html = "";
-      topEntries.forEach((item, idx) => {
-        const id = `${catId.substring(0, 3)}-live-${idx + 1}`;
-        const escapedTitle = item.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        html += `
-          <article data-id="${id}" class="article-item p-3.5 rounded-2xl hover:bg-${themeColor}-950/20 transition-all duration-200 group border border-transparent hover:border-${themeColor}-800/40 hover:shadow-xl relative animate-fade-in-up">
-            <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('${escapedTitle}', '${item.source}', '${item.link}', '${item.pubDate}', '${catId}')" class="cursor-pointer block flex-1">
-                <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-${themeColor}-300 leading-snug line-clamp-2 transition-colors">
-                  ${item.title}
-                </h3>
-              </div>
-              <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
-                <button onclick="toggleBookmark('${id}', this)" title="Save for later" class="bookmark-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-                </button>
-                <button onclick="toggleRead('${id}', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                </button>
-              </div>
-            </div>
-            <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
-              <span class="px-2 py-0.5 rounded-md bg-${themeColor}-950/60 text-${themeColor}-300 border border-${themeColor}-800/50 font-medium">
-                ${item.source}
-              </span>
-              <span>&bull;</span>
-              <span class="text-${themeColor}-400 font-semibold">${item.pubDate}</span>
-              <a href="${item.link}" target="_blank" class="ml-auto flex items-center gap-1 text-${themeColor}-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                <span class="text-[10px] font-bold uppercase">Source →</span>
-              </a>
-            </div>
-          </article>
-        `;
-      });
-
-      container.innerHTML = html;
     }
 
-    async function fetchLiveWeatherMumbai() {
+    function selectCity(name, lat, lon, state) {
+      closeLocationModal();
+      updateCityUI(name, state, lat, lon);
+    }
+
+    async function searchCityGeocode(query) {
+      if (!query || !query.trim()) return;
+      query = query.trim();
       try {
-        const resp = await fetch("https://api.open-meteo.com/v1/forecast?latitude=19.0760&longitude=72.8777&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=sunrise,sunset&timezone=Asia%2FKolkata");
-        if (!resp.ok) return;
+        const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error("Search failed");
         const data = await resp.json();
-        if (data.current) {
-          const temp = Math.round(data.current.temperature_2m * 10) / 10;
-          const tempEl = document.querySelector(".neon-card:nth-child(5) .text-2xl, .neon-card:nth-child(5) .text-3xl");
-          if (tempEl) tempEl.textContent = `${temp}°C`;
+        if (data.results && data.results.length > 0) {
+          const res = data.results[0];
+          selectCity(res.name, res.latitude, res.longitude, res.admin1 || res.country);
+        } else {
+          alert(`City "${query}" not found. Try another city name.`);
         }
       } catch (e) {
-        console.warn("Live weather fetch error:", e);
+        alert("Search error: " + e.message);
       }
     }
 
-    async function refreshAllLiveIntel() {
+    // Auto-detect current user location
+    async function detectUserLocation() {
+      const label = document.getElementById('current-location-label');
+      if (label) label.textContent = "📍 Locating you...";
+      closeLocationModal();
+
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            try {
+              // Free reverse geocoding via OpenStreetMap Nominatim
+              const revUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
+              const resp = await fetch(revUrl, { headers: { "Accept": "application/json" } });
+              if (resp.ok) {
+                const data = await resp.json();
+                const city = data.address?.city || data.address?.town || data.address?.suburb || data.address?.state_district || "Local City";
+                const state = data.address?.state || "";
+                updateCityUI(city, state, lat, lon);
+                return;
+              }
+            } catch (e) {
+              console.warn("Reverse geocode failed, using coordinates:", e);
+            }
+            updateCityUI("Current Location", "", lat, lon);
+          },
+          (err) => {
+            console.warn("Geolocation denied or unavailable:", err.message);
+            // Fallback to IP-based location
+            detectLocationViaIP();
+          },
+          { timeout: 7000 }
+        );
+      } else {
+        detectLocationViaIP();
+      }
+    }
+
+    async function detectLocationViaIP() {
+      try {
+        const resp = await fetch("https://ipapi.co/json/");
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.city && data.latitude && data.longitude) {
+            updateCityUI(data.city, data.region, data.latitude, data.longitude);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("IP location fallback error:", e);
+      }
+      // Ultimate fallback: Lucknow or Mumbai
+      updateCityUI("Mumbai", "Maharashtra", 19.0760, 72.8777);
+    }
+
+    // -------------------------------------------------------------
+    // 11. INITIALIZATION & REFRESH
+    // -------------------------------------------------------------
+    function triggerManualRefresh() {
       const spinner = document.getElementById("refresh-spinner");
       if (spinner) spinner.classList.add("animate-spin");
-
-      try {
-        await Promise.allSettled([
-          fetchLiveCategory("geopolitics", LIVE_FEED_SOURCES.geopolitics, "rose"),
-          fetchLiveCategory("finance", LIVE_FEED_SOURCES.finance, "emerald"),
-          fetchLiveCategory("sports", LIVE_FEED_SOURCES.sports, "sky"),
-          fetchLiveCategory("jobs", LIVE_FEED_SOURCES.jobs, "purple"),
-          fetchLiveWeatherMumbai()
-        ]);
-        
-        // Re-apply saved bookmarks & read state
-        const b = getBookmarks();
-        const r = getReadItems();
-        b.forEach(id => {
-          const btn = document.querySelector(`[data-id="${id}"] .bookmark-btn`);
-          if (btn) { btn.classList.remove('text-slate-400'); btn.classList.add('text-amber-400'); }
-        });
-        r.forEach(id => {
-          const article = document.querySelector(`[data-id="${id}"]`);
-          const btn = document.querySelector(`[data-id="${id}"] .read-btn`);
-          if (article) article.classList.add('is-read');
-          if (btn) { btn.classList.remove('text-slate-400'); btn.classList.add('text-emerald-400'); }
-        });
-        updateSavedCount();
-      } finally {
+      Promise.allSettled([
+        fetchLocationWeatherAndAQI(currentLocation.lat, currentLocation.lon, currentLocation.city),
+        fetchCitySpecificNews(currentLocation.city)
+      ]).finally(() => {
         if (spinner) spinner.classList.remove("animate-spin");
-      }
+      });
     }
 
-    function triggerManualRefresh() {
-      refreshAllLiveIntel();
-    }
-
-    // Auto-fetch on page load & auto-refresh every 10 minutes
     document.addEventListener('DOMContentLoaded', () => {
+      // 1. Restore Bookmarks & Reads
       const b = getBookmarks();
       const r = getReadItems();
       b.forEach(id => {
@@ -1773,11 +2448,22 @@
       });
       updateSavedCount();
 
-      // Trigger background live sync
-      setTimeout(refreshAllLiveIntel, 800);
+      // 2. Check saved location or auto-detect
+      const savedLoc = localStorage.getItem('user_preferred_location');
+      if (savedLoc) {
+        try {
+          const loc = JSON.parse(savedLoc);
+          updateCityUI(loc.city, loc.state, loc.lat, loc.lon);
+        } catch (e) {
+          detectUserLocation();
+        }
+      } else {
+        // Automatically attempt to detect user location on first load!
+        detectUserLocation();
+      }
 
-      // Auto refresh every 10 mins while tab is open
-      setInterval(refreshAllLiveIntel, 10 * 60 * 1000);
+      // 3. Auto-sync every 10 minutes while tab is active
+      setInterval(triggerManualRefresh, 10 * 60 * 1000);
     });
   </script>
 
