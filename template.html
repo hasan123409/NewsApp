@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" data-theme="cyber">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="refresh" content="300">
+  <title>Daily Intelligence Briefing | Mumbai Edition</title>
+
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MorningIntel">
+  <meta name="theme-color" content="#070a11">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0f1d'/><path d='M50 20 L25 55 H45 L35 80 L75 45 H55 Z' fill='%2306b6d4'/></svg>">
+  
+  <!-- Tailwind CSS & Google Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            display: ['Cabinet Grotesk', 'sans-serif'],
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 5s ease-in-out infinite',
+            'glow': 'glow 4s ease-in-out infinite alternate',
+            'marquee': 'marquee 32s linear infinite',
+            'equalizer': 'equalizer 0.8s ease-in-out infinite alternate',
+            'border-dance': 'borderDance 4s linear infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-6px)' }
+            },
+            glow: {
+              '0%': { opacity: 0.4, transform: 'scale(1)' },
+              '100%': { opacity: 0.85, transform: 'scale(1.08)' }
+            },
+            marquee: {
+              '0%': { transform: 'translateX(0%)' },
+              '100%': { transform: 'translateX(-50%)' }
+            },
+            equalizer: {
+              '0%': { height: '3px' },
+              '100%': { height: '16px' }
+            },
+            borderDance: {
+              '0%': { backgroundPosition: '0% 50%' },
+              '50%': { backgroundPosition: '100% 50%' },
+              '100%': { backgroundPosition: '0% 50%' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #070a11;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #38bdf8;
+    }
+
+    .bg-grid-pattern {
+      background-size: 32px 32px;
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    }
+
+    /* Metallic Neon Shimmer Card */
+    .neon-card {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .neon-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+      transition: left 0.7s ease;
+      pointer-events: none;
+    }
+    .neon-card:hover::before {
+      left: 150%;
+    }
+
+    .article-item.is-read {
+      opacity: 0.4;
+      filter: grayscale(0.5);
+    }
+    .article-item.is-read .article-title {
+      text-decoration: line-through;
+    }
+
+    /* Themes */
+    [data-theme="gold"] .theme-accent { color: #f59e0b; }
+    [data-theme="crimson"] .theme-accent { color: #f43f5e; }
+    [data-theme="aurora"] .theme-accent { color: #10b981; }
+    [data-theme="cyber"] .theme-accent { color: #06b6d4; }
+
+    /* Interactive Spotlight hover */
+    .spotlight-hover:hover {
+      box-shadow: 0 10px 30px -10px rgba(6, 182, 212, 0.25);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#070a11] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 antialiased relative overflow-x-hidden">
+
+  <!-- VIBRANT AMBIENT GLOW MESH -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div id="blob-1" class="absolute -top-40 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-cyan-600/25 via-blue-600/15 to-transparent rounded-full blur-[130px] animate-glow"></div>
+    <div id="blob-2" class="absolute top-1/3 -right-40 w-[550px] h-[550px] bg-gradient-to-br from-rose-600/20 via-purple-600/15 to-transparent rounded-full blur-[140px] animate-glow" style="animation-delay: -2s;"></div>
+    <div id="blob-3" class="absolute -bottom-40 left-1/4 w-[600px] h-[600px] bg-gradient-to-br from-amber-600/20 via-emerald-600/15 to-transparent rounded-full blur-[150px] animate-glow" style="animation-delay: -4s;"></div>
+    <div class="absolute inset-0 bg-grid-pattern opacity-70"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- TOP HEADER -->
+    <header class="p-5 sm:p-6 rounded-3xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-2xl shadow-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative overflow-hidden group">
+      
+      <!-- Animated Neon Rainbow Header Line -->
+      <div class="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-cyan-500 via-rose-500 via-amber-400 to-emerald-400 bg-[length:200%_auto] animate-border-dance"></div>
+
+      <!-- Left: Logo & Host Details -->
+      <div class="flex items-center space-x-4">
+        <div class="relative flex-shrink-0">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 via-rose-500 to-cyan-400 p-[2px] shadow-lg shadow-cyan-500/30 animate-float">
+            <div class="w-full h-full bg-[#0a0f1d] rounded-[14px] flex items-center justify-center">
+              <svg class="w-7 h-7 text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.7)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+          </div>
+          <span class="absolute -bottom-1 -right-1 flex h-4 w-4">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-[#0a0f1d]"></span>
+          </span>
+        </div>
+
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-cyan-400 bg-clip-text text-transparent font-display">
+              Morning Intelligence Briefing
+            </h1>
+            <span class="px-2.5 py-0.5 text-[11px] font-bold bg-cyan-950/90 text-cyan-300 border border-cyan-700/80 rounded-full font-mono tracking-wide shadow-lg shadow-cyan-950/50">
+              MUMBAI &bull; 09:00 AM IST
+            </span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 text-xs text-slate-400 font-mono mt-1">
+            <span class="text-slate-200 font-semibold flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400"></span>
+              {{ server.hostname }}
+            </span>
+            <span>&bull;</span>
+            <span class="text-slate-400">Ubuntu 24.04</span>
+            <span>&bull;</span>
+            <span class="text-emerald-400 font-medium">LAN/Tailscale: {{ server.ip_address }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Interactive Controls, Color Themes, Audio & Clock -->
+      <div class="flex flex-wrap items-center gap-2.5">
+        
+        <!-- Interactive Theme Switcher -->
+        <div class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs font-mono">
+          <span class="text-[10px] text-slate-500 uppercase mr-1">Theme:</span>
+          <button onclick="setTheme('cyber')" title="Cyber Neon" class="w-4 h-4 rounded-full bg-cyan-400 hover:scale-125 transition ring-1 ring-cyan-300"></button>
+          <button onclick="setTheme('gold')" title="Imperial Gold" class="w-4 h-4 rounded-full bg-amber-400 hover:scale-125 transition ring-1 ring-amber-300"></button>
+          <button onclick="setTheme('crimson')" title="Tokyo Crimson" class="w-4 h-4 rounded-full bg-rose-500 hover:scale-125 transition ring-1 ring-rose-400"></button>
+          <button onclick="setTheme('aurora')" title="Ocean Aurora" class="w-4 h-4 rounded-full bg-emerald-400 hover:scale-125 transition ring-1 ring-emerald-300"></button>
+        </div>
+
+        <!-- 1-Click Audio Player -->
+        <button id="audio-brief-btn" onclick="toggleAudioBriefing()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-950 via-slate-900 to-indigo-950 hover:from-cyan-900 hover:to-indigo-900 border border-cyan-600/60 text-cyan-300 hover:text-white transition shadow-lg shadow-cyan-950/50 flex items-center gap-2 text-xs font-mono font-semibold group active:scale-95">
+          <span id="audio-icon" class="p-1 rounded-lg bg-cyan-500/20 text-cyan-400 group-hover:scale-110 transition-transform">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+            </svg>
+          </span>
+          <span id="audio-text">Audio Brief</span>
+          <div id="audio-wave" class="hidden items-end gap-[2px] h-4">
+            <div class="w-[3px] bg-cyan-400 rounded-full animate-equalizer"></div>
+            <div class="w-[3px] bg-cyan-400 rounded-full animate-equalizer" style="animation-delay: 0.2s"></div>
+            <div class="w-[3px] bg-cyan-400 rounded-full animate-equalizer" style="animation-delay: 0.4s"></div>
+            <div class="w-[3px] bg-cyan-400 rounded-full animate-equalizer" style="animation-delay: 0.1s"></div>
+          </div>
+        </button>
+
+        <!-- Live Clock -->
+        <div class="px-3 py-2 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-200 text-xs font-mono flex items-center gap-2 shadow-inner">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+          <div id="live-clock" class="font-bold text-white tracking-wider">--:--:-- IST</div>
+        </div>
+
+        <!-- Refresh Button -->
+        <button onclick="location.reload()" title="Refresh" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 transition shadow-md active:scale-95 group">
+          <svg class="w-4 h-4 text-cyan-400 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- COLORFUL BREAKING NEWS MARQUEE -->
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-rose-950/40 via-purple-950/30 to-cyan-950/40 border border-slate-800/80 backdrop-blur-md py-2.5 px-4 flex items-center shadow-xl">
+      <div class="flex items-center gap-2 flex-shrink-0 mr-4 z-10 bg-rose-950/90 px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold text-rose-300 border border-rose-700/60 shadow-md shadow-rose-950/50">
+        <span class="w-2 h-2 rounded-full bg-rose-400 animate-ping"></span>
+        FLASH INTEL
+      </div>
+      <div class="overflow-hidden whitespace-nowrap flex w-full">
+        <div class="inline-flex animate-marquee space-x-8 text-xs font-mono text-slate-200">
+          {% for item in news.geopolitics %}
+          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-cyan-300" onclick="openStoryModal('{{ item.title | replace("'", "\\'") }}', '{{ item.source }}', '{{ item.link }}', '{{ item.published }}', 'Geopolitics')">
+            <span class="text-rose-400 font-bold">&bull;</span>
+            <span class="text-rose-300 font-semibold">[{{ item.source }}]</span>
+            <span>{{ item.title }}</span>
+          </span>
+          {% endfor %}
+          {% for item in news.finance %}
+          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-emerald-300" onclick="openStoryModal('{{ item.title | replace("'", "\\'") }}', '{{ item.source }}', '{{ item.link }}', '{{ item.published }}', 'Finance')">
+            <span class="text-emerald-400 font-bold">&bull;</span>
+            <span class="text-emerald-300 font-semibold">[{{ item.source }}]</span>
+            <span>{{ item.title }}</span>
+          </span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- VIBRANT HERO CARDS ROW (5-CARD COLORFUL GRID) -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      
+      <!-- 1. 24K Gold Card (Radiant Amber/Gold) -->
+      <div class="neon-card rounded-3xl bg-gradient-to-b from-amber-500/15 via-slate-900/90 to-slate-900/95 border border-amber-500/40 hover:border-amber-400 p-5 shadow-xl shadow-amber-950/30 transition-all duration-300 hover:-translate-y-1.5 group">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center space-x-2">
+            <span class="p-2 bg-gradient-to-br from-amber-400 to-yellow-600 rounded-xl text-slate-950 font-bold text-sm shadow-md shadow-amber-500/30">🪙</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-300 font-mono">24K Gold (Mumbai)</span>
+          </div>
+          <button onclick="openGoldCalculator()" title="Open Weight Calculator" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-900/70 text-amber-200 border border-amber-600/60 hover:bg-amber-800 transition flex items-center gap-1 font-semibold">
+            <span>🧮 Calc</span>
+          </button>
+        </div>
+        <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300 group-hover:scale-105 transition-transform origin-left">
+          {{ metals.gold_10g_inr }}
+        </div>
+        <div class="text-[11px] text-slate-300 font-mono mt-3 pt-2 border-t border-amber-900/40 flex justify-between items-center">
+          <span>22K: <strong class="text-amber-400">{{ metals.gold_10g_22k_inr }}</strong></span>
+          <span class="text-slate-400 font-medium">Spot: ${{ metals.gold_usd }}/oz</span>
+        </div>
+      </div>
+
+      <!-- 2. Silver Card (Radiant Platinum/Icy Cyan) -->
+      <div class="neon-card rounded-3xl bg-gradient-to-b from-sky-500/15 via-slate-900/90 to-slate-900/95 border border-sky-400/40 hover:border-sky-300 p-5 shadow-xl shadow-sky-950/30 transition-all duration-300 hover:-translate-y-1.5 group">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center space-x-2">
+            <span class="p-2 bg-gradient-to-br from-slate-200 to-sky-400 rounded-xl text-slate-950 font-bold text-sm shadow-md shadow-sky-500/30">🥈</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-sky-200 font-mono">Silver 1kg (Mumbai)</span>
+          </div>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-sky-950/80 text-sky-300 border border-sky-700/60 font-semibold">1KG BAR</span>
+        </div>
+        <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-sky-100 to-slate-200 group-hover:scale-105 transition-transform origin-left">
+          {{ metals.silver_1kg_inr }}
+        </div>
+        <div class="text-[11px] text-slate-300 font-mono mt-3 pt-2 border-t border-sky-900/40 flex justify-between items-center">
+          <span>Spot: ${{ metals.silver_usd }}/oz</span>
+          <span class="text-sky-400 font-medium">1000g Bullion</span>
+        </div>
+      </div>
+
+      <!-- 3. Forex & Fuel (Vibrant Emerald / Mint) -->
+      <div class="neon-card rounded-3xl bg-gradient-to-b from-emerald-500/15 via-slate-900/90 to-slate-900/95 border border-emerald-500/40 hover:border-emerald-400 p-5 shadow-xl shadow-emerald-950/30 transition-all duration-300 hover:-translate-y-1.5 group">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center space-x-2">
+            <span class="p-2 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-xl text-slate-950 font-bold text-sm shadow-md shadow-emerald-500/30">💵</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-300 font-mono">USD &bull; INR</span>
+          </div>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-700/60 font-semibold">LIVE</span>
+        </div>
+        <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 via-mint-100 to-emerald-400 group-hover:scale-105 transition-transform origin-left">
+          {{ metals.usd_inr_formatted }}
+        </div>
+        <div class="text-[11px] text-slate-300 font-mono mt-3 pt-2 border-t border-emerald-900/40 flex justify-between items-center">
+          <span>Brent: <strong>${{ metals.brent_oil_usd }}/bbl</strong></span>
+          <span class="text-emerald-400 font-medium">Petrol: {{ metals.petrol_mumbai }}</span>
+        </div>
+      </div>
+
+      <!-- 4. Crypto Spot (Neon Fuchsia / Violet) -->
+      <div class="neon-card rounded-3xl bg-gradient-to-b from-purple-500/15 via-slate-900/90 to-slate-900/95 border border-purple-500/40 hover:border-purple-400 p-5 shadow-xl shadow-purple-950/30 transition-all duration-300 hover:-translate-y-1.5 group">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center space-x-2">
+            <span class="p-2 bg-gradient-to-br from-purple-400 to-fuchsia-600 rounded-xl text-white font-bold text-sm shadow-md shadow-purple-500/30">⚡</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-purple-300 font-mono">Crypto Spot</span>
+          </div>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-700/60 font-semibold">COIN</span>
+        </div>
+        <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-pink-100 to-fuchsia-400 group-hover:scale-105 transition-transform origin-left">
+          {{ metals.btc_inr }}
+        </div>
+        <div class="text-[11px] text-slate-300 font-mono mt-3 pt-2 border-t border-purple-900/40 flex justify-between items-center">
+          <span>BTC Live</span>
+          <span class="text-fuchsia-400 font-medium">ETH: {{ metals.eth_inr }}</span>
+        </div>
+      </div>
+
+      <!-- 5. Mumbai Weather & AQI (Vivid Sunset/Sky Blue) -->
+      <div class="neon-card rounded-3xl bg-gradient-to-b from-cyan-500/15 via-slate-900/90 to-slate-900/95 border border-cyan-500/40 hover:border-cyan-400 p-5 shadow-xl shadow-cyan-950/30 transition-all duration-300 hover:-translate-y-1.5 group">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]">{{ weather.icon }}</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-cyan-300 font-mono">Mumbai Weather</span>
+          </div>
+          <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-{{ weather.aqi_color }}-950/90 text-{{ weather.aqi_color }}-300 border border-{{ weather.aqi_color }}-700/70 font-bold shadow-md shadow-{{ weather.aqi_color }}-950/60">
+            AQI {{ weather.aqi_val }}
+          </span>
+        </div>
+        <div class="flex items-baseline justify-between">
+          <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-cyan-100">
+            {{ weather.temp_c }}°C
+          </div>
+          <div class="text-xs font-mono text-cyan-300/80 font-semibold">{{ weather.condition }}</div>
+        </div>
+        <div class="text-[10px] text-slate-300 font-mono mt-3 pt-2 border-t border-cyan-900/40 flex justify-between items-center">
+          <span>🌅 {{ weather.sunrise }}</span>
+          <span>🌇 {{ weather.sunset }}</span>
+          <span class="text-cyan-400">💧 {{ weather.humidity }}%</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- HOMELAB & SYSTEM TELEMETRY DOCK -->
+    <section class="p-4 rounded-3xl bg-gradient-to-r from-slate-900/80 via-slate-900/60 to-slate-900/80 border border-slate-800/90 backdrop-blur-xl flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs shadow-xl">
+      
+      <!-- System Telemetry with Colorful Badges -->
+      <div class="flex flex-wrap items-center gap-4 sm:gap-6 w-full md:w-auto">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+          <span class="text-slate-400">CPU:</span>
+          <strong class="text-cyan-300 font-bold">{{ server.cpu_percent }}%</strong>
+          <span class="text-slate-500">({{ server.cpu_temp }})</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span class="text-slate-400">RAM:</span>
+          <strong class="text-emerald-300 font-bold">{{ server.ram_percent }}%</strong>
+          <span class="text-slate-500">({{ server.ram_used_gb }}/{{ server.ram_total_gb }} GB)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          <span class="text-slate-400">Disk (/):</span>
+          <strong class="text-amber-300 font-bold">{{ server.disk_percent }}%</strong>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-slate-400">Bandwidth:</span>
+          <span class="text-slate-300">↑{{ server.net_tx_gb }}G ↓{{ server.net_rx_gb }}G</span>
+        </div>
+        {% if server.docker.active %}
+        <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-950/80 text-blue-300 border border-blue-700/60 shadow-sm">
+          <span>🐳 Docker:</span>
+          <strong>{{ server.docker.running }}/{{ server.docker.total }} UP</strong>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Quick Homelab Launch Bookmarks -->
+      <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto justify-start md:justify-end">
+        <span class="text-[11px] text-slate-500 uppercase tracking-wider mr-1">Homelab:</span>
+        <a href="http://{{ server.ip_address }}:80" target="_blank" class="px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-cyan-950/80 text-slate-300 hover:text-cyan-300 border border-slate-700/60 hover:border-cyan-700/60 transition shadow-sm">🛡️ Pi-hole</a>
+        <a href="http://{{ server.ip_address }}:32400/web" target="_blank" class="px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-amber-950/80 text-slate-300 hover:text-amber-300 border border-slate-700/60 hover:border-amber-700/60 transition shadow-sm">🎬 Plex</a>
+        <a href="http://{{ server.ip_address }}:9000" target="_blank" class="px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-blue-950/80 text-slate-300 hover:text-blue-300 border border-slate-700/60 hover:border-blue-700/60 transition shadow-sm">📦 Portainer</a>
+        <a href="https://login.tailscale.com/admin/machines" target="_blank" class="px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-emerald-950/80 text-slate-300 hover:text-emerald-300 border border-slate-700/60 hover:border-emerald-700/60 transition shadow-sm">⚡ Tailscale</a>
+      </div>
+    </section>
+
+    <!-- SEARCH & INTERACTIVE VIEW SWITCHER (GRID vs FEED) -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-3xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl shadow-xl">
+      <div class="relative w-full sm:w-96">
+        <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input 
+          type="text" 
+          id="headline-search" 
+          placeholder="Search headlines in real-time..."
+          class="w-full pl-10 pr-4 py-2 bg-slate-950/80 border border-slate-800 rounded-2xl text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/30 transition"
+        >
+      </div>
+
+      <!-- Category Filter Pills + View Switcher -->
+      <div class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto text-xs font-mono pb-1 sm:pb-0 custom-scrollbar">
+        <!-- View Toggle Buttons -->
+        <div class="flex items-center p-1 rounded-xl bg-slate-950/80 border border-slate-800 mr-1">
+          <button id="view-grid-btn" onclick="setViewMode('grid')" title="Grid View" class="px-2.5 py-1 rounded-lg bg-cyan-950 text-cyan-300 font-semibold transition">⊞ Grid</button>
+          <button id="view-feed-btn" onclick="setViewMode('feed')" title="Unified Stream Feed" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">☰ Stream</button>
+        </div>
+
+        <button onclick="filterCategory('all', this)" class="cat-pill px-3 py-1.5 rounded-xl bg-cyan-950 text-cyan-300 border border-cyan-700/80 font-bold transition">All</button>
+        <button onclick="filterCategory('geopolitics', this)" class="cat-pill px-3 py-1.5 rounded-xl bg-slate-800/80 text-rose-300 border border-slate-700 hover:border-rose-500 transition">Geopolitics</button>
+        <button onclick="filterCategory('finance', this)" class="cat-pill px-3 py-1.5 rounded-xl bg-slate-800/80 text-emerald-300 border border-slate-700 hover:border-emerald-500 transition">Finance</button>
+        <button onclick="filterCategory('sports', this)" class="cat-pill px-3 py-1.5 rounded-xl bg-slate-800/80 text-sky-300 border border-slate-700 hover:border-sky-500 transition">Sports</button>
+        <button onclick="filterCategory('jobs', this)" class="cat-pill px-3 py-1.5 rounded-xl bg-slate-800/80 text-purple-300 border border-slate-700 hover:border-purple-500 transition">AI Jobs</button>
+        <button onclick="filterCategory('saved', this)" class="cat-pill px-3 py-1.5 rounded-xl bg-slate-800/80 text-amber-300 border border-slate-700 hover:border-amber-500 transition">⭐ Saved (<span id="saved-count">0</span>)</button>
+      </div>
+    </div>
+
+    <!-- MAIN 4-COLUMN CONTENT GRID (OR STREAM VIEW) -->
+    <main id="content-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- SECTION 1: GEOPOLITICS (ROSE/CRIMSON) -->
+      <section data-category="geopolitics" class="news-section flex flex-col rounded-3xl bg-gradient-to-b from-rose-950/20 via-slate-900/80 to-slate-900/90 border border-rose-900/40 hover:border-rose-500/60 backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-300">
+        <div class="flex items-center justify-between p-4 sm:p-5 border-b border-rose-950/60 bg-gradient-to-r from-rose-950/40 via-slate-900/80 to-transparent">
+          <div class="flex items-center space-x-3.5">
+            <span class="flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-500 to-red-600 text-white font-bold shadow-lg shadow-rose-950/60">
+              🌍
+            </span>
+            <div>
+              <h2 class="text-base sm:text-lg font-bold text-white font-display">Geopolitics & Middle East</h2>
+              <p class="text-xs text-rose-300/70 font-mono">Iran, USA & Strategic Conflicts &bull; 24h Intel</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono font-bold px-3 py-1 rounded-full bg-rose-950 text-rose-300 border border-rose-700/60 shadow-sm shadow-rose-900/50">
+            {{ news.geopolitics | length }} INTEL
+          </span>
+        </div>
+
+        <div class="divide-y divide-rose-950/30 flex-1 p-2 sm:p-3 space-y-1">
+          {% for item in news.geopolitics %}
+          <article data-id="geo-{{ loop.index }}" class="article-item p-3.5 rounded-2xl hover:bg-rose-950/20 transition-all duration-200 group border border-transparent hover:border-rose-800/40 hover:shadow-xl relative">
+            <div class="flex items-start justify-between gap-3">
+              <div onclick="openStoryModal('{{ item.title | replace("'", "\\'") }}', '{{ item.source }}', '{{ item.link }}', '{{ item.published }}', 'Geopolitics')" class="cursor-pointer block flex-1">
+                <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-rose-300 leading-snug line-clamp-2 transition-colors">
+                  {{ item.title }}
+                </h3>
+              </div>
+              <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
+                <button onclick="toggleBookmark('geo-{{ loop.index }}', this)" title="Save for later" class="bookmark-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                </button>
+                <button onclick="toggleRead('geo-{{ loop.index }}', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
+              <span class="px-2 py-0.5 rounded-md bg-rose-950/60 text-rose-300 border border-rose-800/50 font-medium">
+                {{ item.source }}
+              </span>
+              <span>&bull;</span>
+              <span class="text-slate-400">{{ item.published }}</span>
+              <a href="{{ item.link }}" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span class="text-[10px] font-bold uppercase">Source →</span>
+              </a>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- SECTION 2: MARKETS & FINANCE (EMERALD/MINT) -->
+      <section data-category="finance" class="news-section flex flex-col rounded-3xl bg-gradient-to-b from-emerald-950/20 via-slate-900/80 to-slate-900/90 border border-emerald-900/40 hover:border-emerald-500/60 backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-300">
+        <div class="flex items-center justify-between p-4 sm:p-5 border-b border-emerald-950/60 bg-gradient-to-r from-emerald-950/40 via-slate-900/80 to-transparent">
+          <div class="flex items-center space-x-3.5">
+            <span class="flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold shadow-lg shadow-emerald-950/60">
+              📈
+            </span>
+            <div>
+              <h2 class="text-base sm:text-lg font-bold text-white font-display">Financial & Market Updates</h2>
+              <p class="text-xs text-emerald-300/70 font-mono">Economic Times Markets & Macro Trends</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/60 shadow-sm shadow-emerald-900/50">
+            {{ news.finance | length }} HEADLINES
+          </span>
+        </div>
+
+        <div class="divide-y divide-emerald-950/30 flex-1 p-2 sm:p-3 space-y-1">
+          {% for item in news.finance %}
+          <article data-id="fin-{{ loop.index }}" class="article-item p-3.5 rounded-2xl hover:bg-emerald-950/20 transition-all duration-200 group border border-transparent hover:border-emerald-800/40 hover:shadow-xl relative">
+            <div class="flex items-start justify-between gap-3">
+              <div onclick="openStoryModal('{{ item.title | replace("'", "\\'") }}', '{{ item.source }}', '{{ item.link }}', '{{ item.published }}', 'Finance')" class="cursor-pointer block flex-1">
+                <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-emerald-300 leading-snug line-clamp-2 transition-colors">
+                  {{ item.title }}
+                </h3>
+              </div>
+              <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
+                <button onclick="toggleBookmark('fin-{{ loop.index }}', this)" title="Save for later" class="bookmark-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                </button>
+                <button onclick="toggleRead('fin-{{ loop.index }}', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
+              <span class="px-2 py-0.5 rounded-md bg-emerald-950/60 text-emerald-300 border border-emerald-800/50 font-medium">
+                {{ item.source }}
+              </span>
+              <span>&bull;</span>
+              <span class="text-slate-400">{{ item.published }}</span>
+              <a href="{{ item.link }}" target="_blank" class="ml-auto flex items-center gap-1 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span class="text-[10px] font-bold uppercase">Source →</span>
+              </a>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- SECTION 3: SPORTS (CYAN/SKY) -->
+      <section data-category="sports" class="news-section flex flex-col rounded-3xl bg-gradient-to-b from-sky-950/20 via-slate-900/80 to-slate-900/90 border border-sky-900/40 hover:border-sky-500/60 backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-300">
+        <div class="flex items-center justify-between p-4 sm:p-5 border-b border-sky-950/60 bg-gradient-to-r from-sky-950/40 via-slate-900/80 to-transparent">
+          <div class="flex items-center space-x-3.5">
+            <span class="flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white font-bold shadow-lg shadow-sky-950/60">
+              🏏
+            </span>
+            <div>
+              <h2 class="text-base sm:text-lg font-bold text-white font-display">Sports Desk (Cricket & Football)</h2>
+              <p class="text-xs text-sky-300/70 font-mono">ESPNcricinfo & BBC Football</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono font-bold px-3 py-1 rounded-full bg-sky-950 text-sky-300 border border-sky-700/60 shadow-sm shadow-sky-900/50">
+            {{ news.sports | length }} STORIES
+          </span>
+        </div>
+
+        <div class="divide-y divide-sky-950/30 flex-1 p-2 sm:p-3 space-y-1">
+          {% for item in news.sports %}
+          <article data-id="spt-{{ loop.index }}" class="article-item p-3.5 rounded-2xl hover:bg-sky-950/20 transition-all duration-200 group border border-transparent hover:border-sky-800/40 hover:shadow-xl relative">
+            <div class="flex items-start justify-between gap-3">
+              <div onclick="openStoryModal('{{ item.title | replace("'", "\\'") }}', '{{ item.source }}', '{{ item.link }}', '{{ item.published }}', 'Sports')" class="cursor-pointer block flex-1">
+                <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-sky-300 leading-snug line-clamp-2 transition-colors">
+                  {{ item.title }}
+                </h3>
+              </div>
+              <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
+                <button onclick="toggleBookmark('spt-{{ loop.index }}', this)" title="Save for later" class="bookmark-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                </button>
+                <button onclick="toggleRead('spt-{{ loop.index }}', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
+              <span class="px-2 py-0.5 rounded-md bg-sky-950/60 text-sky-300 border border-sky-800/50 font-medium">
+                {{ item.source }}
+              </span>
+              <span>&bull;</span>
+              <span class="text-slate-400">{{ item.published }}</span>
+              <a href="{{ item.link }}" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span class="text-[10px] font-bold uppercase">Source →</span>
+              </a>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- SECTION 4: IT & AI JOBS (PURPLE/VIOLET) -->
+      <section data-category="jobs" class="news-section flex flex-col rounded-3xl bg-gradient-to-b from-purple-950/20 via-slate-900/80 to-slate-900/90 border border-purple-900/40 hover:border-purple-500/60 backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-300">
+        <div class="flex items-center justify-between p-4 sm:p-5 border-b border-purple-950/60 bg-gradient-to-r from-purple-950/40 via-slate-900/80 to-transparent">
+          <div class="flex items-center space-x-3.5">
+            <span class="flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white font-bold shadow-lg shadow-purple-950/60">
+              💼
+            </span>
+            <div>
+              <h2 class="text-base sm:text-lg font-bold text-white font-display">IT Requirements & AI Jobs</h2>
+              <p class="text-xs text-purple-300/70 font-mono">AI Engineer, Java Lead, GenAI & Remote</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono font-bold px-3 py-1 rounded-full bg-purple-950 text-purple-300 border border-purple-700/60 shadow-sm shadow-purple-900/50">
+            {{ news.jobs | length }} ROLES
+          </span>
+        </div>
+
+        <div class="divide-y divide-purple-950/30 flex-1 p-2 sm:p-3 space-y-1">
+          {% for item in news.jobs %}
+          <article data-id="job-{{ loop.index }}" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
+            <div class="flex items-start justify-between gap-3">
+              <div onclick="openStoryModal('{{ item.title | replace("'", "\\'") }}', '{{ item.source }}', '{{ item.link }}', '{{ item.published }}', 'AI Careers')" class="cursor-pointer block flex-1">
+                <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-purple-300 leading-snug line-clamp-2 transition-colors">
+                  {{ item.title }}
+                </h3>
+              </div>
+              <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
+                <button onclick="toggleBookmark('job-{{ loop.index }}', this)" title="Save for later" class="bookmark-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                </button>
+                <button onclick="toggleRead('job-{{ loop.index }}', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
+              <span class="px-2 py-0.5 rounded-md bg-purple-950/60 text-purple-300 border border-purple-800/50 font-medium">
+                {{ item.source }}
+              </span>
+              <span>&bull;</span>
+              <span class="text-slate-400">{{ item.published }}</span>
+              <a href="{{ item.link }}" target="_blank" class="ml-auto flex items-center gap-1 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span class="text-[10px] font-bold uppercase">Apply →</span>
+              </a>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-12 p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 font-mono shadow-2xl">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400"></span>
+        <span>Host: <strong class="text-slate-200">{{ server.hostname }}</strong> ({{ server.ip_address }}) &bull; Zero-Database Briefing Engine</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-4">
+        <span>Cadence: <strong class="text-slate-200">Daily 09:00 AM IST</strong></span>
+        <span>Port: <strong class="text-cyan-400">8089</strong></span>
+        <span>Auto-Refresh: <strong class="text-slate-200">300s</strong></span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- INTERACTIVE MODAL 1: GOLD WEIGHT CALCULATOR (MUMBAI RATES) -->
+  <div id="gold-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-amber-500/50 rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🪙</span>
+          <h3 class="text-lg font-bold text-amber-300 font-display">Mumbai Gold Calculator</h3>
+        </div>
+        <button onclick="closeGoldCalculator()" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="space-y-3 font-mono text-xs">
+        <label class="text-slate-400 block">Select Gold Weight:</label>
+        <div class="grid grid-cols-4 gap-2">
+          <button onclick="calcGold(1)" class="calc-btn p-2 rounded-xl bg-slate-800 hover:bg-amber-950 border border-slate-700 hover:border-amber-500 text-slate-200">1 Gram</button>
+          <button onclick="calcGold(8)" class="calc-btn p-2 rounded-xl bg-slate-800 hover:bg-amber-950 border border-slate-700 hover:border-amber-500 text-slate-200">8g (Sovereign)</button>
+          <button onclick="calcGold(10)" class="calc-btn p-2 rounded-xl bg-amber-950 border border-amber-500 text-amber-200 font-bold">10 Grams</button>
+          <button onclick="calcGold(50)" class="calc-btn p-2 rounded-xl bg-slate-800 hover:bg-amber-950 border border-slate-700 hover:border-amber-500 text-slate-200">50 Grams</button>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-amber-950/30 border border-amber-900/50 space-y-2 font-mono">
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-slate-300 font-semibold">24K Pure Gold:</span>
+          <span id="calc-24k-val" class="text-amber-300 font-bold text-base">{{ metals.gold_10g_inr }}</span>
+        </div>
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-slate-300 font-semibold">22K Hallmarked:</span>
+          <span id="calc-22k-val" class="text-amber-400 font-bold text-base">{{ metals.gold_10g_22k_inr }}</span>
+        </div>
+        <div class="text-[10px] text-slate-400 pt-1 border-t border-amber-900/40">
+          Based on current Mumbai spot benchmark + standard duties.
+        </div>
+      </div>
+
+      <button onclick="closeGoldCalculator()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold font-mono text-xs transition">
+        Done
+      </button>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE MODAL 2: STORY QUICK READER -->
+  <div id="story-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-cyan-500/50 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <span id="modal-category" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-700/60">News</span>
+        <button onclick="closeStoryModal()" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div>
+        <h3 id="modal-title" class="text-lg font-bold text-white leading-snug">Story Title</h3>
+        <div class="flex items-center gap-2 mt-2 font-mono text-xs text-slate-400">
+          <span id="modal-source" class="text-slate-300 font-semibold">Source</span>
+          <span>&bull;</span>
+          <span id="modal-published">Time</span>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 text-xs font-mono text-slate-300 leading-relaxed">
+        This headline was indexed live for today's briefing. You can listen to it read aloud or open the full story on the publisher's website.
+      </div>
+
+      <div class="flex items-center gap-3 pt-2">
+        <button onclick="speakCurrentStory()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-300 font-mono text-xs font-bold transition flex items-center justify-center gap-2">
+          <span>🔊</span> Listen
+        </button>
+        <a id="modal-link" href="#" target="_blank" class="flex-1 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono text-xs font-bold transition flex items-center justify-center gap-2">
+          <span>Read Source</span> ↗
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIENT-SIDE DYNAMIC SCRIPT -->
+  <script>
+    // 1. Live IST Clock
+    function updateLiveClock() {
+      const now = new Date();
+      const options = { timeZone: 'Asia/Kolkata', hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+      const el = document.getElementById('live-clock');
+      if (el) el.textContent = now.toLocaleTimeString('en-US', options) + ' IST';
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
+    // 2. Interactive Theme Switcher
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      const b1 = document.getElementById('blob-1');
+      const b2 = document.getElementById('blob-2');
+      const b3 = document.getElementById('blob-3');
+      if (theme === 'gold') {
+        b1.className = 'absolute -top-40 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-amber-600/30 to-yellow-600/20 rounded-full blur-[130px] animate-glow';
+        b2.className = 'absolute top-1/3 -right-40 w-[550px] h-[550px] bg-gradient-to-br from-emerald-600/20 to-teal-600/15 rounded-full blur-[140px] animate-glow';
+      } else if (theme === 'crimson') {
+        b1.className = 'absolute -top-40 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-rose-600/30 to-red-600/20 rounded-full blur-[130px] animate-glow';
+        b2.className = 'absolute top-1/3 -right-40 w-[550px] h-[550px] bg-gradient-to-br from-purple-600/25 to-indigo-600/15 rounded-full blur-[140px] animate-glow';
+      } else if (theme === 'aurora') {
+        b1.className = 'absolute -top-40 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-emerald-600/30 to-teal-600/20 rounded-full blur-[130px] animate-glow';
+        b2.className = 'absolute top-1/3 -right-40 w-[550px] h-[550px] bg-gradient-to-br from-cyan-600/25 to-blue-600/15 rounded-full blur-[140px] animate-glow';
+      } else {
+        b1.className = 'absolute -top-40 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-cyan-600/25 via-blue-600/15 to-transparent rounded-full blur-[130px] animate-glow';
+        b2.className = 'absolute top-1/3 -right-40 w-[550px] h-[550px] bg-gradient-to-br from-rose-600/20 via-purple-600/15 to-transparent rounded-full blur-[140px] animate-glow';
+      }
+      localStorage.setItem('mb_theme', theme);
+    }
+    const savedTheme = localStorage.getItem('mb_theme') || 'cyber';
+    setTheme(savedTheme);
+
+    // 3. View Switcher: Grid vs Unified Stream
+    function setViewMode(mode) {
+      const container = document.getElementById('content-container');
+      const gridBtn = document.getElementById('view-grid-btn');
+      const feedBtn = document.getElementById('view-feed-btn');
+      if (mode === 'feed') {
+        container.classList.remove('md:grid-cols-2');
+        container.classList.add('grid-cols-1');
+        feedBtn.classList.add('bg-cyan-950', 'text-cyan-300', 'font-semibold');
+        gridBtn.classList.remove('bg-cyan-950', 'text-cyan-300', 'font-semibold');
+        gridBtn.classList.add('text-slate-400');
+      } else {
+        container.classList.remove('grid-cols-1');
+        container.classList.add('md:grid-cols-2');
+        gridBtn.classList.add('bg-cyan-950', 'text-cyan-300', 'font-semibold');
+        feedBtn.classList.remove('bg-cyan-950', 'text-cyan-300', 'font-semibold');
+        feedBtn.classList.add('text-slate-400');
+      }
+    }
+
+    // 4. Headline Search
+    const searchInput = document.getElementById('headline-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const articles = document.querySelectorAll('.article-item');
+        articles.forEach(article => {
+          const title = article.querySelector('.article-title')?.textContent.toLowerCase() || '';
+          article.style.display = (!query || title.includes(query)) ? 'block' : 'none';
+        });
+      });
+    }
+
+    // 5. Category Filters & Saved
+    function filterCategory(cat, btn) {
+      const sections = document.querySelectorAll('.news-section');
+      const pills = document.querySelectorAll('.cat-pill');
+      const articles = document.querySelectorAll('.article-item');
+      
+      pills.forEach(p => {
+        p.classList.remove('bg-cyan-950', 'text-cyan-300', 'border-cyan-700/80', 'font-bold');
+        p.classList.add('bg-slate-800/80', 'text-slate-300', 'border-slate-700');
+      });
+      if (btn) {
+        btn.classList.remove('bg-slate-800/80', 'text-slate-300', 'border-slate-700');
+        btn.classList.add('bg-cyan-950', 'text-cyan-300', 'border-cyan-700/80', 'font-bold');
+      }
+
+      if (cat === 'saved') {
+        sections.forEach(s => s.style.display = 'flex');
+        const bookmarks = JSON.parse(localStorage.getItem('mb_bookmarks') || '[]');
+        articles.forEach(a => {
+          const id = a.getAttribute('data-id');
+          a.style.display = bookmarks.includes(id) ? 'block' : 'none';
+        });
+      } else {
+        articles.forEach(a => a.style.display = 'block');
+        sections.forEach(sec => {
+          sec.style.display = (cat === 'all' || sec.getAttribute('data-category') === cat) ? 'flex' : 'none';
+        });
+      }
+    }
+
+    // 6. Bookmarks & Read items
+    function getBookmarks() { return JSON.parse(localStorage.getItem('mb_bookmarks') || '[]'); }
+    function getReadItems() { return JSON.parse(localStorage.getItem('mb_read') || '[]'); }
+
+    function updateSavedCount() {
+      const el = document.getElementById('saved-count');
+      if (el) el.textContent = getBookmarks().length;
+    }
+
+    function toggleBookmark(id, btn) {
+      let b = getBookmarks();
+      if (b.includes(id)) {
+        b = b.filter(x => x !== id);
+        btn.classList.remove('text-amber-400');
+        btn.classList.add('text-slate-400');
+      } else {
+        b.push(id);
+        btn.classList.remove('text-slate-400');
+        btn.classList.add('text-amber-400');
+      }
+      localStorage.setItem('mb_bookmarks', JSON.stringify(b));
+      updateSavedCount();
+    }
+
+    function toggleRead(id, btn) {
+      let r = getReadItems();
+      const article = document.querySelector(`[data-id="${id}"]`);
+      if (r.includes(id)) {
+        r = r.filter(x => x !== id);
+        article?.classList.remove('is-read');
+        btn.classList.remove('text-emerald-400');
+        btn.classList.add('text-slate-400');
+      } else {
+        r.push(id);
+        article?.classList.add('is-read');
+        btn.classList.remove('text-slate-400');
+        btn.classList.add('text-emerald-400');
+      }
+      localStorage.setItem('mb_read', JSON.stringify(r));
+    }
+
+    // 7. Interactive Gold Weight Calculator (Mumbai IBJA)
+    const base10gRate = parseFloat("{{ metals.gold_10g_inr }}".replace(/[^0-9.]/g, '')) || 106241;
+    function openGoldCalculator() {
+      document.getElementById('gold-modal').classList.remove('hidden');
+      document.getElementById('gold-modal').classList.add('flex');
+    }
+    function closeGoldCalculator() {
+      document.getElementById('gold-modal').classList.add('hidden');
+      document.getElementById('gold-modal').classList.remove('flex');
+    }
+    function calcGold(grams) {
+      document.querySelectorAll('.calc-btn').forEach(b => {
+        b.classList.remove('bg-amber-950', 'border-amber-500', 'text-amber-200', 'font-bold');
+        b.classList.add('bg-slate-800', 'border-slate-700', 'text-slate-200');
+      });
+      event.target.classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-200');
+      event.target.classList.add('bg-amber-950', 'border-amber-500', 'text-amber-200', 'font-bold');
+
+      const ratePerGram = base10gRate / 10.0;
+      const total24k = ratePerGram * grams;
+      const total22k = (total24k * 22.0) / 24.0;
+
+      document.getElementById('calc-24k-val').textContent = '₹' + Math.round(total24k).toLocaleString('en-IN');
+      document.getElementById('calc-22k-val').textContent = '₹' + Math.round(total22k).toLocaleString('en-IN');
+    }
+
+    // 8. Story Modal Quick Reader
+    let currentStoryText = "";
+    function openStoryModal(title, source, link, pub, category) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-source').textContent = source;
+      document.getElementById('modal-published').textContent = pub;
+      document.getElementById('modal-category').textContent = category;
+      document.getElementById('modal-link').setAttribute('href', link);
+      currentStoryText = `${title}. Published by ${source}.`;
+      document.getElementById('story-modal').classList.remove('hidden');
+      document.getElementById('story-modal').classList.add('flex');
+    }
+    function closeStoryModal() {
+      document.getElementById('story-modal').classList.add('hidden');
+      document.getElementById('story-modal').classList.remove('flex');
+      window.speechSynthesis?.cancel();
+    }
+    function speakCurrentStory() {
+      if (!window.speechSynthesis || !currentStoryText) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(currentStoryText);
+      window.speechSynthesis.speak(utter);
+    }
+
+    // 9. Audio Briefing (Web Speech API)
+    let isSpeaking = false;
+    function toggleAudioBriefing() {
+      const synth = window.speechSynthesis;
+      if (!synth) { alert("Speech synthesis not supported on this device."); return; }
+      const btnText = document.getElementById('audio-text');
+      const wave = document.getElementById('audio-wave');
+
+      if (isSpeaking) {
+        synth.cancel();
+        isSpeaking = false;
+        if (btnText) btnText.textContent = "Audio Brief";
+        if (wave) { wave.classList.remove('flex'); wave.classList.add('hidden'); }
+        return;
+      }
+
+      let script = "Good morning Mumbai! Here is your Daily Intelligence Briefing. ";
+      script += "Today the temperature is {{ weather.temp_c }} degrees with {{ weather.condition }}, and the Air Quality Index is {{ weather.aqi_val }}. ";
+      script += "24 karat Gold in Mumbai is {{ metals.gold_10g_inr }} per 10 grams, 22 karat is {{ metals.gold_10g_22k_inr }}, and Silver is {{ metals.silver_1kg_inr }} per kilo. ";
+      
+      const geoItems = document.querySelectorAll('[data-category="geopolitics"] .article-title');
+      if (geoItems.length > 0) script += "Top Geopolitics: " + geoItems[0].textContent.trim() + ". ";
+      const finItems = document.querySelectorAll('[data-category="finance"] .article-title');
+      if (finItems.length > 0) script += "Top Market news: " + finItems[0].textContent.trim() + ". ";
+
+      script += "Have a productive and safe day ahead!";
+      const utter = new SpeechSynthesisUtterance(script);
+      utter.onstart = () => { isSpeaking = true; if (btnText) btnText.textContent = "Stop"; if (wave) { wave.classList.remove('hidden'); wave.classList.add('flex'); }};
+      utter.onend = utter.onerror = () => { isSpeaking = false; if (btnText) btnText.textContent = "Audio Brief"; if (wave) { wave.classList.remove('flex'); wave.classList.add('hidden'); }};
+      synth.speak(utter);
+    }
+
+    // Restore bookmarks & read state on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const b = getBookmarks();
+      const r = getReadItems();
+      b.forEach(id => {
+        const btn = document.querySelector(`[data-id="${id}"] .bookmark-btn`);
+        if (btn) { btn.classList.remove('text-slate-400'); btn.classList.add('text-amber-400'); }
+      });
+      r.forEach(id => {
+        const article = document.querySelector(`[data-id="${id}"]`);
+        const btn = document.querySelector(`[data-id="${id}"] .read-btn`);
+        if (article) article.classList.add('is-read');
+        if (btn) { btn.classList.remove('text-slate-400'); btn.classList.add('text-emerald-400'); }
+      });
+      updateSavedCount();
+    });
+  </script>
+
+</body>
+</html>

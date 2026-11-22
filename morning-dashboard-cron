@@ -1,0 +1,2 @@
+# 09:00 AM Daily Personal Intelligence Dashboard (Ubuntu 24.04)
+0 9 * * * /opt/morning-dashboard/venv/bin/python3 /opt/morning-dashboard/fetch_and_build.py -o /var/www/morning-dashboard/index.html --city "Mumbai" --lat 19.0760 --lon 72.8777 >> /var/log/morning-dashboard.log 2>&1
