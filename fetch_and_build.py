@@ -134,10 +134,19 @@ def get_metals_and_forex(mock_offline: bool = False) -> Dict[str, Any]:
     if not silver_usd:
         silver_usd = 31.80
 
-    # Mumbai Bullion Benchmark (IBJA/Zaveri Bazaar standard with standard import/GST benchmark)
-    gold_10g_inr = (gold_usd / TROY_OUNCE_TO_GRAMS) * 10.0 * usd_inr
+    # Indian Bullion Standard (IBJA & MCX Benchmark)
+    # India levies 6% Import Duty (5% BCD + 1% AIDC, revised Budget 2024) + 3% GST for retail landed gold
+    IMPORT_DUTY_FACTOR = 1.06  # 6% Customs Duty & Cess
+    GST_FACTOR = 1.03          # 3% Goods & Services Tax
+    
+    # Raw international unrefined parity
+    raw_gold_10g = (gold_usd / TROY_OUNCE_TO_GRAMS) * 10.0 * usd_inr
+    # Landed retail rate (with duty + GST)
+    gold_10g_inr = raw_gold_10g * IMPORT_DUTY_FACTOR * GST_FACTOR
     gold_10g_22k_inr = (gold_10g_inr * 22.0) / 24.0
-    silver_1kg_inr = (silver_usd / TROY_OUNCE_TO_GRAMS) * 1000.0 * usd_inr
+
+    raw_silver_1kg = (silver_usd / TROY_OUNCE_TO_GRAMS) * 1000.0 * usd_inr
+    silver_1kg_inr = raw_silver_1kg * IMPORT_DUTY_FACTOR * GST_FACTOR
 
     # 3. Crypto Spot Rates (CoinGecko)
     btc_inr_str = "₹78,40,000"
