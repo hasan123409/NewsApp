@@ -43,6 +43,10 @@ cp "${SCRIPT_SRC_DIR}/fetch_and_build.py" "${APP_DIR}/"
 cp "${SCRIPT_SRC_DIR}/template.html" "${APP_DIR}/"
 cp "${SCRIPT_SRC_DIR}/serve.py" "${APP_DIR}/"
 cp "${SCRIPT_SRC_DIR}/requirements.txt" "${APP_DIR}/"
+if [ -f "${SCRIPT_SRC_DIR}/profile.html" ]; then
+  cp "${SCRIPT_SRC_DIR}/profile.html" "${APP_DIR}/"
+  cp "${SCRIPT_SRC_DIR}/profile.html" "${WEB_DIR}/"
+fi
 if [ -f "${SCRIPT_SRC_DIR}/manifest.json" ]; then
   cp "${SCRIPT_SRC_DIR}/manifest.json" "${APP_DIR}/"
   cp "${SCRIPT_SRC_DIR}/manifest.json" "${WEB_DIR}/"

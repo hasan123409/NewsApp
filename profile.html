@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hasan | Senior Java Backend Developer & Homelab Architect</title>
+  
+  <!-- Tailwind CSS & Google Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            display: ['Cabinet Grotesk', 'sans-serif'],
+          },
+          animation: {
+            'glow': 'glow 5s ease-in-out infinite alternate',
+            'float': 'float 6s ease-in-out infinite',
+            'radar': 'radar 3s linear infinite',
+          },
+          keyframes: {
+            glow: {
+              '0%': { opacity: 0.35, transform: 'scale(1)' },
+              '100%': { opacity: 0.75, transform: 'scale(1.06)' }
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-6px)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #070a11; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #10b981; }
+
+    .bg-grid-pattern {
+      background-size: 32px 32px;
+      background-image: radial-gradient(circle, rgba(16, 185, 129, 0.06) 1px, transparent 1px);
+    }
+
+    .glass-card {
+      background: rgba(13, 19, 33, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(16, 185, 129, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px -10px rgba(16, 185, 129, 0.15);
+    }
+
+    .water-bottle.filled {
+      background: linear-gradient(180deg, rgba(6, 182, 212, 0.3) 0%, rgba(16, 185, 129, 0.4) 100%);
+      border-color: #10b981;
+      color: #34d399;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#070a11] text-slate-100 font-sans antialiased relative overflow-x-hidden selection:bg-emerald-500/30 selection:text-emerald-200">
+
+  <!-- AMBIENT GLOW MESH -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute -top-40 -left-40 w-[550px] h-[550px] bg-gradient-to-br from-emerald-600/20 via-teal-600/10 to-transparent rounded-full blur-[140px] animate-glow"></div>
+    <div class="absolute top-1/2 -right-40 w-[600px] h-[600px] bg-gradient-to-br from-cyan-600/15 via-blue-600/10 to-transparent rounded-full blur-[150px] animate-glow" style="animation-delay: -3s;"></div>
+    <div class="absolute inset-0 bg-grid-pattern opacity-60"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+
+    <!-- TOP NAVIGATION BAR -->
+    <nav class="flex items-center justify-between p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl shadow-xl">
+      <div class="flex items-center space-x-3">
+        <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="font-mono text-xs text-slate-300 font-semibold tracking-wide">hasan@navi-mumbai:~#</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="index.html" class="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition text-xs font-mono flex items-center gap-1.5 shadow-sm">
+          <span>📰</span>
+          <span>Morning Intelligence</span>
+        </a>
+        <a href="https://github.com/hasan123409" target="_blank" class="p-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        </a>
+      </div>
+    </nav>
+
+    <!-- HERO PROFILE CARD -->
+    <header class="glass-card rounded-3xl p-6 sm:p-8 relative overflow-hidden group">
+      <!-- Gradient Border Accent -->
+      <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400 to-cyan-400"></div>
+
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        
+        <div class="flex items-start sm:items-center space-x-5">
+          <!-- Avatar Icon -->
+          <div class="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 p-[2px] shadow-xl shadow-emerald-500/20 flex-shrink-0 animate-float">
+            <div class="w-full h-full bg-[#0a1120] rounded-[14px] flex items-center justify-center font-display font-extrabold text-2xl sm:text-3xl text-emerald-400">
+              HR
+            </div>
+          </div>
+
+          <div>
+            <div class="flex flex-wrap items-center gap-2.5">
+              <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white font-display">
+                Hasan
+              </h1>
+              <span class="text-xs sm:text-sm font-mono text-slate-400">
+                (Mohammed Hasan Nafees Rizvi)
+              </span>
+            </div>
+            
+            <div class="text-emerald-400 font-mono text-sm sm:text-base font-semibold mt-1 flex items-center gap-2">
+              <span>Senior Java & Spring Boot Backend Developer</span>
+              <span>&bull;</span>
+              <span class="text-cyan-400 flex items-center gap-1">📍 Navi Mumbai, India</span>
+            </div>
+
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mt-3 max-w-3xl">
+              Architecting high-throughput financial backend systems (<strong>payments</strong>, <strong>netting</strong>, <strong>billing</strong>, <strong>invoicing</strong>) and low-latency ETL batch pipelines using <strong>Java 21/25 Virtual Threads</strong>, <strong>Spring Boot</strong>, <strong>Spring Batch</strong>, <strong>MS SQL Server</strong>, and <strong>AWS</strong>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Status & Quick Highlights -->
+        <div class="flex flex-col sm:flex-row lg:flex-col gap-3 font-mono text-xs flex-shrink-0">
+          <div class="px-3.5 py-2 rounded-xl bg-emerald-950/60 border border-emerald-800/60 text-emerald-300 flex items-center gap-2 shadow-inner">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span>Focus: High-Throughput Distributed Systems</span>
+          </div>
+          <div class="px-3.5 py-2 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-300 flex items-center gap-2">
+            <span>⚡ Loom / Virtual Threads Ready</span>
+          </div>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- SECTION 1: CORE TECH STACK GRID -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <span class="text-lg">⚙️</span>
+          <h2 class="text-lg sm:text-xl font-bold font-display text-white">Core Technology Stack</h2>
+        </div>
+        <span class="text-xs font-mono text-slate-400">Production Systems Mastery</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Java 21 / 25 -->
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-l-amber-500">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold font-mono text-amber-400 uppercase tracking-wider">Language Core</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950/70 text-amber-300 border border-amber-800/50">Loom / 21+</span>
+          </div>
+          <div class="text-lg font-bold text-white font-display">Java 21 / 25</div>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Virtual Threads (Project Loom), Structured Concurrency, Pattern Matching, Record Patterns, and ZGC / G1 low-pause garbage collection tuning.
+          </p>
+        </div>
+
+        <!-- Spring Boot -->
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-l-emerald-500">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold font-mono text-emerald-400 uppercase tracking-wider">Framework</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/70 text-emerald-300 border border-emerald-800/50">Spring 3.x</span>
+          </div>
+          <div class="text-lg font-bold text-white font-display">Spring Boot</div>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Enterprise microservices, Spring Security, OAuth2/JWT, REST APIs, Actuator telemetry, Micrometer observability, and resilience patterns.
+          </p>
+        </div>
+
+        <!-- Spring Batch -->
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-l-cyan-500">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold font-mono text-cyan-400 uppercase tracking-wider">ETL & Batch</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950/70 text-cyan-300 border border-cyan-800/50">High-Volume</span>
+          </div>
+          <div class="text-lg font-bold text-white font-display">Spring Batch</div>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Chunk-oriented ETL processing, multi-threaded step partitioning, fault-tolerant retry/skip mechanisms, and high-throughput netting engines.
+          </p>
+        </div>
+
+        <!-- MS SQL Server -->
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-l-blue-500">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold font-mono text-blue-400 uppercase tracking-wider">Database</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/70 text-blue-300 border border-blue-800/50">Enterprise</span>
+          </div>
+          <div class="text-lg font-bold text-white font-display">MS SQL Server</div>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            High-concurrency transaction processing, query execution plan tuning, index optimization, partitioning, and ACID consistency for billing.
+          </p>
+        </div>
+
+        <!-- AWS Cloud -->
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-l-orange-500">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold font-mono text-orange-400 uppercase tracking-wider">Cloud Platform</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-orange-950/70 text-orange-300 border border-orange-800/50">Production</span>
+          </div>
+          <div class="text-lg font-bold text-white font-display">AWS Cloud</div>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            ECS Fargate, RDS Multi-AZ, S3 storage architectures, SQS/SNS decoupled messaging, CloudWatch telemetry, and IAM least-privilege security.
+          </p>
+        </div>
+
+        <!-- Python & Data Engineering -->
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-l-yellow-500">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold font-mono text-yellow-400 uppercase tracking-wider">Data Scripting</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-yellow-950/70 text-yellow-300 border border-yellow-800/50">pandas / SQL</span>
+          </div>
+          <div class="text-lg font-bold text-white font-display">Python & Data</div>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            pandas, SQLAlchemy, data ingestion pipelines, automated schema mapping, data cleaning utilities, and backend automation scripting.
+          </p>
+        </div>
+
+        <!-- Docker & Linux -->
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-l-indigo-500">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold font-mono text-indigo-400 uppercase tracking-wider">Infrastructure</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950/70 text-indigo-300 border border-indigo-800/50">Compose / CLI</span>
+          </div>
+          <div class="text-lg font-bold text-white font-display">Docker & Linux</div>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Containerization, multi-stage optimized builds, Docker Compose, Linux systemd unit management, headless server operations, and socket networking.
+          </p>
+        </div>
+
+        <!-- Financial Systems Architecture -->
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-l-rose-500">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold font-mono text-rose-400 uppercase tracking-wider">Domain Expertise</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-950/70 text-rose-300 border border-rose-800/50">FinTech</span>
+          </div>
+          <div class="text-lg font-bold text-white font-display">Financial Engines</div>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Multi-currency netting, payment settlement pipelines, automated billing reconciliation, and zero-data-loss audit logging.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 2: HOMELAB & SELF-HOSTED INFRASTRUCTURE PANEL -->
+    <section class="glass-card rounded-3xl p-6 sm:p-8 space-y-6 relative overflow-hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 p-[2px] flex items-center justify-center">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center text-cyan-400 text-lg">
+              🖥️
+            </div>
+          </div>
+          <div>
+            <h2 class="text-lg sm:text-xl font-bold font-display text-white">Homelab & Self-Hosted Infrastructure</h2>
+            <p class="text-xs text-slate-400 font-mono">24/7 Headless Ubuntu Server 24.04 LTS &bull; Tailscale Mesh Overlay</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 font-mono text-xs">
+          <span class="px-2.5 py-1 rounded-lg bg-emerald-950/80 text-emerald-400 border border-emerald-800/50 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            ALL NODES HEALTHY
+          </span>
+        </div>
+      </div>
+
+      <!-- Telemetry Bar -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
+        <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
+          <div class="text-[10px] text-slate-500 uppercase">OS & Kernel</div>
+          <div class="font-bold text-slate-200 mt-0.5">Ubuntu 24.04 LTS</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
+          <div class="text-[10px] text-slate-500 uppercase">Network Mesh</div>
+          <div class="font-bold text-cyan-300 mt-0.5">Tailscale WireGuard</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
+          <div class="text-[10px] text-slate-500 uppercase">Power Telemetry</div>
+          <div class="font-bold text-emerald-300 mt-0.5">Smart-Plug (~48W)</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
+          <div class="text-[10px] text-slate-500 uppercase">Thermal Health</div>
+          <div class="font-bold text-amber-300 mt-0.5">Automated Throttling</div>
+        </div>
+      </div>
+
+      <!-- Services Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        
+        <!-- Tailscale -->
+        <div class="p-4 rounded-2xl bg-slate-950/40 border border-slate-800/80 hover:border-cyan-800/80 transition group">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-xs font-bold text-cyan-300">⚡ Tailscale VPN</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800">Mesh Overlay</span>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Zero-trust encrypted peer-to-peer mesh. Secure remote SSH, subnet routing, and seamless homelab access from any 4G/5G mobile device worldwide.
+          </p>
+        </div>
+
+        <!-- Pi-hole -->
+        <div class="p-4 rounded-2xl bg-slate-950/40 border border-slate-800/80 hover:border-emerald-800/80 transition group">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-xs font-bold text-emerald-300">🛡️ Pi-hole DNS</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800">150k+ Blocked</span>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Network-wide hardware-level DNS sinkhole. Blocks tracking, telemetry, and advertising across all phones, smart TVs, and laptops on home Wi-Fi.
+          </p>
+        </div>
+
+        <!-- Ollama Local AI -->
+        <div class="p-4 rounded-2xl bg-slate-950/40 border border-slate-800/80 hover:border-purple-800/80 transition group">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-xs font-bold text-purple-300">🤖 Ollama AI Agents</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-950 text-purple-300 border border-purple-800">Self-Hosted</span>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Private local LLM inference engines (Llama 3, DeepSeek, Mistral) running directly on server hardware for automated scripts and local AI workflows.
+          </p>
+        </div>
+
+        <!-- Plex & Jellyfin -->
+        <div class="p-4 rounded-2xl bg-slate-950/40 border border-slate-800/80 hover:border-amber-800/80 transition group">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-xs font-bold text-amber-300">🎬 Plex & Jellyfin</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-800">Intel QuickSync</span>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Hardware-accelerated media streaming, direct 4K playback, and dynamic on-the-fly video transcoding serving family devices simultaneously.
+          </p>
+        </div>
+
+        <!-- Immich -->
+        <div class="p-4 rounded-2xl bg-slate-950/40 border border-slate-800/80 hover:border-rose-800/80 transition group">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-xs font-bold text-rose-300">📸 Immich Photo Vault</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-800">Auto-Sync</span>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Self-hosted Google Photos alternative with local machine-learning face recognition, automated mobile camera roll backup, and zero cloud lock-in.
+          </p>
+        </div>
+
+        <!-- Smart-Plug Power Management -->
+        <div class="p-4 rounded-2xl bg-slate-950/40 border border-slate-800/80 hover:border-teal-800/80 transition group">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-xs font-bold text-teal-300">🔌 Smart-Plug Automation</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-950 text-teal-300 border border-teal-800">Energy & UPS</span>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Automated power-cycling telemetry, surge protection, power consumption metrics, and emergency safe shutdown scripting during power cuts.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 3: FITNESS & DAILY GOALS TRACKER (INTERACTIVE) -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <span class="text-lg">🎯</span>
+          <h2 class="text-lg sm:text-xl font-bold font-display text-white">Fitness & Daily Goals Tracker</h2>
+        </div>
+        <span class="text-xs font-mono text-emerald-400">Body Recomposition & Discipline</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- 1. Body Recomp Weight Tracker -->
+        <div class="glass-card rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold font-mono text-emerald-400 uppercase">Body Recomposition</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">Target: 80 kg</span>
+          </div>
+          
+          <div class="flex items-baseline justify-between font-mono">
+            <div>
+              <div class="text-xs text-slate-400">Current Weight</div>
+              <div class="text-3xl font-extrabold text-white"><span id="weight-val">84.6</span> <span class="text-sm font-normal text-slate-400">kg</span></div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-slate-400">Remaining</div>
+              <div class="text-xl font-bold text-emerald-400">-4.6 kg</div>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="space-y-1.5 font-mono text-xs">
+            <div class="flex justify-between text-[11px] text-slate-400">
+              <span>88.0 kg (Start)</span>
+              <span>80.0 kg (Goal)</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden p-0.5">
+              <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-700" style="width: 42.5%;"></div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/80 font-mono text-xs">
+            <span class="text-slate-400">Log Weight:</span>
+            <div class="flex items-center gap-1.5">
+              <button onclick="adjustWeight(-0.1)" class="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center font-bold">-</button>
+              <button onclick="adjustWeight(0.1)" class="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center font-bold">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Nutrition & High-Protein Macro Split -->
+        <div class="glass-card rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold font-mono text-cyan-400 uppercase">Daily Calorie Target</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">High-Protein</span>
+          </div>
+
+          <div class="flex items-baseline justify-between font-mono">
+            <div>
+              <div class="text-xs text-slate-400">Calorie Budget</div>
+              <div class="text-2xl font-extrabold text-white">2,050 <span class="text-xs font-normal text-slate-400">kcal</span></div>
+            </div>
+            <div class="text-right text-xs font-mono text-emerald-400">
+              Deficit Recomp
+            </div>
+          </div>
+
+          <!-- Macro Distribution Progress -->
+          <div class="space-y-2 font-mono text-xs">
+            <div>
+              <div class="flex justify-between text-[11px] text-slate-400 mb-0.5">
+                <span>Protein (175g &bull; 35%)</span>
+                <span class="text-emerald-400 font-bold">175g</span>
+              </div>
+              <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-emerald-400 rounded-full" style="width: 85%;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] text-slate-400 mb-0.5">
+                <span>Carbs (190g &bull; 38%)</span>
+                <span class="text-cyan-400 font-bold">190g</span>
+              </div>
+              <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-cyan-400 rounded-full" style="width: 75%;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] text-slate-400 mb-0.5">
+                <span>Fats (60g &bull; 27%)</span>
+                <span class="text-amber-400 font-bold">60g</span>
+              </div>
+              <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-amber-400 rounded-full" style="width: 65%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Daily 10k Steps Tracker -->
+        <div class="glass-card rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold font-mono text-teal-400 uppercase">Movement Goal</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-950 text-teal-300 border border-teal-800">10,000+ Steps</span>
+          </div>
+
+          <div class="flex items-baseline justify-between font-mono">
+            <div>
+              <div class="text-xs text-slate-400">Today's Progress</div>
+              <div class="text-3xl font-extrabold text-white"><span id="steps-val">10,420</span></div>
+            </div>
+            <div class="text-right text-xs font-mono text-teal-400 font-bold">
+              ✓ GOAL MET
+            </div>
+          </div>
+
+          <div class="space-y-1.5 font-mono text-xs">
+            <div class="flex justify-between text-[11px] text-slate-400">
+              <span>0</span>
+              <span>104% Completed</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden p-0.5">
+              <div class="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/80 font-mono text-xs">
+            <span class="text-slate-400">Log Walk:</span>
+            <div class="flex items-center gap-1.5">
+              <button onclick="addSteps(500)" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold">+500</button>
+              <button onclick="addSteps(1000)" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold">+1,000</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. 5L Daily Hydration Tracker -->
+        <div class="glass-card rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold font-mono text-blue-400 uppercase">Daily Hydration</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800">Goal: 5 Litres</span>
+          </div>
+
+          <div class="flex items-baseline justify-between font-mono">
+            <div>
+              <div class="text-xs text-slate-400">Drank Today</div>
+              <div class="text-3xl font-extrabold text-white"><span id="water-val">3</span> <span class="text-sm font-normal text-slate-400">/ 5 Litres</span></div>
+            </div>
+            <div class="text-right text-xs font-mono text-cyan-400" id="water-pct">
+              60%
+            </div>
+          </div>
+
+          <!-- 5 Clickable Water Bottles -->
+          <div class="grid grid-cols-5 gap-1.5 font-mono text-center">
+            <button onclick="toggleWater(1)" id="wb-1" class="water-bottle filled py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold transition">1L</button>
+            <button onclick="toggleWater(2)" id="wb-2" class="water-bottle filled py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold transition">2L</button>
+            <button onclick="toggleWater(3)" id="wb-3" class="water-bottle filled py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold transition">3L</button>
+            <button onclick="toggleWater(4)" id="wb-4" class="water-bottle py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400 font-bold transition">4L</button>
+            <button onclick="toggleWater(5)" id="wb-5" class="water-bottle py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400 font-bold transition">5L</button>
+          </div>
+
+          <div class="text-[10px] text-slate-400 font-mono text-center pt-2 border-t border-slate-800/80">
+            Click each 1L bottle to track hydration.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 font-mono shadow-xl">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400"></span>
+        <span>Hasan &bull; Navi Mumbai, India &bull; High-Throughput Distributed Systems</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="hover:text-emerald-300 transition">📰 Intelligence Dashboard</a>
+        <span>&bull;</span>
+        <a href="https://github.com/hasan123409" target="_blank" class="hover:text-cyan-300 transition">GitHub Profile ↗</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- INTERACTIVE LOGIC (LOCALSTORAGE PERSISTENCE) -->
+  <script>
+    // 1. Weight Tracker
+    let currentWeight = parseFloat(localStorage.getItem('user_weight') || '84.6');
+    function updateWeightDisplay() {
+      document.getElementById('weight-val').textContent = currentWeight.toFixed(1);
+      localStorage.setItem('user_weight', currentWeight.toFixed(1));
+    }
+    function adjustWeight(delta) {
+      currentWeight += delta;
+      updateWeightDisplay();
+    }
+    updateWeightDisplay();
+
+    // 2. Steps Tracker
+    let currentSteps = parseInt(localStorage.getItem('user_steps') || '10420');
+    function updateStepsDisplay() {
+      document.getElementById('steps-val').textContent = currentSteps.toLocaleString('en-IN');
+      localStorage.setItem('user_steps', currentSteps);
+    }
+    function addSteps(count) {
+      currentSteps += count;
+      updateStepsDisplay();
+    }
+    updateStepsDisplay();
+
+    // 3. Hydration Tracker
+    let waterLitres = parseInt(localStorage.getItem('user_water') || '3');
+    function updateWaterDisplay() {
+      document.getElementById('water-val').textContent = waterLitres;
+      document.getElementById('water-pct').textContent = (waterLitres * 20) + '%';
+      for (let i = 1; i <= 5; i++) {
+        const btn = document.getElementById(`wb-${i}`);
+        if (i <= waterLitres) {
+          btn.classList.add('filled');
+          btn.classList.remove('text-slate-400');
+        } else {
+          btn.classList.remove('filled');
+          btn.classList.add('text-slate-400');
+        }
+      }
+      localStorage.setItem('user_water', waterLitres);
+    }
+    function toggleWater(l) {
+      if (waterLitres === l) {
+        waterLitres = l - 1;
+      } else {
+        waterLitres = l;
+      }
+      updateWaterDisplay();
+    }
+    updateWaterDisplay();
+  </script>
+
+</body>
+</html>

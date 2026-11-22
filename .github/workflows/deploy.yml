@@ -41,6 +41,7 @@ jobs:
           mkdir -p ./public
           python fetch_and_build.py -o ./public/index.html --city "Mumbai" --lat 19.0760 --lon 72.8777
           if [ -f manifest.json ]; then cp manifest.json ./public/; fi
+          if [ -f profile.html ]; then cp profile.html ./public/; fi
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
