@@ -228,10 +228,11 @@
         </div>
 
         <!-- Refresh Button -->
-        <button onclick="location.reload()" title="Refresh" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 transition shadow-md active:scale-95 group">
-          <svg class="w-4 h-4 text-cyan-400 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="refresh-btn" onclick="triggerManualRefresh()" title="Fetch Realtime News Now" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 transition shadow-md active:scale-95 group flex items-center gap-1.5 font-mono text-xs">
+          <svg id="refresh-spinner" class="w-4 h-4 text-cyan-400 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
           </svg>
+          <span class="hidden md:inline">Sync Live</span>
         </button>
       </div>
     </header>
@@ -251,36 +252,60 @@
             <span>A Tale of Two Ballots: Why the Iran War Will Outlast Both</span>
           </span>
           
+          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-cyan-300" onclick="openStoryModal('Sensex, Nifty slide nearly 1% as crude oil prices surge amid Iran conflict', 'DD News', 'https://news.google.com/rss/articles/CBMinwFBVV95cUxPS1BCT3dwVkVjQ2QyVU8xQ2VFYkVIV1RhUnUzeDY1R01OUzBJSGd3cmdPZVdsajN2WHRWQ2VKaEtJU1V2Tmd0dklfSXl2QkQ5OGk1dEEzZGo3YUJqRHBiUDl1bENkZHlWbXR4RzRqQ2F2SlM2Sm41SXV5MmtNUUk4WTU3bzg4M1U3TEZRWjBXX0hFMXBZYTUweUxRTXhaVDA?oc=5', 'Sun, 22 Nov 2026 03:20:37', 'Geopolitics')">
+            <span class="text-rose-400 font-bold">&bull;</span>
+            <span class="text-rose-300 font-semibold">[DD News]</span>
+            <span>Sensex, Nifty slide nearly 1% as crude oil prices surge amid Iran conflict</span>
+          </span>
+          
+          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-cyan-300" onclick="openStoryModal('Bahrain says Iran struck industrial site as tankers hit in Hormuz', 'The New Indian Express', 'https://news.google.com/rss/articles/CBMitwFBVV95cUxPWUFLRTB6NE9jOEI3czIyR2JJekNNNlNwbm1WTG1NUUhJOHFqdlZ0QzZGc0dlRTd6aGg5S0NxS0hZNmtoR1VPX09wYnVCc2hUaG5kV2pkNkItMUZnWUN0eGxOdF9fRUdKbDQ1MVdHSTR1aGJhTWxHdWRCNW1hRWVEemJuMGp4VVc3b2RkbjhlNUVxZ29YZU0tRXlVVlFhajVOWjFaU18xOFdRSWNFa0pNcFl3MzB6ZWvSAcQBQVVfeXFMTjFCdW10Nk5YOEdnWWJrVkxXSWV6UG41QVNuVm80am5idXR2eUt4YUxvcHEtc3BQVUxXSVIxVjM2ZEZTbFJHaDFjUUpCWTRBNlllRWQ3VWNQOUpYM25pRXA1aVM2OVlCUnVWR3pOSS1vNEhpRTVDMkdBNVdmYjFHaTU3djd3aTdkNVEyeEFxWGx2RGJvU01ReHZoOC0weDduSXRWMVVrVFY3MDdfWHZ6ZGprRE9QVGxBck1yZTRYcmY3TWVpZA?oc=5', 'Sun, 22 Nov 2026 02:57:13', 'Geopolitics')">
+            <span class="text-rose-400 font-bold">&bull;</span>
+            <span class="text-rose-300 font-semibold">[The New Indian Express]</span>
+            <span>Bahrain says Iran struck industrial site as tankers hit in Hormuz</span>
+          </span>
+          
+          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-cyan-300" onclick="openStoryModal('Iran says held talks with Qatari mediators, urges US to accept conditions', 'Al Jazeera', 'https://news.google.com/rss/articles/CBMitAFBVV95cUxNWHFKUDdNZFRCLWtBLVdXaXJicmtVTFVoMFM2anB6VnA2dER4bHhWTVROaDdpWFhTeUpZYUJRWnZjYzc1b3g1WC1TcTJnZk5EdXpULTRwRFJRMGJRYmRKTzlzd1FiazJrSlNGRHNuUktRRjNaLTBTWlJScGhkeHJMTnYxdUdlcVRJOHZmWFdFeE1fUnlhMHB5MnM1SzcxaTdrWnRiT1BFbktpcmhSemw3anQ1R23SAboBQVVfeXFMT01MTmVjb1NOQWlBR3ZTRUhUU203dVZZSVljRnUwcGhWSUtiQkFOOFdsQjduS0tSVkN0VUtIVDc5NTJ4b21UbVVXWEp2SmdXTFZpbHB1X3FvM3ZHZ2piWURGTU45anA0M3VDOTJiaXh6ZTNZVFhlSlhlTjBoS0FFWjY0NDJ4V04zSUFwcVVORTJqQ083RjAtdmtCanZUMWQxNzgwak5NSWxwMWx5eVZGWHlWODhIM1R4Uzln?oc=5', 'Sat, 21 Nov 2026 21:00:04', 'Geopolitics')">
+            <span class="text-rose-400 font-bold">&bull;</span>
+            <span class="text-rose-300 font-semibold">[Al Jazeera]</span>
+            <span>Iran says held talks with Qatari mediators, urges US to accept conditions</span>
+          </span>
+          
+          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-cyan-300" onclick="openStoryModal('Bahrain says Iranian attack hits industrial facility as air defences intercept attacks', 'Reuters', 'https://news.google.com/rss/articles/CBMiuAFBVV95cUxOTzltZHhpNzJyRTg4dE5kYUJSOUJ4azFWY2txckEtQUlGQVVfTEtIUUpWN3dHZWlocXlZWGFidVRIMjN3ZDM4d2xQWVZ0UFAxRm81TGFfbFNZRzMxTXJOemdzOHRNeWJOLXhEWF83a3N0a1hiR0FjbUE1eGZVX002eVpMNHJyX2JoVXp5bFdjcDJBYkhOWFE4a1AzN0hSRE1wTDFmNGxvaFR6TkR6bkd4a3FSSUU1anZp?oc=5', 'Sat, 21 Nov 2026 19:15:00', 'Geopolitics')">
+            <span class="text-rose-400 font-bold">&bull;</span>
+            <span class="text-rose-300 font-semibold">[Reuters]</span>
+            <span>Bahrain says Iranian attack hits industrial facility as air defences intercept attacks</span>
+          </span>
+          
           <span class="inline-flex items-center gap-2 cursor-pointer hover:text-cyan-300" onclick="openStoryModal('DW News. . DW Fact check looks at how pro-Iran networks are using AI-generated videos during the Iran war to shape online narratives, how these networks operate, and the signs that can help users identify them. #dwfactcheck', 'Facebook', 'https://news.google.com/rss/articles/CBMi4gFBVV95cUxOeXFsSkUtMzNGSHJvWGRKaEplU3U4ODlkenowUVpJeEllUTl3YzVzRENBWVJvLUZqS1VRRmtkVlpmbDl4VWlpcDBZRWxXeXZoUGYzY2otY0FVQmhPU3pFRkNnMmhmVXRodHBLNVczSllscG5EcXZvLXkwSjV3TWtINU1CTDhTVHNoUm0zUEswVjk2VjVBenpsVk1CYzRneFVpeGhlX3FyeWNZbFZOeTdLaDFzRUhNYlcwQm5UUklMVFlhWEkyMVZKRnZhT0lsTjk4cFRfYUlEQlJHOUdIUi1oNVd3?oc=5', 'Sat, 21 Nov 2026 15:30:22', 'Geopolitics')">
             <span class="text-rose-400 font-bold">&bull;</span>
             <span class="text-rose-300 font-semibold">[Facebook]</span>
             <span>DW News. . DW Fact check looks at how pro-Iran networks are using AI-generated videos during the Iran war to shape online narratives, how these networks operate, and the signs that can help users identify them. #dwfactcheck</span>
           </span>
           
-          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-cyan-300" onclick="openStoryModal('Iran war turns Dubai into a ghost city', 'DW.com', 'https://news.google.com/rss/articles/CBMie0FVX3lxTE1laTdZT0xaRTNBR2tSSklTaHdpa0xxMWtxNkNlNzVCN2I0SVYwWlczcV9jcXRFSElpTnBIN1VKQUt5dF9mVmRQWTlmaDdKM0w4Y1RtbGp6VG16MkczMm1HaGJNUW9QNGVINUhISVNQNHFXYU9JZnhMa1k5dw?oc=5', 'Sat, 21 Nov 2026 11:11:49', 'Geopolitics')">
-            <span class="text-rose-400 font-bold">&bull;</span>
-            <span class="text-rose-300 font-semibold">[DW.com]</span>
-            <span>Iran war turns Dubai into a ghost city</span>
+          
+          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-emerald-300" onclick="openStoryModal('InvIT IPO rush gathers pace; 4-5 private trusts likely to go public by Mar 2027', 'ET Markets', 'https://economictimes.indiatimes.com/markets/ipos/fpos/invit-ipo-rush-gathers-pace-4-5-private-trusts-likely-to-go-public-by-mar-2027/articleshow/136069094.cms', 'Sun, 22 Nov 2026 12:15:10', 'Finance')">
+            <span class="text-emerald-400 font-bold">&bull;</span>
+            <span class="text-emerald-300 font-semibold">[ET Markets]</span>
+            <span>InvIT IPO rush gathers pace; 4-5 private trusts likely to go public by Mar 2027</span>
           </span>
           
-          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-cyan-300" onclick="openStoryModal('Asia Hopes Democrats Can Provide Relief From Trump’s Iran War, Tariffs: Russell', 'EnergyNow.com', 'https://news.google.com/rss/articles/CBMiqwFBVV95cUxOQkxtUVNlU2Y5TzBYNEhtRjlQMmUwVXloNTBSOG1td0QwZnRvWkI4N2lTa0VKYk1Oc2lfMDdVekhmWTNHcmxwVFZoemJLUV9ONnZjXzNhczBDM0pzSFNmRWtqbTRoOW04M2JTNHJ2b3JGWnExRnpTbzI0am1Zb3ROTnlBV1NUa0REME9fSE40b3l5cTRzRXkyNEZGSlZndXF5S3ZVWlpMaXB0clE?oc=5', 'Sat, 21 Nov 2026 10:41:20', 'Geopolitics')">
-            <span class="text-rose-400 font-bold">&bull;</span>
-            <span class="text-rose-300 font-semibold">[EnergyNow.com]</span>
-            <span>Asia Hopes Democrats Can Provide Relief From Trump’s Iran War, Tariffs: Russell</span>
+          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-emerald-300" onclick="openStoryModal('5 penny stocks plunge up to 68% in six months. Do you own any?', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/news/5-penny-stocks-plunge-up-to-68-in-six-months-do-you-own-any/slideshow/136069072.cms', 'Sun, 22 Nov 2026 12:03:45', 'Finance')">
+            <span class="text-emerald-400 font-bold">&bull;</span>
+            <span class="text-emerald-300 font-semibold">[ET Markets]</span>
+            <span>5 penny stocks plunge up to 68% in six months. Do you own any?</span>
           </span>
           
-          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-cyan-300" onclick="openStoryModal('Senate blocks Iran war resolution in 51-48 vote', 'The Avenue Mail', 'https://news.google.com/rss/articles/CBMidkFVX3lxTE5yeXBhdF9YXzVacEljRnZwMnNsTTY1NVFIYnByTnIyS3pnNGhDQ25fQ0laVTRlWnNqLXFxY3lDU3Y1RGRwWDd3WW9TVHZuRTRwZGc1U3R5cWVrenpUbXh6QS1JWExvZjcwd3NJcmtKMmE5ZWh4ZHc?oc=5', 'Sat, 21 Nov 2026 08:27:04', 'Geopolitics')">
-            <span class="text-rose-400 font-bold">&bull;</span>
-            <span class="text-rose-300 font-semibold">[The Avenue Mail]</span>
-            <span>Senate blocks Iran war resolution in 51-48 vote</span>
+          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-emerald-300" onclick="openStoryModal('Reliance Brands FY26 revenue up 3.8% to Rs 3,390.9 crore; loss narrows to Rs 137 crore', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/earnings/reliance-brands-fy26-revenue-up-3-8-to-rs-3390-9-crore-loss-narrows-to-rs-137-crore/articleshow/136068185.cms', 'Sun, 22 Nov 2026 11:14:52', 'Finance')">
+            <span class="text-emerald-400 font-bold">&bull;</span>
+            <span class="text-emerald-300 font-semibold">[ET Markets]</span>
+            <span>Reliance Brands FY26 revenue up 3.8% to Rs 3,390.9 crore; loss narrows to Rs 137 crore</span>
           </span>
           
-          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-cyan-300" onclick="openStoryModal('Former defense secretary suggests Iran war may last until 2029: ‘It’s just gonna take a long time’', 'The Hill', 'https://news.google.com/rss/articles/CBMidkFVX3lxTE9DU1BkMEdwOVpObzk5SlYzLVRoaXhuaXlEcTJVNkN5Ry1iV0RWMHpvSkg3RDVKUHlacXUwdUUtblY2OFIxcXEyY1RaQllKeFVhcXRsTzRqWFlHTk1WM1F0cFB0RzIwbUdmYVNINnJzbWlNWmdURFHSAXtBVV95cUxNTTRtVGNNUzU5UmZKM05KdTV2WWh2QXZZUVdzR05jYk5Ldm03SHlNZnZ0aVd0VEJNT1hSXzZLOTlyOV93dDlMSWd0NDVuaFhHYUFxY3QwTFNiQ1NjTElvTjVUb185cTQ3NzlVN3NkbVBlbTQ3NnFSXzJBX2s?oc=5', 'Sat, 21 Nov 2026 12:52:00', 'Geopolitics')">
-            <span class="text-rose-400 font-bold">&bull;</span>
-            <span class="text-rose-300 font-semibold">[The Hill]</span>
-            <span>Former defense secretary suggests Iran war may last until 2029: ‘It’s just gonna take a long time’</span>
+          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-emerald-300" onclick="openStoryModal('Anthropic\'s post-debut stumble delivers reality check for AI trade', 'ET Markets', 'https://economictimes.indiatimes.com/markets/us-stocks/news/anthropics-post-debut-stumble-delivers-reality-check-for-ai-trade/articleshow/136066633.cms', 'Sun, 22 Nov 2026 09:00:15', 'Finance')">
+            <span class="text-emerald-400 font-bold">&bull;</span>
+            <span class="text-emerald-300 font-semibold">[ET Markets]</span>
+            <span>Anthropic's post-debut stumble delivers reality check for AI trade</span>
           </span>
-          
           
           <span class="inline-flex items-center gap-2 cursor-pointer hover:text-emerald-300" onclick="openStoryModal('Nifty eyes 26,200 as rally strengthens; 6 sectors signal outperformance', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/news/nifty-eyes-26200-as-rally-strengthens-6-sectors-signal-outperformance/articleshow/136050218.cms', 'Sat, 21 Nov 2026 15:09:05', 'Finance')">
             <span class="text-emerald-400 font-bold">&bull;</span>
@@ -292,30 +317,6 @@
             <span class="text-emerald-400 font-bold">&bull;</span>
             <span class="text-emerald-300 font-semibold">[ET Markets]</span>
             <span>Stocks to buy: HSBC lists 19 Indian stocks that saw FY27 earnings upgrades, check target prices</span>
-          </span>
-          
-          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-emerald-300" onclick="openStoryModal('Concurrent Gainers: These 13 stocks gained for 5 days in a row, all rose over 27%', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/news/concurrent-gainers-these-13-stocks-gained-for-5-days-in-a-row-all-rose-over-27/slideshow/136047969.cms', 'Sat, 21 Nov 2026 12:27:10', 'Finance')">
-            <span class="text-emerald-400 font-bold">&bull;</span>
-            <span class="text-emerald-300 font-semibold">[ET Markets]</span>
-            <span>Concurrent Gainers: These 13 stocks gained for 5 days in a row, all rose over 27%</span>
-          </span>
-          
-          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-emerald-300" onclick="openStoryModal('AI to lead investment strategy in 2027; Energy and borrowing costs shape macro outlook: Barclays', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/news/ai-to-lead-investment-strategy-in-2027-energy-and-borrowing-costs-shape-macro-outlook-barclays/articleshow/136046648.cms', 'Sat, 21 Nov 2026 11:39:54', 'Finance')">
-            <span class="text-emerald-400 font-bold">&bull;</span>
-            <span class="text-emerald-300 font-semibold">[ET Markets]</span>
-            <span>AI to lead investment strategy in 2027; Energy and borrowing costs shape macro outlook: Barclays</span>
-          </span>
-          
-          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-emerald-300" onclick="openStoryModal('Market winners: Max Healthcare, Deepak Fertilisers among 10 stocks that surged up to 14% in last week', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/news/market-winners-max-healthcare-deepak-fertilisers-among-10-stocks-that-surged-up-to-14-in-last-week/slideshow/136046616.cms', 'Sat, 21 Nov 2026 11:21:22', 'Finance')">
-            <span class="text-emerald-400 font-bold">&bull;</span>
-            <span class="text-emerald-300 font-semibold">[ET Markets]</span>
-            <span>Market winners: Max Healthcare, Deepak Fertilisers among 10 stocks that surged up to 14% in last week</span>
-          </span>
-          
-          <span class="inline-flex items-center gap-2 cursor-pointer hover:text-emerald-300" onclick="openStoryModal('US Treasury yields drop for day and week; AI trade concern spurs safe-haven bid', 'ET Markets', 'https://economictimes.indiatimes.com/markets/bonds/us-treasury-yields-drop-for-day-and-week-ai-trade-concern-spurs-safe-haven-bid/articleshow/136045682.cms', 'Sat, 21 Nov 2026 10:53:49', 'Finance')">
-            <span class="text-emerald-400 font-bold">&bull;</span>
-            <span class="text-emerald-300 font-semibold">[ET Markets]</span>
-            <span>US Treasury yields drop for day and week; AI trade concern spurs safe-haven bid</span>
           </span>
           
         </div>
@@ -337,10 +338,10 @@
           </button>
         </div>
         <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300 group-hover:scale-105 transition-transform origin-left">
-          ₹106,241
+          ₹105,691
         </div>
         <div class="text-[11px] text-slate-300 font-mono mt-3 pt-2 border-t border-amber-900/40 flex justify-between items-center">
-          <span>22K: <strong class="text-amber-400">₹97,387</strong></span>
+          <span>22K: <strong class="text-amber-400">₹96,883</strong></span>
           <span class="text-slate-400 font-medium">Spot: $3,539.00/oz</span>
         </div>
       </div>
@@ -355,7 +356,7 @@
           <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-sky-950/80 text-sky-300 border border-sky-700/60 font-semibold">1KG BAR</span>
         </div>
         <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-sky-100 to-slate-200 group-hover:scale-105 transition-transform origin-left">
-          ₹123,322
+          ₹122,684
         </div>
         <div class="text-[11px] text-slate-300 font-mono mt-3 pt-2 border-t border-sky-900/40 flex justify-between items-center">
           <span>Spot: $41.08/oz</span>
@@ -373,7 +374,7 @@
           <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-700/60 font-semibold">LIVE</span>
         </div>
         <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 via-mint-100 to-emerald-400 group-hover:scale-105 transition-transform origin-left">
-          ₹93.37
+          ₹92.89
         </div>
         <div class="text-[11px] text-slate-300 font-mono mt-3 pt-2 border-t border-emerald-900/40 flex justify-between items-center">
           <span>Brent: <strong>$74.80/bbl</strong></span>
@@ -391,11 +392,11 @@
           <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-700/60 font-semibold">COIN</span>
         </div>
         <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-pink-100 to-fuchsia-400 group-hover:scale-105 transition-transform origin-left">
-          ₹5,585,719
+          ₹5,471,178
         </div>
         <div class="text-[11px] text-slate-300 font-mono mt-3 pt-2 border-t border-purple-900/40 flex justify-between items-center">
           <span>BTC Live</span>
-          <span class="text-fuchsia-400 font-medium">ETH: ₹156,145</span>
+          <span class="text-fuchsia-400 font-medium">ETH: ₹154,315</span>
         </div>
       </div>
 
@@ -407,19 +408,19 @@
             <span class="text-xs font-bold uppercase tracking-wider text-cyan-300 font-mono">Mumbai Weather</span>
           </div>
           <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-rose-950/90 text-rose-300 border border-rose-700/70 font-bold shadow-md shadow-rose-950/60">
-            AQI 220
+            AQI 178
           </span>
         </div>
         <div class="flex items-baseline justify-between">
           <div class="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-cyan-100">
-            23.9°C
+            31.7°C
           </div>
           <div class="text-xs font-mono text-cyan-300/80 font-semibold">Clear Sky</div>
         </div>
         <div class="text-[10px] text-slate-300 font-mono mt-3 pt-2 border-t border-cyan-900/40 flex justify-between items-center">
           <span>🌅 06:49 AM</span>
           <span>🌇 17:59 PM</span>
-          <span class="text-cyan-400">💧 62%</span>
+          <span class="text-cyan-400">💧 34%</span>
         </div>
       </div>
 
@@ -433,23 +434,23 @@
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
           <span class="text-slate-400">CPU:</span>
-          <strong class="text-cyan-300 font-bold">4.1%</strong>
+          <strong class="text-cyan-300 font-bold">12.7%</strong>
           <span class="text-slate-500">(Normal)</span>
         </div>
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
           <span class="text-slate-400">RAM:</span>
-          <strong class="text-emerald-300 font-bold">80.9%</strong>
-          <span class="text-slate-500">(3.0/8.0 GB)</span>
+          <strong class="text-emerald-300 font-bold">83.3%</strong>
+          <span class="text-slate-500">(2.9/8.0 GB)</span>
         </div>
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-amber-400"></span>
           <span class="text-slate-400">Disk (/):</span>
-          <strong class="text-amber-300 font-bold">8.4%</strong>
+          <strong class="text-amber-300 font-bold">8.6%</strong>
         </div>
         <div class="flex items-center gap-2">
           <span class="text-slate-400">Bandwidth:</span>
-          <span class="text-slate-300">↑2.6G ↓2.6G</span>
+          <span class="text-slate-300">↑3.0G ↓3.0G</span>
         </div>
         
       </div>
@@ -515,7 +516,7 @@
           </span>
         </div>
 
-        <div class="divide-y divide-rose-950/30 flex-1 p-2 sm:p-3 space-y-1">
+        <div id="news-list-geopolitics" class="divide-y divide-rose-950/30 flex-1 p-2 sm:p-3 space-y-1">
           
           <article data-id="geo-1" class="article-item p-3.5 rounded-2xl hover:bg-rose-950/20 transition-all duration-200 group border border-transparent hover:border-rose-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
@@ -547,9 +548,9 @@
           
           <article data-id="geo-2" class="article-item p-3.5 rounded-2xl hover:bg-rose-950/20 transition-all duration-200 group border border-transparent hover:border-rose-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('DW News. . DW Fact check looks at how pro-Iran networks are using AI-generated videos during the Iran war to shape online narratives, how these networks operate, and the signs that can help users identify them. #dwfactcheck', 'Facebook', 'https://news.google.com/rss/articles/CBMi4gFBVV95cUxOeXFsSkUtMzNGSHJvWGRKaEplU3U4ODlkenowUVpJeEllUTl3YzVzRENBWVJvLUZqS1VRRmtkVlpmbDl4VWlpcDBZRWxXeXZoUGYzY2otY0FVQmhPU3pFRkNnMmhmVXRodHBLNVczSllscG5EcXZvLXkwSjV3TWtINU1CTDhTVHNoUm0zUEswVjk2VjVBenpsVk1CYzRneFVpeGhlX3FyeWNZbFZOeTdLaDFzRUhNYlcwQm5UUklMVFlhWEkyMVZKRnZhT0lsTjk4cFRfYUlEQlJHOUdIUi1oNVd3?oc=5', 'Sat, 21 Nov 2026 15:30:22', 'Geopolitics')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Sensex, Nifty slide nearly 1% as crude oil prices surge amid Iran conflict', 'DD News', 'https://news.google.com/rss/articles/CBMinwFBVV95cUxPS1BCT3dwVkVjQ2QyVU8xQ2VFYkVIV1RhUnUzeDY1R01OUzBJSGd3cmdPZVdsajN2WHRWQ2VKaEtJU1V2Tmd0dklfSXl2QkQ5OGk1dEEzZGo3YUJqRHBiUDl1bENkZHlWbXR4RzRqQ2F2SlM2Sm41SXV5MmtNUUk4WTU3bzg4M1U3TEZRWjBXX0hFMXBZYTUweUxRTXhaVDA?oc=5', 'Sun, 22 Nov 2026 03:20:37', 'Geopolitics')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-rose-300 leading-snug line-clamp-2 transition-colors">
-                  DW News. . DW Fact check looks at how pro-Iran networks are using AI-generated videos during the Iran war to shape online narratives, how these networks operate, and the signs that can help users identify them. #dwfactcheck
+                  Sensex, Nifty slide nearly 1% as crude oil prices surge amid Iran conflict
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -563,11 +564,11 @@
             </div>
             <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
               <span class="px-2 py-0.5 rounded-md bg-rose-950/60 text-rose-300 border border-rose-800/50 font-medium">
-                Facebook
+                DD News
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 15:30:22</span>
-              <a href="https://news.google.com/rss/articles/CBMi4gFBVV95cUxOeXFsSkUtMzNGSHJvWGRKaEplU3U4ODlkenowUVpJeEllUTl3YzVzRENBWVJvLUZqS1VRRmtkVlpmbDl4VWlpcDBZRWxXeXZoUGYzY2otY0FVQmhPU3pFRkNnMmhmVXRodHBLNVczSllscG5EcXZvLXkwSjV3TWtINU1CTDhTVHNoUm0zUEswVjk2VjVBenpsVk1CYzRneFVpeGhlX3FyeWNZbFZOeTdLaDFzRUhNYlcwQm5UUklMVFlhWEkyMVZKRnZhT0lsTjk4cFRfYUlEQlJHOUdIUi1oNVd3?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sun, 22 Nov 2026 03:20:37</span>
+              <a href="https://news.google.com/rss/articles/CBMinwFBVV95cUxPS1BCT3dwVkVjQ2QyVU8xQ2VFYkVIV1RhUnUzeDY1R01OUzBJSGd3cmdPZVdsajN2WHRWQ2VKaEtJU1V2Tmd0dklfSXl2QkQ5OGk1dEEzZGo3YUJqRHBiUDl1bENkZHlWbXR4RzRqQ2F2SlM2Sm41SXV5MmtNUUk4WTU3bzg4M1U3TEZRWjBXX0hFMXBZYTUweUxRTXhaVDA?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -575,9 +576,9 @@
           
           <article data-id="geo-3" class="article-item p-3.5 rounded-2xl hover:bg-rose-950/20 transition-all duration-200 group border border-transparent hover:border-rose-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Iran war turns Dubai into a ghost city', 'DW.com', 'https://news.google.com/rss/articles/CBMie0FVX3lxTE1laTdZT0xaRTNBR2tSSklTaHdpa0xxMWtxNkNlNzVCN2I0SVYwWlczcV9jcXRFSElpTnBIN1VKQUt5dF9mVmRQWTlmaDdKM0w4Y1RtbGp6VG16MkczMm1HaGJNUW9QNGVINUhISVNQNHFXYU9JZnhMa1k5dw?oc=5', 'Sat, 21 Nov 2026 11:11:49', 'Geopolitics')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Bahrain says Iran struck industrial site as tankers hit in Hormuz', 'The New Indian Express', 'https://news.google.com/rss/articles/CBMitwFBVV95cUxPWUFLRTB6NE9jOEI3czIyR2JJekNNNlNwbm1WTG1NUUhJOHFqdlZ0QzZGc0dlRTd6aGg5S0NxS0hZNmtoR1VPX09wYnVCc2hUaG5kV2pkNkItMUZnWUN0eGxOdF9fRUdKbDQ1MVdHSTR1aGJhTWxHdWRCNW1hRWVEemJuMGp4VVc3b2RkbjhlNUVxZ29YZU0tRXlVVlFhajVOWjFaU18xOFdRSWNFa0pNcFl3MzB6ZWvSAcQBQVVfeXFMTjFCdW10Nk5YOEdnWWJrVkxXSWV6UG41QVNuVm80am5idXR2eUt4YUxvcHEtc3BQVUxXSVIxVjM2ZEZTbFJHaDFjUUpCWTRBNlllRWQ3VWNQOUpYM25pRXA1aVM2OVlCUnVWR3pOSS1vNEhpRTVDMkdBNVdmYjFHaTU3djd3aTdkNVEyeEFxWGx2RGJvU01ReHZoOC0weDduSXRWMVVrVFY3MDdfWHZ6ZGprRE9QVGxBck1yZTRYcmY3TWVpZA?oc=5', 'Sun, 22 Nov 2026 02:57:13', 'Geopolitics')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-rose-300 leading-snug line-clamp-2 transition-colors">
-                  Iran war turns Dubai into a ghost city
+                  Bahrain says Iran struck industrial site as tankers hit in Hormuz
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -591,11 +592,11 @@
             </div>
             <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
               <span class="px-2 py-0.5 rounded-md bg-rose-950/60 text-rose-300 border border-rose-800/50 font-medium">
-                DW.com
+                The New Indian Express
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 11:11:49</span>
-              <a href="https://news.google.com/rss/articles/CBMie0FVX3lxTE1laTdZT0xaRTNBR2tSSklTaHdpa0xxMWtxNkNlNzVCN2I0SVYwWlczcV9jcXRFSElpTnBIN1VKQUt5dF9mVmRQWTlmaDdKM0w4Y1RtbGp6VG16MkczMm1HaGJNUW9QNGVINUhISVNQNHFXYU9JZnhMa1k5dw?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sun, 22 Nov 2026 02:57:13</span>
+              <a href="https://news.google.com/rss/articles/CBMitwFBVV95cUxPWUFLRTB6NE9jOEI3czIyR2JJekNNNlNwbm1WTG1NUUhJOHFqdlZ0QzZGc0dlRTd6aGg5S0NxS0hZNmtoR1VPX09wYnVCc2hUaG5kV2pkNkItMUZnWUN0eGxOdF9fRUdKbDQ1MVdHSTR1aGJhTWxHdWRCNW1hRWVEemJuMGp4VVc3b2RkbjhlNUVxZ29YZU0tRXlVVlFhajVOWjFaU18xOFdRSWNFa0pNcFl3MzB6ZWvSAcQBQVVfeXFMTjFCdW10Nk5YOEdnWWJrVkxXSWV6UG41QVNuVm80am5idXR2eUt4YUxvcHEtc3BQVUxXSVIxVjM2ZEZTbFJHaDFjUUpCWTRBNlllRWQ3VWNQOUpYM25pRXA1aVM2OVlCUnVWR3pOSS1vNEhpRTVDMkdBNVdmYjFHaTU3djd3aTdkNVEyeEFxWGx2RGJvU01ReHZoOC0weDduSXRWMVVrVFY3MDdfWHZ6ZGprRE9QVGxBck1yZTRYcmY3TWVpZA?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -603,9 +604,9 @@
           
           <article data-id="geo-4" class="article-item p-3.5 rounded-2xl hover:bg-rose-950/20 transition-all duration-200 group border border-transparent hover:border-rose-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Asia Hopes Democrats Can Provide Relief From Trump’s Iran War, Tariffs: Russell', 'EnergyNow.com', 'https://news.google.com/rss/articles/CBMiqwFBVV95cUxOQkxtUVNlU2Y5TzBYNEhtRjlQMmUwVXloNTBSOG1td0QwZnRvWkI4N2lTa0VKYk1Oc2lfMDdVekhmWTNHcmxwVFZoemJLUV9ONnZjXzNhczBDM0pzSFNmRWtqbTRoOW04M2JTNHJ2b3JGWnExRnpTbzI0am1Zb3ROTnlBV1NUa0REME9fSE40b3l5cTRzRXkyNEZGSlZndXF5S3ZVWlpMaXB0clE?oc=5', 'Sat, 21 Nov 2026 10:41:20', 'Geopolitics')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Iran says held talks with Qatari mediators, urges US to accept conditions', 'Al Jazeera', 'https://news.google.com/rss/articles/CBMitAFBVV95cUxNWHFKUDdNZFRCLWtBLVdXaXJicmtVTFVoMFM2anB6VnA2dER4bHhWTVROaDdpWFhTeUpZYUJRWnZjYzc1b3g1WC1TcTJnZk5EdXpULTRwRFJRMGJRYmRKTzlzd1FiazJrSlNGRHNuUktRRjNaLTBTWlJScGhkeHJMTnYxdUdlcVRJOHZmWFdFeE1fUnlhMHB5MnM1SzcxaTdrWnRiT1BFbktpcmhSemw3anQ1R23SAboBQVVfeXFMT01MTmVjb1NOQWlBR3ZTRUhUU203dVZZSVljRnUwcGhWSUtiQkFOOFdsQjduS0tSVkN0VUtIVDc5NTJ4b21UbVVXWEp2SmdXTFZpbHB1X3FvM3ZHZ2piWURGTU45anA0M3VDOTJiaXh6ZTNZVFhlSlhlTjBoS0FFWjY0NDJ4V04zSUFwcVVORTJqQ083RjAtdmtCanZUMWQxNzgwak5NSWxwMWx5eVZGWHlWODhIM1R4Uzln?oc=5', 'Sat, 21 Nov 2026 21:00:04', 'Geopolitics')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-rose-300 leading-snug line-clamp-2 transition-colors">
-                  Asia Hopes Democrats Can Provide Relief From Trump’s Iran War, Tariffs: Russell
+                  Iran says held talks with Qatari mediators, urges US to accept conditions
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -619,11 +620,11 @@
             </div>
             <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
               <span class="px-2 py-0.5 rounded-md bg-rose-950/60 text-rose-300 border border-rose-800/50 font-medium">
-                EnergyNow.com
+                Al Jazeera
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 10:41:20</span>
-              <a href="https://news.google.com/rss/articles/CBMiqwFBVV95cUxOQkxtUVNlU2Y5TzBYNEhtRjlQMmUwVXloNTBSOG1td0QwZnRvWkI4N2lTa0VKYk1Oc2lfMDdVekhmWTNHcmxwVFZoemJLUV9ONnZjXzNhczBDM0pzSFNmRWtqbTRoOW04M2JTNHJ2b3JGWnExRnpTbzI0am1Zb3ROTnlBV1NUa0REME9fSE40b3l5cTRzRXkyNEZGSlZndXF5S3ZVWlpMaXB0clE?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sat, 21 Nov 2026 21:00:04</span>
+              <a href="https://news.google.com/rss/articles/CBMitAFBVV95cUxNWHFKUDdNZFRCLWtBLVdXaXJicmtVTFVoMFM2anB6VnA2dER4bHhWTVROaDdpWFhTeUpZYUJRWnZjYzc1b3g1WC1TcTJnZk5EdXpULTRwRFJRMGJRYmRKTzlzd1FiazJrSlNGRHNuUktRRjNaLTBTWlJScGhkeHJMTnYxdUdlcVRJOHZmWFdFeE1fUnlhMHB5MnM1SzcxaTdrWnRiT1BFbktpcmhSemw3anQ1R23SAboBQVVfeXFMT01MTmVjb1NOQWlBR3ZTRUhUU203dVZZSVljRnUwcGhWSUtiQkFOOFdsQjduS0tSVkN0VUtIVDc5NTJ4b21UbVVXWEp2SmdXTFZpbHB1X3FvM3ZHZ2piWURGTU45anA0M3VDOTJiaXh6ZTNZVFhlSlhlTjBoS0FFWjY0NDJ4V04zSUFwcVVORTJqQ083RjAtdmtCanZUMWQxNzgwak5NSWxwMWx5eVZGWHlWODhIM1R4Uzln?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -631,9 +632,9 @@
           
           <article data-id="geo-5" class="article-item p-3.5 rounded-2xl hover:bg-rose-950/20 transition-all duration-200 group border border-transparent hover:border-rose-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Senate blocks Iran war resolution in 51-48 vote', 'The Avenue Mail', 'https://news.google.com/rss/articles/CBMidkFVX3lxTE5yeXBhdF9YXzVacEljRnZwMnNsTTY1NVFIYnByTnIyS3pnNGhDQ25fQ0laVTRlWnNqLXFxY3lDU3Y1RGRwWDd3WW9TVHZuRTRwZGc1U3R5cWVrenpUbXh6QS1JWExvZjcwd3NJcmtKMmE5ZWh4ZHc?oc=5', 'Sat, 21 Nov 2026 08:27:04', 'Geopolitics')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Bahrain says Iranian attack hits industrial facility as air defences intercept attacks', 'Reuters', 'https://news.google.com/rss/articles/CBMiuAFBVV95cUxOTzltZHhpNzJyRTg4dE5kYUJSOUJ4azFWY2txckEtQUlGQVVfTEtIUUpWN3dHZWlocXlZWGFidVRIMjN3ZDM4d2xQWVZ0UFAxRm81TGFfbFNZRzMxTXJOemdzOHRNeWJOLXhEWF83a3N0a1hiR0FjbUE1eGZVX002eVpMNHJyX2JoVXp5bFdjcDJBYkhOWFE4a1AzN0hSRE1wTDFmNGxvaFR6TkR6bkd4a3FSSUU1anZp?oc=5', 'Sat, 21 Nov 2026 19:15:00', 'Geopolitics')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-rose-300 leading-snug line-clamp-2 transition-colors">
-                  Senate blocks Iran war resolution in 51-48 vote
+                  Bahrain says Iranian attack hits industrial facility as air defences intercept attacks
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -647,11 +648,11 @@
             </div>
             <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
               <span class="px-2 py-0.5 rounded-md bg-rose-950/60 text-rose-300 border border-rose-800/50 font-medium">
-                The Avenue Mail
+                Reuters
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 08:27:04</span>
-              <a href="https://news.google.com/rss/articles/CBMidkFVX3lxTE5yeXBhdF9YXzVacEljRnZwMnNsTTY1NVFIYnByTnIyS3pnNGhDQ25fQ0laVTRlWnNqLXFxY3lDU3Y1RGRwWDd3WW9TVHZuRTRwZGc1U3R5cWVrenpUbXh6QS1JWExvZjcwd3NJcmtKMmE5ZWh4ZHc?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sat, 21 Nov 2026 19:15:00</span>
+              <a href="https://news.google.com/rss/articles/CBMiuAFBVV95cUxOTzltZHhpNzJyRTg4dE5kYUJSOUJ4azFWY2txckEtQUlGQVVfTEtIUUpWN3dHZWlocXlZWGFidVRIMjN3ZDM4d2xQWVZ0UFAxRm81TGFfbFNZRzMxTXJOemdzOHRNeWJOLXhEWF83a3N0a1hiR0FjbUE1eGZVX002eVpMNHJyX2JoVXp5bFdjcDJBYkhOWFE4a1AzN0hSRE1wTDFmNGxvaFR6TkR6bkd4a3FSSUU1anZp?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -659,9 +660,9 @@
           
           <article data-id="geo-6" class="article-item p-3.5 rounded-2xl hover:bg-rose-950/20 transition-all duration-200 group border border-transparent hover:border-rose-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Former defense secretary suggests Iran war may last until 2029: ‘It’s just gonna take a long time’', 'The Hill', 'https://news.google.com/rss/articles/CBMidkFVX3lxTE9DU1BkMEdwOVpObzk5SlYzLVRoaXhuaXlEcTJVNkN5Ry1iV0RWMHpvSkg3RDVKUHlacXUwdUUtblY2OFIxcXEyY1RaQllKeFVhcXRsTzRqWFlHTk1WM1F0cFB0RzIwbUdmYVNINnJzbWlNWmdURFHSAXtBVV95cUxNTTRtVGNNUzU5UmZKM05KdTV2WWh2QXZZUVdzR05jYk5Ldm03SHlNZnZ0aVd0VEJNT1hSXzZLOTlyOV93dDlMSWd0NDVuaFhHYUFxY3QwTFNiQ1NjTElvTjVUb185cTQ3NzlVN3NkbVBlbTQ3NnFSXzJBX2s?oc=5', 'Sat, 21 Nov 2026 12:52:00', 'Geopolitics')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('DW News. . DW Fact check looks at how pro-Iran networks are using AI-generated videos during the Iran war to shape online narratives, how these networks operate, and the signs that can help users identify them. #dwfactcheck', 'Facebook', 'https://news.google.com/rss/articles/CBMi4gFBVV95cUxOeXFsSkUtMzNGSHJvWGRKaEplU3U4ODlkenowUVpJeEllUTl3YzVzRENBWVJvLUZqS1VRRmtkVlpmbDl4VWlpcDBZRWxXeXZoUGYzY2otY0FVQmhPU3pFRkNnMmhmVXRodHBLNVczSllscG5EcXZvLXkwSjV3TWtINU1CTDhTVHNoUm0zUEswVjk2VjVBenpsVk1CYzRneFVpeGhlX3FyeWNZbFZOeTdLaDFzRUhNYlcwQm5UUklMVFlhWEkyMVZKRnZhT0lsTjk4cFRfYUlEQlJHOUdIUi1oNVd3?oc=5', 'Sat, 21 Nov 2026 15:30:22', 'Geopolitics')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-rose-300 leading-snug line-clamp-2 transition-colors">
-                  Former defense secretary suggests Iran war may last until 2029: ‘It’s just gonna take a long time’
+                  DW News. . DW Fact check looks at how pro-Iran networks are using AI-generated videos during the Iran war to shape online narratives, how these networks operate, and the signs that can help users identify them. #dwfactcheck
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -675,11 +676,11 @@
             </div>
             <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
               <span class="px-2 py-0.5 rounded-md bg-rose-950/60 text-rose-300 border border-rose-800/50 font-medium">
-                The Hill
+                Facebook
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 12:52:00</span>
-              <a href="https://news.google.com/rss/articles/CBMidkFVX3lxTE9DU1BkMEdwOVpObzk5SlYzLVRoaXhuaXlEcTJVNkN5Ry1iV0RWMHpvSkg3RDVKUHlacXUwdUUtblY2OFIxcXEyY1RaQllKeFVhcXRsTzRqWFlHTk1WM1F0cFB0RzIwbUdmYVNINnJzbWlNWmdURFHSAXtBVV95cUxNTTRtVGNNUzU5UmZKM05KdTV2WWh2QXZZUVdzR05jYk5Ldm03SHlNZnZ0aVd0VEJNT1hSXzZLOTlyOV93dDlMSWd0NDVuaFhHYUFxY3QwTFNiQ1NjTElvTjVUb185cTQ3NzlVN3NkbVBlbTQ3NnFSXzJBX2s?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sat, 21 Nov 2026 15:30:22</span>
+              <a href="https://news.google.com/rss/articles/CBMi4gFBVV95cUxOeXFsSkUtMzNGSHJvWGRKaEplU3U4ODlkenowUVpJeEllUTl3YzVzRENBWVJvLUZqS1VRRmtkVlpmbDl4VWlpcDBZRWxXeXZoUGYzY2otY0FVQmhPU3pFRkNnMmhmVXRodHBLNVczSllscG5EcXZvLXkwSjV3TWtINU1CTDhTVHNoUm0zUEswVjk2VjVBenpsVk1CYzRneFVpeGhlX3FyeWNZbFZOeTdLaDFzRUhNYlcwQm5UUklMVFlhWEkyMVZKRnZhT0lsTjk4cFRfYUlEQlJHOUdIUi1oNVd3?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -705,13 +706,13 @@
           </span>
         </div>
 
-        <div class="divide-y divide-emerald-950/30 flex-1 p-2 sm:p-3 space-y-1">
+        <div id="news-list-finance" class="divide-y divide-emerald-950/30 flex-1 p-2 sm:p-3 space-y-1">
           
           <article data-id="fin-1" class="article-item p-3.5 rounded-2xl hover:bg-emerald-950/20 transition-all duration-200 group border border-transparent hover:border-emerald-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Nifty eyes 26,200 as rally strengthens; 6 sectors signal outperformance', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/news/nifty-eyes-26200-as-rally-strengthens-6-sectors-signal-outperformance/articleshow/136050218.cms', 'Sat, 21 Nov 2026 15:09:05', 'Finance')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('InvIT IPO rush gathers pace; 4-5 private trusts likely to go public by Mar 2027', 'ET Markets', 'https://economictimes.indiatimes.com/markets/ipos/fpos/invit-ipo-rush-gathers-pace-4-5-private-trusts-likely-to-go-public-by-mar-2027/articleshow/136069094.cms', 'Sun, 22 Nov 2026 12:15:10', 'Finance')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-emerald-300 leading-snug line-clamp-2 transition-colors">
-                  Nifty eyes 26,200 as rally strengthens; 6 sectors signal outperformance
+                  InvIT IPO rush gathers pace; 4-5 private trusts likely to go public by Mar 2027
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -728,8 +729,8 @@
                 ET Markets
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 15:09:05</span>
-              <a href="https://economictimes.indiatimes.com/markets/stocks/news/nifty-eyes-26200-as-rally-strengthens-6-sectors-signal-outperformance/articleshow/136050218.cms" target="_blank" class="ml-auto flex items-center gap-1 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sun, 22 Nov 2026 12:15:10</span>
+              <a href="https://economictimes.indiatimes.com/markets/ipos/fpos/invit-ipo-rush-gathers-pace-4-5-private-trusts-likely-to-go-public-by-mar-2027/articleshow/136069094.cms" target="_blank" class="ml-auto flex items-center gap-1 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -737,9 +738,9 @@
           
           <article data-id="fin-2" class="article-item p-3.5 rounded-2xl hover:bg-emerald-950/20 transition-all duration-200 group border border-transparent hover:border-emerald-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Stocks to buy: HSBC lists 19 Indian stocks that saw FY27 earnings upgrades, check target prices', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/news/stocks-to-buy-hsbc-lists-19-indian-stocks-that-saw-fy27-earnings-upgrades-check-target-prices/slideshow/136048231.cms', 'Sat, 21 Nov 2026 12:51:34', 'Finance')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('5 penny stocks plunge up to 68% in six months. Do you own any?', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/news/5-penny-stocks-plunge-up-to-68-in-six-months-do-you-own-any/slideshow/136069072.cms', 'Sun, 22 Nov 2026 12:03:45', 'Finance')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-emerald-300 leading-snug line-clamp-2 transition-colors">
-                  Stocks to buy: HSBC lists 19 Indian stocks that saw FY27 earnings upgrades, check target prices
+                  5 penny stocks plunge up to 68% in six months. Do you own any?
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -756,8 +757,8 @@
                 ET Markets
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 12:51:34</span>
-              <a href="https://economictimes.indiatimes.com/markets/stocks/news/stocks-to-buy-hsbc-lists-19-indian-stocks-that-saw-fy27-earnings-upgrades-check-target-prices/slideshow/136048231.cms" target="_blank" class="ml-auto flex items-center gap-1 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sun, 22 Nov 2026 12:03:45</span>
+              <a href="https://economictimes.indiatimes.com/markets/stocks/news/5-penny-stocks-plunge-up-to-68-in-six-months-do-you-own-any/slideshow/136069072.cms" target="_blank" class="ml-auto flex items-center gap-1 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -765,9 +766,9 @@
           
           <article data-id="fin-3" class="article-item p-3.5 rounded-2xl hover:bg-emerald-950/20 transition-all duration-200 group border border-transparent hover:border-emerald-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Concurrent Gainers: These 13 stocks gained for 5 days in a row, all rose over 27%', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/news/concurrent-gainers-these-13-stocks-gained-for-5-days-in-a-row-all-rose-over-27/slideshow/136047969.cms', 'Sat, 21 Nov 2026 12:27:10', 'Finance')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Reliance Brands FY26 revenue up 3.8% to Rs 3,390.9 crore; loss narrows to Rs 137 crore', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/earnings/reliance-brands-fy26-revenue-up-3-8-to-rs-3390-9-crore-loss-narrows-to-rs-137-crore/articleshow/136068185.cms', 'Sun, 22 Nov 2026 11:14:52', 'Finance')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-emerald-300 leading-snug line-clamp-2 transition-colors">
-                  Concurrent Gainers: These 13 stocks gained for 5 days in a row, all rose over 27%
+                  Reliance Brands FY26 revenue up 3.8% to Rs 3,390.9 crore; loss narrows to Rs 137 crore
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -784,8 +785,8 @@
                 ET Markets
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 12:27:10</span>
-              <a href="https://economictimes.indiatimes.com/markets/stocks/news/concurrent-gainers-these-13-stocks-gained-for-5-days-in-a-row-all-rose-over-27/slideshow/136047969.cms" target="_blank" class="ml-auto flex items-center gap-1 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sun, 22 Nov 2026 11:14:52</span>
+              <a href="https://economictimes.indiatimes.com/markets/stocks/earnings/reliance-brands-fy26-revenue-up-3-8-to-rs-3390-9-crore-loss-narrows-to-rs-137-crore/articleshow/136068185.cms" target="_blank" class="ml-auto flex items-center gap-1 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -793,9 +794,9 @@
           
           <article data-id="fin-4" class="article-item p-3.5 rounded-2xl hover:bg-emerald-950/20 transition-all duration-200 group border border-transparent hover:border-emerald-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('AI to lead investment strategy in 2027; Energy and borrowing costs shape macro outlook: Barclays', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/news/ai-to-lead-investment-strategy-in-2027-energy-and-borrowing-costs-shape-macro-outlook-barclays/articleshow/136046648.cms', 'Sat, 21 Nov 2026 11:39:54', 'Finance')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Anthropic\'s post-debut stumble delivers reality check for AI trade', 'ET Markets', 'https://economictimes.indiatimes.com/markets/us-stocks/news/anthropics-post-debut-stumble-delivers-reality-check-for-ai-trade/articleshow/136066633.cms', 'Sun, 22 Nov 2026 09:00:15', 'Finance')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-emerald-300 leading-snug line-clamp-2 transition-colors">
-                  AI to lead investment strategy in 2027; Energy and borrowing costs shape macro outlook: Barclays
+                  Anthropic's post-debut stumble delivers reality check for AI trade
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -812,8 +813,8 @@
                 ET Markets
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 11:39:54</span>
-              <a href="https://economictimes.indiatimes.com/markets/stocks/news/ai-to-lead-investment-strategy-in-2027-energy-and-borrowing-costs-shape-macro-outlook-barclays/articleshow/136046648.cms" target="_blank" class="ml-auto flex items-center gap-1 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sun, 22 Nov 2026 09:00:15</span>
+              <a href="https://economictimes.indiatimes.com/markets/us-stocks/news/anthropics-post-debut-stumble-delivers-reality-check-for-ai-trade/articleshow/136066633.cms" target="_blank" class="ml-auto flex items-center gap-1 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -821,9 +822,9 @@
           
           <article data-id="fin-5" class="article-item p-3.5 rounded-2xl hover:bg-emerald-950/20 transition-all duration-200 group border border-transparent hover:border-emerald-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Market winners: Max Healthcare, Deepak Fertilisers among 10 stocks that surged up to 14% in last week', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/news/market-winners-max-healthcare-deepak-fertilisers-among-10-stocks-that-surged-up-to-14-in-last-week/slideshow/136046616.cms', 'Sat, 21 Nov 2026 11:21:22', 'Finance')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Nifty eyes 26,200 as rally strengthens; 6 sectors signal outperformance', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/news/nifty-eyes-26200-as-rally-strengthens-6-sectors-signal-outperformance/articleshow/136050218.cms', 'Sat, 21 Nov 2026 15:09:05', 'Finance')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-emerald-300 leading-snug line-clamp-2 transition-colors">
-                  Market winners: Max Healthcare, Deepak Fertilisers among 10 stocks that surged up to 14% in last week
+                  Nifty eyes 26,200 as rally strengthens; 6 sectors signal outperformance
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -840,8 +841,8 @@
                 ET Markets
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 11:21:22</span>
-              <a href="https://economictimes.indiatimes.com/markets/stocks/news/market-winners-max-healthcare-deepak-fertilisers-among-10-stocks-that-surged-up-to-14-in-last-week/slideshow/136046616.cms" target="_blank" class="ml-auto flex items-center gap-1 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sat, 21 Nov 2026 15:09:05</span>
+              <a href="https://economictimes.indiatimes.com/markets/stocks/news/nifty-eyes-26200-as-rally-strengthens-6-sectors-signal-outperformance/articleshow/136050218.cms" target="_blank" class="ml-auto flex items-center gap-1 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -849,9 +850,9 @@
           
           <article data-id="fin-6" class="article-item p-3.5 rounded-2xl hover:bg-emerald-950/20 transition-all duration-200 group border border-transparent hover:border-emerald-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('US Treasury yields drop for day and week; AI trade concern spurs safe-haven bid', 'ET Markets', 'https://economictimes.indiatimes.com/markets/bonds/us-treasury-yields-drop-for-day-and-week-ai-trade-concern-spurs-safe-haven-bid/articleshow/136045682.cms', 'Sat, 21 Nov 2026 10:53:49', 'Finance')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Stocks to buy: HSBC lists 19 Indian stocks that saw FY27 earnings upgrades, check target prices', 'ET Markets', 'https://economictimes.indiatimes.com/markets/stocks/news/stocks-to-buy-hsbc-lists-19-indian-stocks-that-saw-fy27-earnings-upgrades-check-target-prices/slideshow/136048231.cms', 'Sat, 21 Nov 2026 12:51:34', 'Finance')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-emerald-300 leading-snug line-clamp-2 transition-colors">
-                  US Treasury yields drop for day and week; AI trade concern spurs safe-haven bid
+                  Stocks to buy: HSBC lists 19 Indian stocks that saw FY27 earnings upgrades, check target prices
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -868,8 +869,8 @@
                 ET Markets
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 10:53:49</span>
-              <a href="https://economictimes.indiatimes.com/markets/bonds/us-treasury-yields-drop-for-day-and-week-ai-trade-concern-spurs-safe-haven-bid/articleshow/136045682.cms" target="_blank" class="ml-auto flex items-center gap-1 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sat, 21 Nov 2026 12:51:34</span>
+              <a href="https://economictimes.indiatimes.com/markets/stocks/news/stocks-to-buy-hsbc-lists-19-indian-stocks-that-saw-fy27-earnings-upgrades-check-target-prices/slideshow/136048231.cms" target="_blank" class="ml-auto flex items-center gap-1 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -895,13 +896,13 @@
           </span>
         </div>
 
-        <div class="divide-y divide-sky-950/30 flex-1 p-2 sm:p-3 space-y-1">
+        <div id="news-list-sports" class="divide-y divide-sky-950/30 flex-1 p-2 sm:p-3 space-y-1">
           
           <article data-id="spt-1" class="article-item p-3.5 rounded-2xl hover:bg-sky-950/20 transition-all duration-200 group border border-transparent hover:border-sky-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Lehmann maintains he did not know of sandpaper use after Bancroft\'s article', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563472.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 16:09:57', 'Sports')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Railways T20 debutant Jamshed Alam picks up four wickets in four balls', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563589.html?ex_cid=OTC-RSS', 'Sun, 22 Nov 2026 07:06:54', 'Sports')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-sky-300 leading-snug line-clamp-2 transition-colors">
-                  Lehmann maintains he did not know of sandpaper use after Bancroft's article
+                  Railways T20 debutant Jamshed Alam picks up four wickets in four balls
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -918,8 +919,8 @@
                 ESPNcricinfo
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 16:09:57</span>
-              <a href="https://www.cricinfo.com/ci/content/story/1563472.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sun, 22 Nov 2026 07:06:54</span>
+              <a href="https://www.cricinfo.com/ci/content/story/1563589.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -927,9 +928,9 @@
           
           <article data-id="spt-2" class="article-item p-3.5 rounded-2xl hover:bg-sky-950/20 transition-all duration-200 group border border-transparent hover:border-sky-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('England face captaincy dilemma after deputy Jacks suffers hand injury', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563497.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 14:38:56', 'Sports')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('New Zealand battle to try and save the Test after India batters\' record-breaking day', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563584.html?ex_cid=OTC-RSS', 'Sun, 22 Nov 2026 06:47:00', 'Sports')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-sky-300 leading-snug line-clamp-2 transition-colors">
-                  England face captaincy dilemma after deputy Jacks suffers hand injury
+                  New Zealand battle to try and save the Test after India batters' record-breaking day
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -946,8 +947,8 @@
                 ESPNcricinfo
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 14:38:56</span>
-              <a href="https://www.cricinfo.com/ci/content/story/1563497.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sun, 22 Nov 2026 06:47:00</span>
+              <a href="https://www.cricinfo.com/ci/content/story/1563584.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -955,9 +956,9 @@
           
           <article data-id="spt-3" class="article-item p-3.5 rounded-2xl hover:bg-sky-950/20 transition-all duration-200 group border border-transparent hover:border-sky-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Ben McKinney called up to England Test squad for South Africa', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563517.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 14:35:17', 'Sports')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Lehmann maintains he did not know of sandpaper use after Bancroft\'s article', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563472.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 16:09:57', 'Sports')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-sky-300 leading-snug line-clamp-2 transition-colors">
-                  Ben McKinney called up to England Test squad for South Africa
+                  Lehmann maintains he did not know of sandpaper use after Bancroft's article
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -974,8 +975,8 @@
                 ESPNcricinfo
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 14:35:17</span>
-              <a href="https://www.cricinfo.com/ci/content/story/1563517.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sat, 21 Nov 2026 16:09:57</span>
+              <a href="https://www.cricinfo.com/ci/content/story/1563472.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -983,9 +984,9 @@
           
           <article data-id="spt-4" class="article-item p-3.5 rounded-2xl hover:bg-sky-950/20 transition-all duration-200 group border border-transparent hover:border-sky-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Mushfiqur Rahim ruled out of Centurion Test because of groin injury', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563495.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 12:25:50', 'Sports')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('England face captaincy dilemma after deputy Jacks suffers hand injury', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563497.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 14:38:56', 'Sports')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-sky-300 leading-snug line-clamp-2 transition-colors">
-                  Mushfiqur Rahim ruled out of Centurion Test because of groin injury
+                  England face captaincy dilemma after deputy Jacks suffers hand injury
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -1002,8 +1003,8 @@
                 ESPNcricinfo
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 12:25:50</span>
-              <a href="https://www.cricinfo.com/ci/content/story/1563495.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sat, 21 Nov 2026 14:38:56</span>
+              <a href="https://www.cricinfo.com/ci/content/story/1563497.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -1011,9 +1012,9 @@
           
           <article data-id="spt-5" class="article-item p-3.5 rounded-2xl hover:bg-sky-950/20 transition-all duration-200 group border border-transparent hover:border-sky-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Chaudhary, Edwards star as Australia end bleak week with win', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563459.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 12:21:12', 'Sports')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Ben McKinney called up to England Test squad for South Africa', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563517.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 14:35:17', 'Sports')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-sky-300 leading-snug line-clamp-2 transition-colors">
-                  Chaudhary, Edwards star as Australia end bleak week with win
+                  Ben McKinney called up to England Test squad for South Africa
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -1030,8 +1031,8 @@
                 ESPNcricinfo
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 12:21:12</span>
-              <a href="https://www.cricinfo.com/ci/content/story/1563459.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sat, 21 Nov 2026 14:35:17</span>
+              <a href="https://www.cricinfo.com/ci/content/story/1563517.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -1039,9 +1040,9 @@
           
           <article data-id="spt-6" class="article-item p-3.5 rounded-2xl hover:bg-sky-950/20 transition-all duration-200 group border border-transparent hover:border-sky-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Oram on Duffy: One bad day won\'t \'put him in the depths of despair\'', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563466.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 11:07:32', 'Sports')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Mushfiqur Rahim ruled out of Centurion Test because of groin injury', 'ESPNcricinfo', 'https://www.cricinfo.com/ci/content/story/1563495.html?ex_cid=OTC-RSS', 'Sat, 21 Nov 2026 12:25:50', 'Sports')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-sky-300 leading-snug line-clamp-2 transition-colors">
-                  Oram on Duffy: One bad day won't 'put him in the depths of despair'
+                  Mushfiqur Rahim ruled out of Centurion Test because of groin injury
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -1058,8 +1059,8 @@
                 ESPNcricinfo
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Sat, 21 Nov 2026 11:07:32</span>
-              <a href="https://www.cricinfo.com/ci/content/story/1563466.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sat, 21 Nov 2026 12:25:50</span>
+              <a href="https://www.cricinfo.com/ci/content/story/1563495.html?ex_cid=OTC-RSS" target="_blank" class="ml-auto flex items-center gap-1 text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Source →</span>
               </a>
             </div>
@@ -1085,13 +1086,13 @@
           </span>
         </div>
 
-        <div class="divide-y divide-purple-950/30 flex-1 p-2 sm:p-3 space-y-1">
+        <div id="news-list-jobs" class="divide-y divide-purple-950/30 flex-1 p-2 sm:p-3 space-y-1">
           
           <article data-id="job-1" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('Technology firms hunt for talent to build and deploy AI agents', 'The New Indian Express', 'https://news.google.com/rss/articles/CBMitwFBVV95cUxQZnBrdzhVTmotYlBjLVg0MnAwekUyZnBVVUhpcmRuajhnNkZKOFhPbURVdDl1b2t1X1NyMVNaUnhYeDFYSmUxbWhsSndJbnpIZG5CUldqWnpRWmZEXzZLSkNsUm1SQ3hTVFE5ejh6ekdlOHlDenRIT3M0VmVPanY0ZVpMSEd2RmhrSDh0Tzh4MDhlNWVTS0RzbkVoUEtLUE9UNXdHcXdPQk5oYS1pZk9UM1E5RHFxZUnSAcQBQVVfeXFMUEpZeFU4T1NNR2NXSWVhNHpjeHlLel8wdHRjMkdQVk80ZzNkNHhZdjdrRnJYUjZIc3FmbkVuamtXbGMwa3IzSFFQc2tUdWs4cVZKd3hLQThWSU8tZ2kwUkd4NU5hakR0d2UwUVVGTTVucXdaV2NRU0s2UGQySGxfY2M4VGM1a2UzbGRFcDBTb0FRcmVoVkV3X3JiT1Y5TlVHRHAyd0s0Q0J0TEVjVk5lNDQxRmY1SVZxR0c0NFB0YmZNd2NDdQ?oc=5', 'Fri, 20 Nov 2026 03:09:02', 'AI Careers')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('Indian Man Gets 800 Crore Salary in AI: Is This The New History?', 'Tupaki English', 'https://news.google.com/rss/articles/CBMimwFBVV95cUxPbkNDc2l2Mi1zRDF6RFhRblpYZV9MNFRGZXk5N2VqV25ISjVLcDNGOFk4eHpqVGI4QlZVWXRaQnpwdGhPMUhaVW41akdLeThyYjhFdEU5ZEFZNGJ2WG1OWFNvWnJKak9zRGtXN3FiTXFJeEZfRXgyUGY0SHhvTTAzRnBOVmJBVlYyZ3FVcS1XdHB0OGFwM0M2elhBONIBoAFBVV95cUxORExyMExKRzVuSEpaeDVmUGhpSnFqbVExXzNnSDI4VDBWVTI1TDdyNWdFMk5aX25vMG9pNkNkTWI2Q24yWmlDTFZDUzUyNnZvc0NxblZZcjY1T2lERHFVemVpV2V0WVJzMWtFdlBHcFdDbk1oeFZDcjRwMnczclJUeEJOSkFBYTNJVmVLT19mci1EamN4Zm1rR29BOG1jZlNl?oc=5', 'Sun, 22 Nov 2026 04:12:50', 'AI Careers')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-purple-300 leading-snug line-clamp-2 transition-colors">
-                  Technology firms hunt for talent to build and deploy AI agents
+                  Indian Man Gets 800 Crore Salary in AI: Is This The New History?
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -1105,11 +1106,11 @@
             </div>
             <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
               <span class="px-2 py-0.5 rounded-md bg-purple-950/60 text-purple-300 border border-purple-800/50 font-medium">
-                The New Indian Express
+                Tupaki English
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Fri, 20 Nov 2026 03:09:02</span>
-              <a href="https://news.google.com/rss/articles/CBMitwFBVV95cUxQZnBrdzhVTmotYlBjLVg0MnAwekUyZnBVVUhpcmRuajhnNkZKOFhPbURVdDl1b2t1X1NyMVNaUnhYeDFYSmUxbWhsSndJbnpIZG5CUldqWnpRWmZEXzZLSkNsUm1SQ3hTVFE5ejh6ekdlOHlDenRIT3M0VmVPanY0ZVpMSEd2RmhrSDh0Tzh4MDhlNWVTS0RzbkVoUEtLUE9UNXdHcXdPQk5oYS1pZk9UM1E5RHFxZUnSAcQBQVVfeXFMUEpZeFU4T1NNR2NXSWVhNHpjeHlLel8wdHRjMkdQVk80ZzNkNHhZdjdrRnJYUjZIc3FmbkVuamtXbGMwa3IzSFFQc2tUdWs4cVZKd3hLQThWSU8tZ2kwUkd4NU5hakR0d2UwUVVGTTVucXdaV2NRU0s2UGQySGxfY2M4VGM1a2UzbGRFcDBTb0FRcmVoVkV3X3JiT1Y5TlVHRHAyd0s0Q0J0TEVjVk5lNDQxRmY1SVZxR0c0NFB0YmZNd2NDdQ?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Sun, 22 Nov 2026 04:12:50</span>
+              <a href="https://news.google.com/rss/articles/CBMimwFBVV95cUxPbkNDc2l2Mi1zRDF6RFhRblpYZV9MNFRGZXk5N2VqV25ISjVLcDNGOFk4eHpqVGI4QlZVWXRaQnpwdGhPMUhaVW41akdLeThyYjhFdEU5ZEFZNGJ2WG1OWFNvWnJKak9zRGtXN3FiTXFJeEZfRXgyUGY0SHhvTTAzRnBOVmJBVlYyZ3FVcS1XdHB0OGFwM0M2elhBONIBoAFBVV95cUxORExyMExKRzVuSEpaeDVmUGhpSnFqbVExXzNnSDI4VDBWVTI1TDdyNWdFMk5aX25vMG9pNkNkTWI2Q24yWmlDTFZDUzUyNnZvc0NxblZZcjY1T2lERHFVemVpV2V0WVJzMWtFdlBHcFdDbk1oeFZDcjRwMnczclJUeEJOSkFBYTNJVmVLT19mci1EamN4Zm1rR29BOG1jZlNl?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Apply →</span>
               </a>
             </div>
@@ -1145,9 +1146,9 @@
           
           <article data-id="job-3" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('What Is a Machine Learning Engineer? (+ How to Get Started)', 'Coursera', 'https://news.google.com/rss/articles/CBMidkFVX3lxTE0wVWlyNmwtMWY2YU1lNjI5V1Z5NjdMWmZyczdoQjctNUJYenJXRDVzSk4xQ2FrQUxnRWlURjExU1BJcXIzZ2xnbFZWM2VPZHFSUjRVQ1F0TXVEMlFFbER1NzlwTHQyaUp5NWFPeHppbHAyQW1Wemc?oc=5', 'Tue, 17 Nov 2026 08:00:00', 'AI Careers')" class="cursor-pointer block flex-1">
+              <div onclick="openStoryModal('\'Truly inspiring\': Andhra Pradesh man lands Rs 1.06 crore remote AI job at Canada-based firm', 'Moneycontrol.com', 'https://news.google.com/rss/articles/CBMi3AFBVV95cUxNT2tUU2hodWhVZ3djUzN3cW5sYUFVU2tKOXBmeHJkLVRyV0hfUHB1dnRlTWhweHdzNlpNSVhIeTVxNFJCenBHWmtPT3pyOUh3aXRJa0ZUdlZRbE56aWNnbEtqYU9MWm5WRHVnQ0tYeHkxUXhoUW9oTHI3bWRGVzFibFJGWFdSRVVXUWY1SlVLYk9ELWhBbFB1SlhiUEFWSTlTdFJLaTRCR2poWlhJLWZHWWJZcGlRUEJYRHVjN2pqS2ozY3Q2eUhtRG9sWm9BcDJHODNfNHg1VmJlMklx0gHiAUFVX3lxTE1JeXFXT0ltR1gyRUJSOVk3bzU5Zl9jQzB6aklkSE1UOGdzT2NOM1FBb3NsWGdVQWZlNTRLQTVQOEMwRHRJWmZ6OEwtMnJaeGZOQjJCdm9jS05lZ3hLUEVDWVFDY0dQcWJSWlY2X0VqSXYwLVNnZXlKa0w0X0p5LTZIdWtjZGVNczVMYzNtdmVzWDJ1MFR0ZUVIcEY5azA4bUZJdE5KN1g4aG16RUhtRGJROVBiY3NVY095SExhTDJ5QVhNQnhDeHlram9FWG9ZeFoycy1XYmt3SDdpdWRPa25kcWc?oc=5', 'Sun, 02 Aug 2026 07:00:00', 'AI Careers')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-purple-300 leading-snug line-clamp-2 transition-colors">
-                  What Is a Machine Learning Engineer? (+ How to Get Started)
+                  'Truly inspiring': Andhra Pradesh man lands Rs 1.06 crore remote AI job at Canada-based firm
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -1155,62 +1156,6 @@
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
                 </button>
                 <button onclick="toggleRead('job-3', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                </button>
-              </div>
-            </div>
-            <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
-              <span class="px-2 py-0.5 rounded-md bg-purple-950/60 text-purple-300 border border-purple-800/50 font-medium">
-                Coursera
-              </span>
-              <span>&bull;</span>
-              <span class="text-slate-400">Tue, 17 Nov 2026 08:00:00</span>
-              <a href="https://news.google.com/rss/articles/CBMidkFVX3lxTE0wVWlyNmwtMWY2YU1lNjI5V1Z5NjdMWmZyczdoQjctNUJYenJXRDVzSk4xQ2FrQUxnRWlURjExU1BJcXIzZ2xnbFZWM2VPZHFSUjRVQ1F0TXVEMlFFbER1NzlwTHQyaUp5NWFPeHppbHAyQW1Wemc?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                <span class="text-[10px] font-bold uppercase">Apply →</span>
-              </a>
-            </div>
-          </article>
-          
-          <article data-id="job-4" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
-            <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('How to Become an AI Engineer Fast (Skills, Projects, Salary)', 'Towards Data Science', 'https://news.google.com/rss/articles/CBMikgFBVV95cUxNV19PVXVkbGFNTW9XSlRYY3NLZ0VQc1Bzby05R0swOFFWc2t4TENBUVFnNnI4ckhSdFhRUmZwWjkzWWJseHhtcDFfVmZJclh5bVpxaWJyLTA2bExjaEYzOEJPbVdoOER5ZldZYXU0andsRXQ4TUFZWjBVdEVBWlp5SjA4UUxZRnVkYll1cXNVNG1qUQ?oc=5', 'Sun, 29 Mar 2026 16:26:39', 'AI Careers')" class="cursor-pointer block flex-1">
-                <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-purple-300 leading-snug line-clamp-2 transition-colors">
-                  How to Become an AI Engineer Fast (Skills, Projects, Salary)
-                </h3>
-              </div>
-              <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
-                <button onclick="toggleBookmark('job-4', this)" title="Save for later" class="bookmark-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-                </button>
-                <button onclick="toggleRead('job-4', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                </button>
-              </div>
-            </div>
-            <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
-              <span class="px-2 py-0.5 rounded-md bg-purple-950/60 text-purple-300 border border-purple-800/50 font-medium">
-                Towards Data Science
-              </span>
-              <span>&bull;</span>
-              <span class="text-slate-400">Sun, 29 Mar 2026 16:26:39</span>
-              <a href="https://news.google.com/rss/articles/CBMikgFBVV95cUxNV19PVXVkbGFNTW9XSlRYY3NLZ0VQc1Bzby05R0swOFFWc2t4TENBUVFnNnI4ckhSdFhRUmZwWjkzWWJseHhtcDFfVmZJclh5bVpxaWJyLTA2bExjaEYzOEJPbVdoOER5ZldZYXU0andsRXQ4TUFZWjBVdEVBWlp5SjA4UUxZRnVkYll1cXNVNG1qUQ?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                <span class="text-[10px] font-bold uppercase">Apply →</span>
-              </a>
-            </div>
-          </article>
-          
-          <article data-id="job-5" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
-            <div class="flex items-start justify-between gap-3">
-              <div onclick="openStoryModal('\'Truly inspiring\': Andhra Pradesh man lands Rs 1.06 crore remote AI job at Canada-based firm', 'Moneycontrol.com', 'https://news.google.com/rss/articles/CBMi3AFBVV95cUxNT2tUU2hodWhVZ3djUzN3cW5sYUFVU2tKOXBmeHJkLVRyV0hfUHB1dnRlTWhweHdzNlpNSVhIeTVxNFJCenBHWmtPT3pyOUh3aXRJa0ZUdlZRbE56aWNnbEtqYU9MWm5WRHVnQ0tYeHkxUXhoUW9oTHI3bWRGVzFibFJGWFdSRVVXUWY1SlVLYk9ELWhBbFB1SlhiUEFWSTlTdFJLaTRCR2poWlhJLWZHWWJZcGlRUEJYRHVjN2pqS2ozY3Q2eUhtRG9sWm9BcDJHODNfNHg1VmJlMklx0gHiAUFVX3lxTE1JeXFXT0ltR1gyRUJSOVk3bzU5Zl9jQzB6aklkSE1UOGdzT2NOM1FBb3NsWGdVQWZlNTRLQTVQOEMwRHRJWmZ6OEwtMnJaeGZOQjJCdm9jS05lZ3hLUEVDWVFDY0dQcWJSWlY2X0VqSXYwLVNnZXlKa0w0X0p5LTZIdWtjZGVNczVMYzNtdmVzWDJ1MFR0ZUVIcEY5azA4bUZJdE5KN1g4aG16RUhtRGJROVBiY3NVY095SExhTDJ5QVhNQnhDeHlram9FWG9ZeFoycy1XYmt3SDdpdWRPa25kcWc?oc=5', 'Sun, 02 Aug 2026 07:00:00', 'AI Careers')" class="cursor-pointer block flex-1">
-                <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-purple-300 leading-snug line-clamp-2 transition-colors">
-                  'Truly inspiring': Andhra Pradesh man lands Rs 1.06 crore remote AI job at Canada-based firm
-                </h3>
-              </div>
-              <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
-                <button onclick="toggleBookmark('job-5', this)" title="Save for later" class="bookmark-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-                </button>
-                <button onclick="toggleRead('job-5', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 </button>
               </div>
@@ -1227,11 +1172,67 @@
             </div>
           </article>
           
-          <article data-id="job-6" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
+          <article data-id="job-4" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
+            <div class="flex items-start justify-between gap-3">
+              <div onclick="openStoryModal('Remote AI Jobs: Navigating Work-from-Home Careers in Artificial Intelligence', 'Coursera', 'https://news.google.com/rss/articles/CBMiXEFVX3lxTFBmbWladjExY1N5UXg1UEktZ2RaeWZkT1ZqekxWQkg4b1VxUS1tT2xfZWlBeHV1XzJYWVh5OVVBWUR5T2Jvb3BjWVhMSmltaFRNcl9WNEc4M3RLZ2tD?oc=5', 'Mon, 29 Jun 2026 07:00:00', 'AI Careers')" class="cursor-pointer block flex-1">
+                <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-purple-300 leading-snug line-clamp-2 transition-colors">
+                  Remote AI Jobs: Navigating Work-from-Home Careers in Artificial Intelligence
+                </h3>
+              </div>
+              <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
+                <button onclick="toggleBookmark('job-4', this)" title="Save for later" class="bookmark-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                </button>
+                <button onclick="toggleRead('job-4', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
+              <span class="px-2 py-0.5 rounded-md bg-purple-950/60 text-purple-300 border border-purple-800/50 font-medium">
+                Coursera
+              </span>
+              <span>&bull;</span>
+              <span class="text-slate-400">Mon, 29 Jun 2026 07:00:00</span>
+              <a href="https://news.google.com/rss/articles/CBMiXEFVX3lxTFBmbWladjExY1N5UXg1UEktZ2RaeWZkT1ZqekxWQkg4b1VxUS1tT2xfZWlBeHV1XzJYWVh5OVVBWUR5T2Jvb3BjWVhMSmltaFRNcl9WNEc4M3RLZ2tD?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span class="text-[10px] font-bold uppercase">Apply →</span>
+              </a>
+            </div>
+          </article>
+          
+          <article data-id="job-5" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
               <div onclick="openStoryModal('40 Remote AI Jobs Hiring Today (With Salary Ranges up to $350k)', 'Tech.co', 'https://news.google.com/rss/articles/CBMiVEFVX3lxTE9oMm4xUFdvVUpvNDZvNGhVcldCc2REVXFiLWxFSWF6c2hrRks3aGY1VHBWbGhmTFZGeUdZTUpRMWlGN0VHckFYS1R4YUE5MzNTLVUyQw?oc=5', 'Fri, 02 Oct 2026 07:00:00', 'AI Careers')" class="cursor-pointer block flex-1">
                 <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-purple-300 leading-snug line-clamp-2 transition-colors">
                   40 Remote AI Jobs Hiring Today (With Salary Ranges up to $350k)
+                </h3>
+              </div>
+              <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
+                <button onclick="toggleBookmark('job-5', this)" title="Save for later" class="bookmark-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                </button>
+                <button onclick="toggleRead('job-5', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
+              <span class="px-2 py-0.5 rounded-md bg-purple-950/60 text-purple-300 border border-purple-800/50 font-medium">
+                Tech.co
+              </span>
+              <span>&bull;</span>
+              <span class="text-slate-400">Fri, 02 Oct 2026 07:00:00</span>
+              <a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE9oMm4xUFdvVUpvNDZvNGhVcldCc2REVXFiLWxFSWF6c2hrRks3aGY1VHBWbGhmTFZGeUdZTUpRMWlGN0VHckFYS1R4YUE5MzNTLVUyQw?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span class="text-[10px] font-bold uppercase">Apply →</span>
+              </a>
+            </div>
+          </article>
+          
+          <article data-id="job-6" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
+            <div class="flex items-start justify-between gap-3">
+              <div onclick="openStoryModal('AI engineer is the #1 fastest-growing job on LinkedIn', 'Ohio Tech News', 'https://news.google.com/rss/articles/CBMiggFBVV95cUxOTzhOcTB5blBFdGp1VlBYRG5oZkZsWmdXRnA5Vmo1NDBueDAyTl9qZ2g5TzlLUTFvOUJfS0F1WjFCZDJFTUNvcG54Sms2aXhDMFdudm1ybElvd0JPN0NGcTgzemxhNllTS1czRTl5U3pyZXpNY0ozem9MNHlxMnZ5RmZB?oc=5', 'Thu, 29 Jan 2026 08:00:00', 'AI Careers')" class="cursor-pointer block flex-1">
+                <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-purple-300 leading-snug line-clamp-2 transition-colors">
+                  AI engineer is the #1 fastest-growing job on LinkedIn
                 </h3>
               </div>
               <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
@@ -1245,11 +1246,11 @@
             </div>
             <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
               <span class="px-2 py-0.5 rounded-md bg-purple-950/60 text-purple-300 border border-purple-800/50 font-medium">
-                Tech.co
+                Ohio Tech News
               </span>
               <span>&bull;</span>
-              <span class="text-slate-400">Fri, 02 Oct 2026 07:00:00</span>
-              <a href="https://news.google.com/rss/articles/CBMiVEFVX3lxTE9oMm4xUFdvVUpvNDZvNGhVcldCc2REVXFiLWxFSWF6c2hrRks3aGY1VHBWbGhmTFZGeUdZTUpRMWlGN0VHckFYS1R4YUE5MzNTLVUyQw?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-slate-400">Thu, 29 Jan 2026 08:00:00</span>
+              <a href="https://news.google.com/rss/articles/CBMiggFBVV95cUxOTzhOcTB5blBFdGp1VlBYRG5oZkZsWmdXRnA5Vmo1NDBueDAyTl9qZ2g5TzlLUTFvOUJfS0F1WjFCZDJFTUNvcG54Sms2aXhDMFdudm1ybElvd0JPN0NGcTgzemxhNllTS1czRTl5U3pyZXpNY0ozem9MNHlxMnZ5RmZB?oc=5" target="_blank" class="ml-auto flex items-center gap-1 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-bold uppercase">Apply →</span>
               </a>
             </div>
@@ -1301,11 +1302,11 @@
       <div class="p-4 rounded-2xl bg-amber-950/30 border border-amber-900/50 space-y-2 font-mono">
         <div class="flex justify-between items-center text-sm">
           <span class="text-slate-300 font-semibold">24K Pure Gold:</span>
-          <span id="calc-24k-val" class="text-amber-300 font-bold text-base">₹106,241</span>
+          <span id="calc-24k-val" class="text-amber-300 font-bold text-base">₹105,691</span>
         </div>
         <div class="flex justify-between items-center text-sm">
           <span class="text-slate-300 font-semibold">22K Hallmarked:</span>
-          <span id="calc-22k-val" class="text-amber-400 font-bold text-base">₹97,387</span>
+          <span id="calc-22k-val" class="text-amber-400 font-bold text-base">₹96,883</span>
         </div>
         <div class="text-[10px] text-slate-400 pt-1 border-t border-amber-900/40">
           Based on current Mumbai spot benchmark + standard duties.
@@ -1493,7 +1494,7 @@
     }
 
     // 7. Interactive Gold Weight Calculator (Mumbai IBJA)
-    const base10gRate = parseFloat("₹106,241".replace(/[^0-9.]/g, '')) || 106241;
+    const base10gRate = parseFloat("₹105,691".replace(/[^0-9.]/g, '')) || 106241;
     function openGoldCalculator() {
       document.getElementById('gold-modal').classList.remove('hidden');
       document.getElementById('gold-modal').classList.add('flex');
@@ -1559,8 +1560,8 @@
       }
 
       let script = "Good morning Mumbai! Here is your Daily Intelligence Briefing. ";
-      script += "Today the temperature is 23.9 degrees with Clear Sky, and the Air Quality Index is 220. ";
-      script += "24 karat Gold in Mumbai is ₹106,241 per 10 grams, 22 karat is ₹97,387, and Silver is ₹123,322 per kilo. ";
+      script += "Today the temperature is 31.7 degrees with Clear Sky, and the Air Quality Index is 178. ";
+      script += "24 karat Gold in Mumbai is ₹105,691 per 10 grams, 22 karat is ₹96,883, and Silver is ₹122,684 per kilo. ";
       
       const geoItems = document.querySelectorAll('[data-category="geopolitics"] .article-title');
       if (geoItems.length > 0) script += "Top Geopolitics: " + geoItems[0].textContent.trim() + ". ";
@@ -1574,7 +1575,183 @@
       synth.speak(utter);
     }
 
-    // Restore bookmarks & read state on page load
+    // 10. REALTIME CLIENT-SIDE LIVE INGESTION ENGINE (OPTION 2)
+    const LIVE_FEED_SOURCES = {
+      geopolitics: [
+        { url: "https://news.google.com/rss/search?q=Iran+OR+USA+war+conflict+when:1d&hl=en-IN&gl=IN&ceid=IN:en", label: "Google News", theme: "rose" }
+      ],
+      finance: [
+        { url: "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms", label: "ET Markets", theme: "emerald" }
+      ],
+      sports: [
+        { url: "https://www.espncricinfo.com/rss/content/story/feeds/0.xml", label: "ESPNcricinfo", theme: "sky" },
+        { url: "https://feeds.bbci.co.uk/sport/football/rss.xml", label: "BBC Football", theme: "sky" }
+      ],
+      jobs: [
+        { url: "https://news.google.com/rss/search?q=%22AI+Engineer%22+OR+%22Java+Lead%22+OR+%22GenAI%22+jobs+India+when:2d&hl=en-IN&gl=IN&ceid=IN:en", label: "India Jobs", theme: "purple" },
+        { url: "https://news.google.com/rss/search?q=Remote+%22AI+Engineer%22+OR+%22Machine+Learning+Engineer%22+jobs&hl=en-IN&gl=IN&ceid=IN:en", label: "Remote AI", theme: "purple" }
+      ]
+    };
+
+    function formatRelativeTime(dateStr) {
+      try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return "Recent";
+        const diffSec = Math.floor((new Date() - d) / 1000);
+        if (diffSec < 60) return "Just now";
+        if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
+        if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
+        return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+      } catch (e) {
+        return "Recent";
+      }
+    }
+
+    async function fetchXmlViaProxy(url) {
+      const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(url);
+      const resp = await fetch(proxyUrl, { cache: "no-store" });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const text = await resp.text();
+      const parser = new DOMParser();
+      return parser.parseFromString(text, "text/xml");
+    }
+
+    async function fetchLiveCategory(catId, sources, themeColor) {
+      const container = document.getElementById(`news-list-${catId}`);
+      if (!container) return;
+
+      let allEntries = [];
+      for (const src of sources) {
+        try {
+          const xml = await fetchXmlViaProxy(src.url);
+          const items = xml.querySelectorAll("item");
+          items.forEach((item, idx) => {
+            if (idx >= 6) return;
+            let title = item.querySelector("title")?.textContent || "";
+            let link = item.querySelector("link")?.textContent || "#";
+            let pubDate = item.querySelector("pubDate")?.textContent || "";
+            let source = src.label;
+
+            if (title.includes(" - ")) {
+              const parts = title.split(" - ");
+              if (parts.length > 1 && parts[parts.length - 1].length < 40) {
+                if (!source) source = parts[parts.length - 1].trim();
+                parts.pop();
+                title = parts.join(" - ").trim();
+              }
+            }
+
+            if (title) {
+              allEntries.push({
+                title: title.replace(/<[^>]*>?/gm, '').trim(),
+                link,
+                pubDate: formatRelativeTime(pubDate),
+                source: source || "News",
+                rawDate: pubDate ? new Date(pubDate).getTime() : 0
+              });
+            }
+          });
+        } catch (e) {
+          console.warn(`Live fetch error on ${catId}:`, e);
+        }
+      }
+
+      if (allEntries.length === 0) return;
+
+      // Sort by newest and pick top 6
+      allEntries.sort((a, b) => b.rawDate - a.rawDate);
+      const topEntries = allEntries.slice(0, 6);
+
+      let html = "";
+      topEntries.forEach((item, idx) => {
+        const id = `${catId.substring(0, 3)}-live-${idx + 1}`;
+        const escapedTitle = item.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        html += `
+          <article data-id="${id}" class="article-item p-3.5 rounded-2xl hover:bg-${themeColor}-950/20 transition-all duration-200 group border border-transparent hover:border-${themeColor}-800/40 hover:shadow-xl relative animate-fade-in-up">
+            <div class="flex items-start justify-between gap-3">
+              <div onclick="openStoryModal('${escapedTitle}', '${item.source}', '${item.link}', '${item.pubDate}', '${catId}')" class="cursor-pointer block flex-1">
+                <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-${themeColor}-300 leading-snug line-clamp-2 transition-colors">
+                  ${item.title}
+                </h3>
+              </div>
+              <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
+                <button onclick="toggleBookmark('${id}', this)" title="Save for later" class="bookmark-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                </button>
+                <button onclick="toggleRead('${id}', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
+              <span class="px-2 py-0.5 rounded-md bg-${themeColor}-950/60 text-${themeColor}-300 border border-${themeColor}-800/50 font-medium">
+                ${item.source}
+              </span>
+              <span>&bull;</span>
+              <span class="text-${themeColor}-400 font-semibold">${item.pubDate}</span>
+              <a href="${item.link}" target="_blank" class="ml-auto flex items-center gap-1 text-${themeColor}-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span class="text-[10px] font-bold uppercase">Source →</span>
+              </a>
+            </div>
+          </article>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    async function fetchLiveWeatherMumbai() {
+      try {
+        const resp = await fetch("https://api.open-meteo.com/v1/forecast?latitude=19.0760&longitude=72.8777&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=sunrise,sunset&timezone=Asia%2FKolkata");
+        if (!resp.ok) return;
+        const data = await resp.json();
+        if (data.current) {
+          const temp = Math.round(data.current.temperature_2m * 10) / 10;
+          const tempEl = document.querySelector(".neon-card:nth-child(5) .text-2xl, .neon-card:nth-child(5) .text-3xl");
+          if (tempEl) tempEl.textContent = `${temp}°C`;
+        }
+      } catch (e) {
+        console.warn("Live weather fetch error:", e);
+      }
+    }
+
+    async function refreshAllLiveIntel() {
+      const spinner = document.getElementById("refresh-spinner");
+      if (spinner) spinner.classList.add("animate-spin");
+
+      try {
+        await Promise.allSettled([
+          fetchLiveCategory("geopolitics", LIVE_FEED_SOURCES.geopolitics, "rose"),
+          fetchLiveCategory("finance", LIVE_FEED_SOURCES.finance, "emerald"),
+          fetchLiveCategory("sports", LIVE_FEED_SOURCES.sports, "sky"),
+          fetchLiveCategory("jobs", LIVE_FEED_SOURCES.jobs, "purple"),
+          fetchLiveWeatherMumbai()
+        ]);
+        
+        // Re-apply saved bookmarks & read state
+        const b = getBookmarks();
+        const r = getReadItems();
+        b.forEach(id => {
+          const btn = document.querySelector(`[data-id="${id}"] .bookmark-btn`);
+          if (btn) { btn.classList.remove('text-slate-400'); btn.classList.add('text-amber-400'); }
+        });
+        r.forEach(id => {
+          const article = document.querySelector(`[data-id="${id}"]`);
+          const btn = document.querySelector(`[data-id="${id}"] .read-btn`);
+          if (article) article.classList.add('is-read');
+          if (btn) { btn.classList.remove('text-slate-400'); btn.classList.add('text-emerald-400'); }
+        });
+        updateSavedCount();
+      } finally {
+        if (spinner) spinner.classList.remove("animate-spin");
+      }
+    }
+
+    function triggerManualRefresh() {
+      refreshAllLiveIntel();
+    }
+
+    // Auto-fetch on page load & auto-refresh every 10 minutes
     document.addEventListener('DOMContentLoaded', () => {
       const b = getBookmarks();
       const r = getReadItems();
@@ -1589,6 +1766,12 @@
         if (btn) { btn.classList.remove('text-slate-400'); btn.classList.add('text-emerald-400'); }
       });
       updateSavedCount();
+
+      // Trigger background live sync
+      setTimeout(refreshAllLiveIntel, 800);
+
+      // Auto refresh every 10 mins while tab is open
+      setInterval(refreshAllLiveIntel, 10 * 60 * 1000);
     });
   </script>
 

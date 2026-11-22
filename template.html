@@ -228,10 +228,11 @@
         </div>
 
         <!-- Refresh Button -->
-        <button onclick="location.reload()" title="Refresh" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 transition shadow-md active:scale-95 group">
-          <svg class="w-4 h-4 text-cyan-400 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="refresh-btn" onclick="triggerManualRefresh()" title="Fetch Realtime News Now" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 transition shadow-md active:scale-95 group flex items-center gap-1.5 font-mono text-xs">
+          <svg id="refresh-spinner" class="w-4 h-4 text-cyan-400 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
           </svg>
+          <span class="hidden md:inline">Sync Live</span>
         </button>
       </div>
     </header>
@@ -460,7 +461,7 @@
           </span>
         </div>
 
-        <div class="divide-y divide-rose-950/30 flex-1 p-2 sm:p-3 space-y-1">
+        <div id="news-list-geopolitics" class="divide-y divide-rose-950/30 flex-1 p-2 sm:p-3 space-y-1">
           {% for item in news.geopolitics %}
           <article data-id="geo-{{ loop.index }}" class="article-item p-3.5 rounded-2xl hover:bg-rose-950/20 transition-all duration-200 group border border-transparent hover:border-rose-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
@@ -510,7 +511,7 @@
           </span>
         </div>
 
-        <div class="divide-y divide-emerald-950/30 flex-1 p-2 sm:p-3 space-y-1">
+        <div id="news-list-finance" class="divide-y divide-emerald-950/30 flex-1 p-2 sm:p-3 space-y-1">
           {% for item in news.finance %}
           <article data-id="fin-{{ loop.index }}" class="article-item p-3.5 rounded-2xl hover:bg-emerald-950/20 transition-all duration-200 group border border-transparent hover:border-emerald-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
@@ -560,7 +561,7 @@
           </span>
         </div>
 
-        <div class="divide-y divide-sky-950/30 flex-1 p-2 sm:p-3 space-y-1">
+        <div id="news-list-sports" class="divide-y divide-sky-950/30 flex-1 p-2 sm:p-3 space-y-1">
           {% for item in news.sports %}
           <article data-id="spt-{{ loop.index }}" class="article-item p-3.5 rounded-2xl hover:bg-sky-950/20 transition-all duration-200 group border border-transparent hover:border-sky-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
@@ -610,7 +611,7 @@
           </span>
         </div>
 
-        <div class="divide-y divide-purple-950/30 flex-1 p-2 sm:p-3 space-y-1">
+        <div id="news-list-jobs" class="divide-y divide-purple-950/30 flex-1 p-2 sm:p-3 space-y-1">
           {% for item in news.jobs %}
           <article data-id="job-{{ loop.index }}" class="article-item p-3.5 rounded-2xl hover:bg-purple-950/20 transition-all duration-200 group border border-transparent hover:border-purple-800/40 hover:shadow-xl relative">
             <div class="flex items-start justify-between gap-3">
@@ -959,7 +960,183 @@
       synth.speak(utter);
     }
 
-    // Restore bookmarks & read state on page load
+    // 10. REALTIME CLIENT-SIDE LIVE INGESTION ENGINE (OPTION 2)
+    const LIVE_FEED_SOURCES = {
+      geopolitics: [
+        { url: "https://news.google.com/rss/search?q=Iran+OR+USA+war+conflict+when:1d&hl=en-IN&gl=IN&ceid=IN:en", label: "Google News", theme: "rose" }
+      ],
+      finance: [
+        { url: "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms", label: "ET Markets", theme: "emerald" }
+      ],
+      sports: [
+        { url: "https://www.espncricinfo.com/rss/content/story/feeds/0.xml", label: "ESPNcricinfo", theme: "sky" },
+        { url: "https://feeds.bbci.co.uk/sport/football/rss.xml", label: "BBC Football", theme: "sky" }
+      ],
+      jobs: [
+        { url: "https://news.google.com/rss/search?q=%22AI+Engineer%22+OR+%22Java+Lead%22+OR+%22GenAI%22+jobs+India+when:2d&hl=en-IN&gl=IN&ceid=IN:en", label: "India Jobs", theme: "purple" },
+        { url: "https://news.google.com/rss/search?q=Remote+%22AI+Engineer%22+OR+%22Machine+Learning+Engineer%22+jobs&hl=en-IN&gl=IN&ceid=IN:en", label: "Remote AI", theme: "purple" }
+      ]
+    };
+
+    function formatRelativeTime(dateStr) {
+      try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return "Recent";
+        const diffSec = Math.floor((new Date() - d) / 1000);
+        if (diffSec < 60) return "Just now";
+        if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
+        if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
+        return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+      } catch (e) {
+        return "Recent";
+      }
+    }
+
+    async function fetchXmlViaProxy(url) {
+      const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(url);
+      const resp = await fetch(proxyUrl, { cache: "no-store" });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const text = await resp.text();
+      const parser = new DOMParser();
+      return parser.parseFromString(text, "text/xml");
+    }
+
+    async function fetchLiveCategory(catId, sources, themeColor) {
+      const container = document.getElementById(`news-list-${catId}`);
+      if (!container) return;
+
+      let allEntries = [];
+      for (const src of sources) {
+        try {
+          const xml = await fetchXmlViaProxy(src.url);
+          const items = xml.querySelectorAll("item");
+          items.forEach((item, idx) => {
+            if (idx >= 6) return;
+            let title = item.querySelector("title")?.textContent || "";
+            let link = item.querySelector("link")?.textContent || "#";
+            let pubDate = item.querySelector("pubDate")?.textContent || "";
+            let source = src.label;
+
+            if (title.includes(" - ")) {
+              const parts = title.split(" - ");
+              if (parts.length > 1 && parts[parts.length - 1].length < 40) {
+                if (!source) source = parts[parts.length - 1].trim();
+                parts.pop();
+                title = parts.join(" - ").trim();
+              }
+            }
+
+            if (title) {
+              allEntries.push({
+                title: title.replace(/<[^>]*>?/gm, '').trim(),
+                link,
+                pubDate: formatRelativeTime(pubDate),
+                source: source || "News",
+                rawDate: pubDate ? new Date(pubDate).getTime() : 0
+              });
+            }
+          });
+        } catch (e) {
+          console.warn(`Live fetch error on ${catId}:`, e);
+        }
+      }
+
+      if (allEntries.length === 0) return;
+
+      // Sort by newest and pick top 6
+      allEntries.sort((a, b) => b.rawDate - a.rawDate);
+      const topEntries = allEntries.slice(0, 6);
+
+      let html = "";
+      topEntries.forEach((item, idx) => {
+        const id = `${catId.substring(0, 3)}-live-${idx + 1}`;
+        const escapedTitle = item.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        html += `
+          <article data-id="${id}" class="article-item p-3.5 rounded-2xl hover:bg-${themeColor}-950/20 transition-all duration-200 group border border-transparent hover:border-${themeColor}-800/40 hover:shadow-xl relative animate-fade-in-up">
+            <div class="flex items-start justify-between gap-3">
+              <div onclick="openStoryModal('${escapedTitle}', '${item.source}', '${item.link}', '${item.pubDate}', '${catId}')" class="cursor-pointer block flex-1">
+                <h3 class="article-title text-sm font-semibold text-slate-100 group-hover:text-${themeColor}-300 leading-snug line-clamp-2 transition-colors">
+                  ${item.title}
+                </h3>
+              </div>
+              <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
+                <button onclick="toggleBookmark('${id}', this)" title="Save for later" class="bookmark-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                </button>
+                <button onclick="toggleRead('${id}', this)" title="Mark as read" class="read-btn p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5 mt-2.5 font-mono text-[11px] text-slate-400">
+              <span class="px-2 py-0.5 rounded-md bg-${themeColor}-950/60 text-${themeColor}-300 border border-${themeColor}-800/50 font-medium">
+                ${item.source}
+              </span>
+              <span>&bull;</span>
+              <span class="text-${themeColor}-400 font-semibold">${item.pubDate}</span>
+              <a href="${item.link}" target="_blank" class="ml-auto flex items-center gap-1 text-${themeColor}-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span class="text-[10px] font-bold uppercase">Source →</span>
+              </a>
+            </div>
+          </article>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    async function fetchLiveWeatherMumbai() {
+      try {
+        const resp = await fetch("https://api.open-meteo.com/v1/forecast?latitude=19.0760&longitude=72.8777&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=sunrise,sunset&timezone=Asia%2FKolkata");
+        if (!resp.ok) return;
+        const data = await resp.json();
+        if (data.current) {
+          const temp = Math.round(data.current.temperature_2m * 10) / 10;
+          const tempEl = document.querySelector(".neon-card:nth-child(5) .text-2xl, .neon-card:nth-child(5) .text-3xl");
+          if (tempEl) tempEl.textContent = `${temp}°C`;
+        }
+      } catch (e) {
+        console.warn("Live weather fetch error:", e);
+      }
+    }
+
+    async function refreshAllLiveIntel() {
+      const spinner = document.getElementById("refresh-spinner");
+      if (spinner) spinner.classList.add("animate-spin");
+
+      try {
+        await Promise.allSettled([
+          fetchLiveCategory("geopolitics", LIVE_FEED_SOURCES.geopolitics, "rose"),
+          fetchLiveCategory("finance", LIVE_FEED_SOURCES.finance, "emerald"),
+          fetchLiveCategory("sports", LIVE_FEED_SOURCES.sports, "sky"),
+          fetchLiveCategory("jobs", LIVE_FEED_SOURCES.jobs, "purple"),
+          fetchLiveWeatherMumbai()
+        ]);
+        
+        // Re-apply saved bookmarks & read state
+        const b = getBookmarks();
+        const r = getReadItems();
+        b.forEach(id => {
+          const btn = document.querySelector(`[data-id="${id}"] .bookmark-btn`);
+          if (btn) { btn.classList.remove('text-slate-400'); btn.classList.add('text-amber-400'); }
+        });
+        r.forEach(id => {
+          const article = document.querySelector(`[data-id="${id}"]`);
+          const btn = document.querySelector(`[data-id="${id}"] .read-btn`);
+          if (article) article.classList.add('is-read');
+          if (btn) { btn.classList.remove('text-slate-400'); btn.classList.add('text-emerald-400'); }
+        });
+        updateSavedCount();
+      } finally {
+        if (spinner) spinner.classList.remove("animate-spin");
+      }
+    }
+
+    function triggerManualRefresh() {
+      refreshAllLiveIntel();
+    }
+
+    // Auto-fetch on page load & auto-refresh every 10 minutes
     document.addEventListener('DOMContentLoaded', () => {
       const b = getBookmarks();
       const r = getReadItems();
@@ -974,6 +1151,12 @@
         if (btn) { btn.classList.remove('text-slate-400'); btn.classList.add('text-emerald-400'); }
       });
       updateSavedCount();
+
+      // Trigger background live sync
+      setTimeout(refreshAllLiveIntel, 800);
+
+      // Auto refresh every 10 mins while tab is open
+      setInterval(refreshAllLiveIntel, 10 * 60 * 1000);
     });
   </script>
 
